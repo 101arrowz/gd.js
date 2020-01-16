@@ -1,0 +1,24 @@
+{
+  "name": "gd.js",
+  "version": "0.0.1",
+  "description": "A Geometry Dash API wrapper for Node.js and the browser",
+  "main": "lib/index.js",
+  "author": "Arjun Barrett",
+  "license": "MIT",
+  "scripts": {
+    "build": "yarn lint && tsc",
+    "lint": "eslint --fix \"src/**/*.ts\""
+  },
+  "devDependencies": {
+    "@types/node": "^13.1.6",
+    "@types/node-fetch": "^2.5.4",
+    "@typescript-eslint/eslint-plugin": "^2.16.0",
+    "@typescript-eslint/parser": "^2.16.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.9.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "node-fetch": "^2.6.0",
+    "prettier": "^1.19.1",
+    "typescript": "^3.7.4"
+  }
+}
