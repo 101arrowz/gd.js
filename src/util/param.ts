@@ -9,7 +9,6 @@ export default class GDRequestParams {
 
   constructor(data: GDRequestData = {}) {
     this.data = {
-      udid: "Hi RobTop, it's gd.js!",
       gdw: 0,
       gameVersion: 21,
       binaryVersion: 35,

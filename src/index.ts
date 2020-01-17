@@ -1,5 +1,6 @@
 import './polyfill';
 import { isNode, GDRequestParams as GDParams, accountKey, encrypt } from './util';
+import { User } from './entities';
 type RawCredentials = {
   rawCreds: {
     accountID: string;
@@ -16,10 +17,12 @@ type Config = Partial<RawCredentials> & {
   };
 };
 type RequestConfig = {
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-  body: GDParams;
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  body?: GDParams;
+  credentials?: boolean;
 };
 export = class Client {
+  User = User;
   private config: Config & RawCredentials;
 
   constructor(
@@ -48,13 +51,23 @@ export = class Client {
       creds,
       rawCreds
     };
+    User.setClient(this);
   }
 
-  private async req(url: string, { method = 'GET', body = null }: RequestConfig): Promise<string> {
+  public async req(
+    url: string,
+    { method = 'GET', body = null, credentials = false }: RequestConfig = {}
+  ): Promise<string> {
+    this.verbose(`Making a ${method} request to ${url}`);
+    let sentBody = null;
+    if (body) {
+      if (credentials) body.insertParams(this.config.rawCreds);
+      sentBody = body.resolve();
+    }
     return (
       await fetch((isNode ? '' : this.config.corsURL) + this.config.dbURL + url, {
         method,
-        body: body ? body.resolve() : null
+        body: sentBody
       })
     ).text();
   }
@@ -63,6 +76,9 @@ export = class Client {
     if (!this.config.creds) return; // No way to add new credentials
     const params = new GDParams();
     params.login(this.config.creds.username, this.config.creds.password, 'unencrypted');
+    params.insertParams({
+      udid: "Hi RobTop, it's gd.js!"
+    });
     params.authorize('account');
     const data = await this.req('/accounts/loginGJAccount.php', {
       method: 'POST',
