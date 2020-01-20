@@ -1,6 +1,4 @@
-import AbstractEntity from './abstract';
-
-import color from 'color';
+import Finder from './finder';
 import { serialize, GDRequestParams } from '../util';
 const colors = [
   '#7dff00',
@@ -46,24 +44,50 @@ const colors = [
   '#7dffaf',
   '#7d7dff'
 ];
+
+/**
+ * A color used by a Geometry Dash player.
+ */
 type GDColor = {
+  /**
+   * The raw color number, as returned by the server
+   */
   raw: number;
-  parsed: color;
+  /**
+   * The color in hexadecimal notation
+   */
+  parsed: string;
 };
+
+/**
+ * Generates a {@link GDColor} from a number returned by the Geometry Dash servers.
+ * @param colorValue The color number from the Geometry Dash servers
+ * @returns The {@link GDColor} representing the given color number
+ */
 const userColor = (colorValue: number): GDColor => ({
   raw: colorValue,
-  parsed: color(colors[colorValue])
+  parsed: colors[colorValue]
 });
 
 const PERMISSIONS = ['User', 'Moderator', 'Elder Moderator'];
 
+/**
+ * A permission level for a Geometry Dash player.
+ */
 type Permission = {
-  raw: keyof typeof PERMISSIONS;
-  pretty: typeof PERMISSIONS[keyof typeof PERMISSIONS];
+  /** The raw permission number, as returned by the server. 1 = user, 2 = mod, 3 = elder mod. */
+  raw: number;
+  /** A prettified string for the permission level. One of "User", "Moderator" or "Elder Moderator" */
+  pretty: string;
 };
 
+/**
+ * Generates a {@link Permission} from a number returned by the Geometry Dash servers.
+ * @param raw The permission number from the Geometry Dash servers
+ * @returns The {@link Permission} representing the given permission number
+ */
 const generatePermission = (raw: number): Permission => ({
-  raw: raw as 1 | 2 | 3,
+  raw,
   pretty: PERMISSIONS[raw]
 });
 
@@ -73,34 +97,74 @@ const SOCIALMAP = {
   twitter: 'https://twitter.com/'
 };
 
+/**
+ * A social media platform that a Geometry Dash player uses
+ */
 type SocialURL = {
+  /** The path to the player's social media from the platform's base URL */
   path: string;
+  /** The full URL path to the player's social media */
   fullURL: string;
 };
+
+/**
+ * Generates a {@link SocialURL} from a path and type returned by the Geometry Dash servers.
+ * @param path The path from the Geometry Dash servers
+ * @param type The social media platform from the Geometry Dash servers
+ * @returns The {@link SocialURL} representing the given social media
+ */
 const generateSocial = (path: string, type: keyof typeof SOCIALMAP): SocialURL => ({
   path,
   fullURL: SOCIALMAP[type] + path
 });
+
+/**
+ * An icon type
+ */
 type IconCosmetic = 'cube' | 'ship' | 'ball' | 'ufo' | 'wave' | 'spider' | 'robot';
-type Colors = { readonly primary: GDColor; readonly secondary: GDColor };
+/**
+ * The colors in a Geometry Dash user's profile
+ */
+type Colors = { primary: GDColor; secondary: GDColor };
+/**
+ * A Geometry Dash player's cosmetics
+ */
 class UserCosmetics {
-  readonly explosion?: number;
+  /** The player's raw explosion number */
+  explosion?: number;
 
   constructor(
-    readonly cube: number,
-    readonly ship: number,
-    readonly ball: number,
-    readonly ufo: number,
-    readonly wave: number,
-    readonly robot: number,
-    readonly glow: number,
-    readonly spider: number,
+    /** @internal */
+    private _finder: UserFinder,
+    /** The player's raw cube number */
+    public cube: number,
+    /** The player's raw ship number */
+    public ship: number,
+    /** The player's raw ball number */
+    public ball: number,
+    /** The player's raw UFO number */
+    public ufo: number,
+    /** The player's raw wave number */
+    public wave: number,
+    /** The player's raw robot number */
+    public robot: number,
+    /** The player's raw glow number */
+    public glow: number,
+    /** The player's raw spider number */
+    public spider: number,
     explosion: number,
-    readonly colors: Colors
+    /** The colors the player uses */
+    public colors: Colors
   ) {
-    if (explosion) this.explosion = explosion;
+    if (!isNaN(explosion)) this.explosion = explosion;
   }
 
+  /**
+   * Renders one of the user's icons as an image using the GDBrowser API
+   * @param type The type of icon to render
+   * @param returnRaw Whether to return a raw Response or an ArrayBuffer
+   * @returns The Response or ArrayBuffer containing the image
+   */
   async renderIcon(type: IconCosmetic, returnRaw: false): Promise<ArrayBuffer>;
   async renderIcon(type: IconCosmetic, returnRaw: true): Promise<Response>;
   async renderIcon(
@@ -115,38 +179,69 @@ class UserCosmetics {
       ['glow', this.glow.toString()],
       ['noUser', '1']
     ]);
-    const response = await fetch(`https://gdbrowser.com/icon/gd.js?${params.toString()}`);
+    const response = await this._finder._client.req(
+      `https://gdbrowser.com/icon/gd.js?${params.toString()}`,
+      null,
+      true
+    );
     if (returnRaw) return response;
     return response.arrayBuffer();
   }
 }
 
+/**
+ * The social media platforms a Geometry Dash player uses
+ */
 type Socials = {
+  /** The player's YouTube channel */
   youtube?: SocialURL;
+  /** The player's Twitter account */
   twitter?: SocialURL;
+  /** The player's Twitch channel */
   twitch?: SocialURL;
 };
 
-class User extends AbstractEntity {
-  readonly username: string;
-  readonly userID: number;
-  readonly accountID: number;
-  readonly stats: {
-    readonly stars: number;
-    readonly diamonds: number;
-    readonly demons: number;
-    readonly coins: {
-      readonly normal: number;
-      readonly user: number;
+/**
+ * A Geometry Dash player
+ */
+class User {
+  /** The player's username  */
+  username: string;
+  /** The player's user ID */
+  userID: number;
+  /** The player's account ID */
+  accountID: number;
+  /** The player's stats */
+  stats: {
+    /** The number of stars the player has collected */
+    stars: number;
+    /** The number of diamonds the player has collected */
+    diamonds: number;
+    /** The number of demons the player has beaten */
+    demons: number;
+    /** The coins the player has collected */
+    coins: {
+      /** The number of coins in the single-player mode (gold coins) the player has collected */
+      normal: number;
+      /** The number of coins in user-created levels (silver coins) the player has collected */
+      user: number;
     };
-    readonly cp: number;
+    /** The number of creator points the player has earned */
+    cp: number;
   };
-  readonly socials: Readonly<Socials>;
-  readonly cosmetics: UserCosmetics;
-  readonly permissions: Permission;
+  /** The player's social media profiles */
+  socials: Readonly<Socials>;
+  /** The player's cosmetics */
+  cosmetics: UserCosmetics;
+  /** The player's permissions */
+  permissions: Permission;
 
-  constructor(rawData: string) {
-    super();
+  /**
+   * Constructs data about a Geometry Dash player
+   * @param finder The finder associated with this user
+   * @param rawData The raw data returned from the Geometry Dash request for this user
+   */
+  constructor(finder: UserFinder, rawData: string) {
     const d = serialize(rawData);
     this.username = d[1];
     this.userID = +d[2];
@@ -167,6 +262,7 @@ class User extends AbstractEntity {
     if (d[45]) socials.twitch = generateSocial(d[45], 'twitch');
     this.socials = socials;
     this.cosmetics = new UserCosmetics(
+      finder,
       +d[21],
       +d[22],
       +d[23],
@@ -183,19 +279,40 @@ class User extends AbstractEntity {
     );
     this.permissions = generatePermission(+d[49]);
   }
-  static async getByAccountID(id: number): Promise<User> {
+}
+
+const ICONTYPEMAP = ['cube', 'ship', 'ball', 'ufo', 'wave', 'robot', 'spider'];
+
+/**
+ * A finder for Geometry Dash players
+ */
+class UserFinder extends Finder {
+  /**
+   * Gets the information about a player using its account ID
+   * @param id The account ID of the player to get
+   * @returns The player with the provided account ID
+   */
+  async getByAccountID(id: number): Promise<User> {
     const params = new GDRequestParams({
       targetAccountID: id
     });
     params.authorize('db');
     return new User(
-      await User.client.req('/getGJUserInfo20.php', { method: 'POST', body: params })
+      this,
+      await this._client.req('/getGJUserInfo20.php', { method: 'POST', body: params })
     );
   }
 
-  static async search(str: string): Promise<SearchedUser>;
-  static async search(str: string, num: number): Promise<SearchedUser[]>;
-  static async search(str: string, num?: number): Promise<SearchedUser | SearchedUser[]> {
+  /**
+   * Searches for players with a given string in their names. Note that the official Geometry Dash servers will always only return the player (if any) whose name is exactly the provided string.
+   * @param str The string to search for
+   * @param num The maximum number of results to fetch. If not specified, a single player is returned rather than an array.
+   * @returns The user or array of users whose names match the given string
+   * @deprecated
+   */
+  async search(str: string): Promise<SearchedUser>;
+  async search(str: string, num: number): Promise<SearchedUser[]>;
+  async search(str: string, num?: number): Promise<SearchedUser | SearchedUser[]> {
     let singleReturn = false;
     if (!num) {
       num = 1;
@@ -210,38 +327,70 @@ class User extends AbstractEntity {
         total: 0
       });
       params.authorize('db');
-      const data = await User.client.req('/getGJUsers20.php', { method: 'POST', body: params });
+      const data = await this._client.req('/getGJUsers20.php', { method: 'POST', body: params });
+      if (data === '-1') return singleReturn ? null : [];
       const split = data.slice(0, data.indexOf('#')).split('|');
-      searchedUsers.push(...split.map(str => new SearchedUser(str)));
-      if (data.length < 10) break;
+      searchedUsers.push(...split.map(str => new SearchedUser(this, str)));
+      if (split.length < 10) break;
     }
     return singleReturn ? searchedUsers[0] || null : searchedUsers.slice(0, num);
   }
+
+  /**
+   * Get information about a user by
+   * @param str The name of the user to search for
+   * @return The user with the given username
+   */
+  async getByUsername(str: string): Promise<SearchedUser> {
+    const possibleUser = await this.search(str);
+    if (possibleUser.username.toLowerCase() === str.toLowerCase()) return possibleUser;
+    return null;
+  }
 }
 
-const ICONTYPEMAP = ['cube', 'ship', 'ball', 'ufo', 'wave', 'robot', 'spider'];
-
+/**
+ * Details about a Geometry Dash player returned from a search
+ */
 class SearchedUser {
-  readonly username: string;
-  readonly userID: number;
-  readonly accountID: number;
-  readonly stats: {
-    readonly stars: number;
-    readonly demons: number;
-    readonly coins: {
-      readonly normal: number;
-      readonly user: number;
+  /** The player's username  */
+  username: string;
+  /** The player's user ID */
+  userID: number;
+  /** The player's account ID */
+  accountID: number;
+  /** The player's stats */
+  stats: {
+    /** The number of stars the player has collected */
+    stars: number;
+    /** The number of demons the player has beaten */
+    demons: number;
+    /** The coins the player has collected */
+    coins: {
+      /** The number of coins in the single-player mode (gold coins) the player has collected */
+      normal: number;
+      /** The number of coins in user-created levels (silver coins) the player has collected */
+      user: number;
     };
-    readonly cp: number;
+    /** The number of creator points the player has earned */
+    cp: number;
   };
-  readonly cosmetics: {
-    readonly icon: {
-      readonly val: number;
-      readonly type: string;
+  /** The player's cosmetics */
+  cosmetics: {
+    /** The player's default icon */
+    icon: {
+      /** The numeric value of the icon, as provided by the Geometry Dash servers */
+      val: number;
+      /** The type of the icon */
+      type: string;
     };
-    readonly colors: Colors;
+    /** The colors the player uses */
+    colors: Colors;
   };
-  constructor(rawData: string) {
+  constructor(
+    /** @internal */
+    private _finder: UserFinder,
+    rawData: string
+  ) {
     const d = serialize(rawData);
     this.username = d[1];
     this.userID = +d[2];
@@ -266,6 +415,12 @@ class SearchedUser {
       }
     };
   }
+
+  /**
+   * Renders the user's selected default icon as an image using the GDBrowser API
+   * @param returnRaw Whether to return a raw Response or an ArrayBuffer
+   * @returns The Response or ArrayBuffer containing the image
+   */
   async renderIcon(returnRaw: false): Promise<ArrayBuffer>;
   async renderIcon(returnRaw: true): Promise<Response>;
   async renderIcon(returnRaw = false): Promise<Response | ArrayBuffer> {
@@ -279,8 +434,14 @@ class SearchedUser {
       returnRaw
     );
   }
+
+  /**
+   * Converts the searched user into a full user
+   * @returns The full data about the user
+   */
   async resolve(): Promise<User> {
-    return await User.getByAccountID(this.accountID);
+    return await this._finder.getByAccountID(this.accountID);
   }
 }
-export default User;
+
+export { User, UserFinder };

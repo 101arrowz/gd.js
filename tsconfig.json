@@ -5,7 +5,8 @@
     "moduleResolution": "node",
     "outDir": "lib/",
     "esModuleInterop": true,
-    "declaration": true
+    "declaration": true,
+    "stripInternal": true
   },
   "include": ["src/**/*.ts"]
 }
