@@ -7,8 +7,8 @@ export type ParsedData = { [k: string]: string };
  * @param data The data to parse
  * @returns The parsed data
  */
-export default (data: string): ParsedData => {
-  const split = data.split(':');
+export const parse = (data: string, splitter = ':'): ParsedData => {
+  const split = data.split(splitter);
   const obj: ParsedData = {};
   for (let i = 0; i < split.length; i += 2) {
     obj[split[i]] = split[i + 1];

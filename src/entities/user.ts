@@ -1,5 +1,5 @@
-import Finder from './finder';
-import { serialize, GDRequestParams } from '../util';
+import Creator from './entityCreator';
+import { parse, GDRequestParams } from '../util';
 const colors = [
   '#7dff00',
   '#00ff00',
@@ -135,7 +135,7 @@ class UserCosmetics {
 
   constructor(
     /** @internal */
-    private _finder: UserFinder,
+    private _creator: UserCreator,
     /** The player's raw cube number */
     public cube: number,
     /** The player's raw ship number */
@@ -164,8 +164,9 @@ class UserCosmetics {
    * @param type The type of icon to render
    * @param returnRaw Whether to return a raw Response or an ArrayBuffer
    * @returns The Response or ArrayBuffer containing the image
+   * @async
    */
-  async renderIcon(type: IconCosmetic, returnRaw: false): Promise<ArrayBuffer>;
+  async renderIcon(type: IconCosmetic, returnRaw?: false): Promise<ArrayBuffer>;
   async renderIcon(type: IconCosmetic, returnRaw: true): Promise<Response>;
   async renderIcon(
     type: IconCosmetic = 'cube',
@@ -179,7 +180,7 @@ class UserCosmetics {
       ['glow', this.glow.toString()],
       ['noUser', '1']
     ]);
-    const response = await this._finder._client.req(
+    const response = await this._creator._client.req(
       `https://gdbrowser.com/icon/gd.js?${params.toString()}`,
       null,
       true
@@ -238,11 +239,11 @@ class User {
 
   /**
    * Constructs data about a Geometry Dash player
-   * @param finder The finder associated with this user
+   * @param creator The creator associated with this user
    * @param rawData The raw data returned from the Geometry Dash request for this user
    */
-  constructor(finder: UserFinder, rawData: string) {
-    const d = serialize(rawData);
+  constructor(creator: UserCreator, rawData: string) {
+    const d = parse(rawData);
     this.username = d[1];
     this.userID = +d[2];
     this.accountID = +d[16];
@@ -262,7 +263,7 @@ class User {
     if (d[45]) socials.twitch = generateSocial(d[45], 'twitch');
     this.socials = socials;
     this.cosmetics = new UserCosmetics(
-      finder,
+      creator,
       +d[21],
       +d[22],
       +d[23],
@@ -281,16 +282,17 @@ class User {
   }
 }
 
-const ICONTYPEMAP = ['cube', 'ship', 'ball', 'ufo', 'wave', 'robot', 'spider'];
+const ICONTYPEMAP: IconCosmetic[] = ['cube', 'ship', 'ball', 'ufo', 'wave', 'robot', 'spider'];
 
 /**
- * A finder for Geometry Dash players
+ * A creator for Geometry Dash players
  */
-class UserFinder extends Finder {
+class UserCreator extends Creator {
   /**
    * Gets the information about a player using its account ID
    * @param id The account ID of the player to get
    * @returns The player with the provided account ID
+   * @async
    */
   async getByAccountID(id: number): Promise<User> {
     const params = new GDRequestParams({
@@ -308,6 +310,7 @@ class UserFinder extends Finder {
    * @param str The string to search for
    * @param num The maximum number of results to fetch. If not specified, a single player is returned rather than an array.
    * @returns The user or array of users whose names match the given string
+   * @async
    * @deprecated
    */
   async search(str: string): Promise<SearchedUser>;
@@ -337,14 +340,64 @@ class UserFinder extends Finder {
   }
 
   /**
-   * Get information about a user by
+   * Get information about a user by its username
    * @param str The name of the user to search for
-   * @return The user with the given username
+   * @returns The user with the given username
+   * @async
    */
   async getByUsername(str: string): Promise<SearchedUser> {
     const possibleUser = await this.search(str);
     if (possibleUser.username.toLowerCase() === str.toLowerCase()) return possibleUser;
     return null;
+  }
+}
+
+/**
+ * Cosmetics of a user found by a search
+ */
+class SearchedUserCosmetics {
+  /** The player's default icon */
+  icon: {
+    /** The numeric value of the icon, as provided by the Geometry Dash servers */
+    val: number;
+    /** The type of the icon */
+    type: IconCosmetic;
+  };
+  /** The colors the player uses */
+  colors: Colors;
+
+  /**
+   * Creates new info about a searched user's cosmetics
+   * @param icon The number of the icon
+   * @param iconType The type of the icon
+   * @param colors The colors the player uses
+   */
+  constructor(icon: number, iconType: IconCosmetic, colors: Colors) {
+    this.icon = {
+      val: icon,
+      type: iconType
+    };
+    this.colors = colors;
+  }
+
+  /**
+   * Renders the user's selected default icon as an image using the GDBrowser API
+   * @param returnRaw Whether to return a raw Response or an ArrayBuffer
+   * @returns The Response or ArrayBuffer containing the image
+   * @async
+   */
+  async renderIcon(returnRaw?: false): Promise<ArrayBuffer>;
+  async renderIcon(returnRaw: true): Promise<Response>;
+  async renderIcon(returnRaw = false): Promise<Response | ArrayBuffer> {
+    return await UserCosmetics.prototype.renderIcon.call(
+      {
+        glow: 0,
+        [this.icon.type]: this.icon.val,
+        colors: this.colors
+      },
+      this.icon.type,
+      returnRaw
+    );
   }
 }
 
@@ -375,23 +428,14 @@ class SearchedUser {
     cp: number;
   };
   /** The player's cosmetics */
-  cosmetics: {
-    /** The player's default icon */
-    icon: {
-      /** The numeric value of the icon, as provided by the Geometry Dash servers */
-      val: number;
-      /** The type of the icon */
-      type: string;
-    };
-    /** The colors the player uses */
-    colors: Colors;
-  };
+  cosmetics: SearchedUserCosmetics;
+
   constructor(
     /** @internal */
-    private _finder: UserFinder,
+    private _creator: UserCreator,
     rawData: string
   ) {
-    const d = serialize(rawData);
+    const d = parse(rawData);
     this.username = d[1];
     this.userID = +d[2];
     this.accountID = +d[16];
@@ -404,44 +448,20 @@ class SearchedUser {
       },
       cp: +d[8]
     };
-    this.cosmetics = {
-      icon: {
-        val: +d[9],
-        type: ICONTYPEMAP[+d[14]]
-      },
-      colors: {
-        primary: userColor(+d[10]),
-        secondary: userColor(+d[11])
-      }
-    };
-  }
-
-  /**
-   * Renders the user's selected default icon as an image using the GDBrowser API
-   * @param returnRaw Whether to return a raw Response or an ArrayBuffer
-   * @returns The Response or ArrayBuffer containing the image
-   */
-  async renderIcon(returnRaw: false): Promise<ArrayBuffer>;
-  async renderIcon(returnRaw: true): Promise<Response>;
-  async renderIcon(returnRaw = false): Promise<Response | ArrayBuffer> {
-    return await UserCosmetics.prototype.renderIcon.call(
-      {
-        [this.cosmetics.icon.type]: this.cosmetics.icon.val,
-        glow: 0,
-        colors: this.cosmetics.colors
-      },
-      this.cosmetics.icon.type,
-      returnRaw
-    );
+    this.cosmetics = new SearchedUserCosmetics(+d[9], ICONTYPEMAP[+d[14]], {
+      primary: userColor(+d[10]),
+      secondary: userColor(+d[11])
+    });
   }
 
   /**
    * Converts the searched user into a full user
    * @returns The full data about the user
+   * @async
    */
   async resolve(): Promise<User> {
-    return await this._finder.getByAccountID(this.accountID);
+    return await this._creator.getByAccountID(this.accountID);
   }
 }
 
-export { User, UserFinder };
+export { User, UserCreator };

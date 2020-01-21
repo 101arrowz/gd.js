@@ -1,21 +1,21 @@
 import Client from '..';
 
 /**
- * A general type of entity finder
+ * A general type of entity creator
  */
-class Finder {
+class Creator {
   /**
-   * The client to be accessed by the finder
+   * The client to be accessed by the creator
    * @internal
    */
   _client: Client;
 
   /**
-   * Creates an entity finder
+   * Creates an entity creator
    * @param client The client to register
    */
   constructor(client: Client) {
     this._client = client;
   }
 }
-export default Finder;
+export default Creator;

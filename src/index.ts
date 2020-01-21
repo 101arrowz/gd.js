@@ -1,48 +1,47 @@
 import './polyfill';
-import { isNode, GDRequestParams as GDParams, login, Credentials, UserCredentials } from './util';
-import { UserFinder, User } from './entities';
+import { isNode, GDRequestParams as GDParams } from './util';
+import { UserCreator, User, AccountCreator, Account } from './entities';
 
 /**
  * Configuration for the [GD client]{@link Client}.
  */
 type Config = {
-  /**
-   * The level of logging. 2 = verbose, 1 = warnings, 0 = off. Defaults to 1.
-   */
+  /** The level of logging. 2 = verbose, 1 = warnings, 0 = off. Defaults to 1. */
   logLevel: 0 | 1 | 2;
-  /**
-   * The URL for the database. Defaults to http://boomlings.com/database.
-   */
+  /** The URL for the database. Defaults to http://boomlings.com/database. */
   dbURL: string;
-  /**
-   * The URL to use as a CORS proxy when making requests from a browser. Defaults to https://cors-anywhere.herokuapp.com/. Note it should have a trailing slash.
-   */
+  /** The URL to use as a CORS proxy when making requests from a browser. Defaults to https://cors-anywhere.herokuapp.com/. Note it should have a trailing slash. */
   corsURL: string;
-  /**
-   * The credentials to be used in requests.
-   */
-  creds: UserCredentials;
 };
+/**
+ * Configuration for a request to the GD servers
+ */
 type RequestConfig = {
+  /** The method for the request */
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  /** The parameters for the request */
   body?: GDParams;
-  credentials?: boolean;
 };
 
 /**
  * Client for Geometry Dash requests.
  */
 class Client {
+  /** A Geometry Dash player */
   static User = User;
+  /** A Geometry Dash account */
+  static Account = Account;
 
   /** The database of Geometry Dash users */
-  users: UserFinder;
+  users: UserCreator;
+  /** The database of Geometry Dash accounts */
+  account: AccountCreator;
 
   /**
    * The configuration for the Geometry Dash client
    * @internal
    */
-  private config: Config & { rawCreds: Credentials };
+  private config: Config;
 
   /**
    * Creates a client for Geometry Dash requests.
@@ -52,31 +51,19 @@ class Client {
     {
       logLevel = 1,
       dbURL = 'http://boomlings.com/database',
-      corsURL = 'https://cors-anywhere.com/',
-      creds
+      corsURL = 'https://cors-anywhere.com/'
     }: Config = {} as Config
   ) {
-    if (!(creds && creds.username && creds.password)) {
-      if (logLevel > 0) console.warn('Invalid credentials provided; will not be logged in');
-      creds = null;
-    }
     this.config = {
       logLevel,
       dbURL,
-      corsURL,
-      creds,
-      rawCreds: {
-        userName: '',
-        accountID: '0',
-        gjp: ''
-      }
+      corsURL
     };
-    this.users = new UserFinder(this);
+    this.users = new UserCreator(this);
+    this.account = new AccountCreator(this);
   }
 
-  /** @internal */
   async req(url: string, conf: RequestConfig, returnRaw: true): Promise<Response>;
-  /** @internal */
   async req(url: string, conf: RequestConfig, returnRaw?: false): Promise<string>;
   /**
    * Make a request to a Geometry Dash server.
@@ -89,7 +76,7 @@ class Client {
    */
   async req(
     url: string,
-    { method = 'GET', body = null, credentials = false }: RequestConfig = {},
+    { method = 'GET', body = null }: RequestConfig = {},
     returnRaw = false
   ): Promise<string | Response> {
     this.verbose(`Making a ${method} request to ${url}`);
@@ -97,28 +84,12 @@ class Client {
     if (body) {
       sentBody = body.resolve();
     }
-    if (credentials) {
-      if (body) body.insertParams(this.config.rawCreds);
-      else sentBody = new GDParams(this.config.rawCreds).resolve();
-    }
     const resp = await fetch((isNode ? '' : this.config.corsURL) + this.config.dbURL + url, {
       method,
       body: sentBody
     });
     if (returnRaw) return resp;
     return resp.text();
-  }
-
-  /**
-   * Log in to the Geometry Dash servers using the provided credentials.
-   * @returns An empty promise that resolves once login is complete
-   */
-  async login(): Promise<void> {
-    if (!this.config.creds) return; // No way to add new credentials
-    this.config.rawCreds = await login(this.config.creds);
-    this.verbose(
-      `Logged in with account ID ${this.config.rawCreds.accountID}, username ${this.config.rawCreds.userName}`
-    );
   }
 
   /** @internal */

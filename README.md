@@ -7,7 +7,9 @@ A Geometry Dash API for Node.js and the browser
 ## Setup
 
 TL;DR: Install `node-fetch` if you're using Node.js with this library. Install `whatwg-fetch` if you're using older browsers with this library. Install `isomorphic-fetch` if you're using both. Don't install anything if you're using only modern browsers.
+
 ---
+
 `gd.js` relies on the `fetch` API and `Promise`. Polyfill `Promise` as needed (I recommend [`es6-promise`](https://npmjs.com/package/es6-promise)). For instructions on `fetch` polyfilling, read on.
 
 If you're using `gd.js` in a modern browser, no polyfill is needed. If you're not doing that, you should add a `fetch` polyfill like [`node-fetch`](https://npmjs.com/package/node-fetch) for only Node.js support, [`whatwg-fetch`](https://npmjs.com/package/whatwg-fetch) for only older browser support, or [`isomorphic-fetch`](https://npmjs.com/package/isomorphic-fetch) for both.
