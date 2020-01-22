@@ -1,4 +1,5 @@
 import Creator from './entityCreator';
+import { Account } from './account';
 import { parse, GDRequestParams } from '../util';
 const colors = [
   '#7dff00',
@@ -182,7 +183,7 @@ class UserCosmetics {
     ]);
     const response = await this._creator._client.req(
       `https://gdbrowser.com/icon/gd.js?${params.toString()}`,
-      null,
+      {},
       true
     );
     if (returnRaw) return response;
@@ -239,10 +240,10 @@ class User {
 
   /**
    * Constructs data about a Geometry Dash player
-   * @param creator The creator associated with this user
+   * @param _creator The creator associated with this user
    * @param rawData The raw data returned from the Geometry Dash request for this user
    */
-  constructor(creator: UserCreator, rawData: string) {
+  constructor(private _creator: UserCreator, rawData: string) {
     const d = parse(rawData);
     this.username = d[1];
     this.userID = +d[2];
@@ -263,7 +264,7 @@ class User {
     if (d[45]) socials.twitch = generateSocial(d[45], 'twitch');
     this.socials = socials;
     this.cosmetics = new UserCosmetics(
-      creator,
+      _creator,
       +d[21],
       +d[22],
       +d[23],
@@ -280,6 +281,15 @@ class User {
     );
     this.permissions = generatePermission(+d[49]);
   }
+
+  /**
+   * Gets the account associated with this user
+   * @returns The account associated with this user
+   * @async
+   */
+  async getAccount(): Promise<Account> {
+    return this._creator._client.accounts.get(this);
+  }
 }
 
 const ICONTYPEMAP: IconCosmetic[] = ['cube', 'ship', 'ball', 'ufo', 'wave', 'robot', 'spider'];
@@ -288,6 +298,26 @@ const ICONTYPEMAP: IconCosmetic[] = ['cube', 'ship', 'ball', 'ufo', 'wave', 'rob
  * A creator for Geometry Dash players
  */
 class UserCreator extends Creator {
+  /**
+   * Find a player by accountID or username
+   * @param id The account ID or username of the player to get
+   * @returns The player with the provided account ID or username
+   * @async
+   */
+  async get(id: number | string | Account): Promise<User> {
+    switch (typeof id) {
+      case 'number':
+        return await this.getByAccountID(id);
+      case 'string':
+        return await this.getByUsername(id);
+      case 'object': {
+        if (id instanceof Account) return await this.getByAccountID(id.id);
+      }
+      default:
+        return null;
+    }
+  }
+
   /**
    * Gets the information about a player using its account ID
    * @param id The account ID of the player to get
@@ -299,10 +329,9 @@ class UserCreator extends Creator {
       targetAccountID: id
     });
     params.authorize('db');
-    return new User(
-      this,
-      await this._client.req('/getGJUserInfo20.php', { method: 'POST', body: params })
-    );
+    const data = await this._client.req('/getGJUserInfo20.php', { method: 'POST', body: params });
+    if (data === '-1') return null;
+    return new User(this, data);
   }
 
   /**
@@ -342,12 +371,16 @@ class UserCreator extends Creator {
   /**
    * Get information about a user by its username
    * @param str The name of the user to search for
+   * @param resolve Whether to resolve the searched user into its full user, making another network request.
    * @returns The user with the given username
    * @async
    */
-  async getByUsername(str: string): Promise<SearchedUser> {
+  async getByUsername(str: string, resolve?: true): Promise<User>;
+  async getByUsername(str: string, resolve: false): Promise<SearchedUser>;
+  async getByUsername(str: string, resolve = true): Promise<User | SearchedUser> {
     const possibleUser = await this.search(str);
-    if (possibleUser.username.toLowerCase() === str.toLowerCase()) return possibleUser;
+    if (possibleUser && possibleUser.username.toLowerCase() === str.toLowerCase())
+      return resolve ? possibleUser.resolve() : possibleUser;
     return null;
   }
 }
@@ -462,6 +495,15 @@ class SearchedUser {
   async resolve(): Promise<User> {
     return await this._creator.getByAccountID(this.accountID);
   }
+
+  /**
+   * Gets the account associated with this user
+   * @returns The account associated with this user
+   * @async
+   */
+  async getAccount(): Promise<Account> {
+    return await User.prototype.getAccount.call(this);
+  }
 }
 
-export { User, UserCreator };
+export { User, SearchedUser, UserCreator };

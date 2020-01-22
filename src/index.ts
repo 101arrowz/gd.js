@@ -35,7 +35,7 @@ class Client {
   /** The database of Geometry Dash users */
   users: UserCreator;
   /** The database of Geometry Dash accounts */
-  account: AccountCreator;
+  accounts: AccountCreator;
 
   /**
    * The configuration for the Geometry Dash client
@@ -60,7 +60,7 @@ class Client {
       corsURL
     };
     this.users = new UserCreator(this);
-    this.account = new AccountCreator(this);
+    this.accounts = new AccountCreator(this);
   }
 
   async req(url: string, conf: RequestConfig, returnRaw: true): Promise<Response>;
@@ -70,7 +70,7 @@ class Client {
    *
    * @param url The path to request to (based at the {@link Config.dbURL})
    * @param conf The request configuration
-   * @param returnRaw Whether to parse the response or return it raw
+   * @param returnRaw Whether to parse the response into a string or return it raw
    * @return The Response or string containing the Geometry Dash server's response
    * @internal
    */
@@ -79,17 +79,21 @@ class Client {
     { method = 'GET', body = null }: RequestConfig = {},
     returnRaw = false
   ): Promise<string | Response> {
-    this.verbose(`Making a ${method} request to ${url}`);
     let sentBody = null;
     if (body) {
       sentBody = body.resolve();
     }
-    const resp = await fetch((isNode ? '' : this.config.corsURL) + this.config.dbURL + url, {
-      method,
-      body: sentBody
-    });
+    const resp = await fetch(
+      (isNode ? '' : this.config.corsURL) + (url.startsWith('http') ? '' : this.config.dbURL) + url,
+      {
+        method,
+        body: sentBody
+      }
+    );
     if (returnRaw) return resp;
-    return resp.text();
+    const data = await resp.text();
+    this.verbose(`Made a ${method} request to ${url}, response: ${data}`);
+    return data;
   }
 
   /** @internal */
