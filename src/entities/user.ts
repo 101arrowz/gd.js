@@ -1,6 +1,6 @@
 import Creator from './entityCreator';
-import { Account } from './account';
-import { parse, GDRequestParams } from '../util';
+import { Account, LoggedInAccount } from './account';
+import { parse, UserCredentials, GDRequestParams, accountKey, encrypt, Credentials } from '../util';
 const colors = [
   '#7dff00',
   '#00ff00',
@@ -210,9 +210,9 @@ class User {
   /** The player's username  */
   username: string;
   /** The player's user ID */
-  userID: number;
-  /** The player's account ID */
-  accountID: number;
+  id: number;
+  /** The player's account */
+  account: Account;
   /** The player's stats */
   stats: {
     /** The number of stars the player has collected */
@@ -243,11 +243,11 @@ class User {
    * @param _creator The creator associated with this user
    * @param rawData The raw data returned from the Geometry Dash request for this user
    */
-  constructor(private _creator: UserCreator, rawData: string) {
+  constructor(_creator: UserCreator, rawData: string) {
     const d = parse(rawData);
     this.username = d[1];
-    this.userID = +d[2];
-    this.accountID = +d[16];
+    this.id = +d[2];
+    this.account = new Account(_creator, +d[16]);
     this.stats = {
       stars: +d[3],
       diamonds: +d[46],
@@ -281,14 +281,16 @@ class User {
     );
     this.permissions = generatePermission(+d[49]);
   }
+}
 
-  /**
-   * Gets the account associated with this user
-   * @returns The account associated with this user
-   * @async
-   */
-  async getAccount(): Promise<Account> {
-    return this._creator._client.accounts.get(this);
+/**
+ * A logged-in Geometry Dash player
+ */
+class LoggedInUser extends User {
+  account: LoggedInAccount;
+  constructor(_creator: UserCreator, rawData: string, _creds: Credentials) {
+    super(_creator, rawData);
+    this.account = new LoggedInAccount(_creator, _creds);
   }
 }
 
@@ -360,7 +362,7 @@ class UserCreator extends Creator {
       });
       params.authorize('db');
       const data = await this._client.req('/getGJUsers20.php', { method: 'POST', body: params });
-      if (data === '-1') return singleReturn ? null : [];
+      if (data === '-1') return singleReturn ? null : searchedUsers;
       const split = data.slice(0, data.indexOf('#')).split('|');
       searchedUsers.push(...split.map(str => new SearchedUser(this, str)));
       if (split.length < 10) break;
@@ -382,6 +384,45 @@ class UserCreator extends Creator {
     if (possibleUser && possibleUser.username.toLowerCase() === str.toLowerCase())
       return resolve ? possibleUser.resolve() : possibleUser;
     return null;
+  }
+
+  /**
+   * Log in to a Geometry Dash account
+   * @param userCreds The username and password to log in with
+   * @throws {TypeError} Credentials must be valid
+   * @async
+   */
+  async login(userCreds: UserCredentials): Promise<LoggedInUser> {
+    const params = new GDRequestParams();
+    params.insertParams({
+      userName: userCreds.username,
+      password: userCreds.password,
+      udid: "Hi RobTop, it's gd.js!"
+    });
+    params.authorize('account');
+    const data = await this._client.req('/accounts/loginGJAccount.php', {
+      method: 'POST',
+      body: params
+    });
+    if (data === '-1') throw new TypeError('could not log in because the credentials were invalid');
+    // TODO: What to do with userID (index 1)?
+    const [accountIDStr] = data.split(',');
+    const accountID = +accountIDStr;
+    const gjp = encrypt(userCreds.password, accountKey);
+    const infoParams = new GDRequestParams({
+      targetAccountID: accountID
+    });
+    infoParams.authorize('db');
+    const infoData = await this._client.req('/getGJUserInfo20.php', {
+      method: 'POST',
+      body: infoParams
+    });
+    if (infoData === '-1') return null;
+    return new LoggedInUser(this, infoData, {
+      userName: userCreds.username,
+      accountID,
+      gjp
+    });
   }
 }
 
@@ -435,15 +476,52 @@ class SearchedUserCosmetics {
 }
 
 /**
- * Details about a Geometry Dash player returned from a search
+ * Details about a Geometry Dash player returned from a search, without any stats
  */
-class SearchedUser {
+class StatlessSearchedUser {
   /** The player's username  */
   username: string;
   /** The player's user ID */
-  userID: number;
-  /** The player's account ID */
-  accountID: number;
+  id: number;
+  /** The player's account */
+  account: Account;
+  /** The player's cosmetics */
+  cosmetics: SearchedUserCosmetics;
+
+  /**
+   * Creates a searched user
+   * @param _creator The searched user's creator
+   * @param rawData The raw data to parse
+   */
+  constructor(
+    /** @internal */
+    private _creator: UserCreator,
+    rawData: string
+  ) {
+    const d = parse(rawData);
+    this.username = d[1];
+    this.id = +d[2];
+    this.account = new Account(this._creator, +d[16]);
+    this.cosmetics = new SearchedUserCosmetics(+d[9], ICONTYPEMAP[+d[14]], {
+      primary: userColor(+d[10]),
+      secondary: userColor(+d[11])
+    });
+  }
+
+  /**
+   * Converts the searched user into a full user
+   * @returns The full data about the user
+   * @async
+   */
+  async resolve(): Promise<User> {
+    return await this._creator.get(this.account);
+  }
+}
+
+/**
+ * Details about a Geometry Dash player returned from a search
+ */
+class SearchedUser extends StatlessSearchedUser {
   /** The player's stats */
   stats: {
     /** The number of stars the player has collected */
@@ -460,18 +538,15 @@ class SearchedUser {
     /** The number of creator points the player has earned */
     cp: number;
   };
-  /** The player's cosmetics */
-  cosmetics: SearchedUserCosmetics;
 
-  constructor(
-    /** @internal */
-    private _creator: UserCreator,
-    rawData: string
-  ) {
-    const d = parse(rawData);
-    this.username = d[1];
-    this.userID = +d[2];
-    this.accountID = +d[16];
+  /**
+   * Creates a searched user with stats
+   * @param _creator The searched user's raw data
+   * @param rawData The raw data to parse
+   */
+  constructor(_creator: UserCreator, rawData: string) {
+    super(_creator, rawData);
+    const d = parse(rawData); // Inefficient, yes, but easier
     this.stats = {
       stars: +d[3],
       demons: +d[4],
@@ -481,29 +556,7 @@ class SearchedUser {
       },
       cp: +d[8]
     };
-    this.cosmetics = new SearchedUserCosmetics(+d[9], ICONTYPEMAP[+d[14]], {
-      primary: userColor(+d[10]),
-      secondary: userColor(+d[11])
-    });
-  }
-
-  /**
-   * Converts the searched user into a full user
-   * @returns The full data about the user
-   * @async
-   */
-  async resolve(): Promise<User> {
-    return await this._creator.getByAccountID(this.accountID);
-  }
-
-  /**
-   * Gets the account associated with this user
-   * @returns The account associated with this user
-   * @async
-   */
-  async getAccount(): Promise<Account> {
-    return await User.prototype.getAccount.call(this);
   }
 }
 
-export { User, SearchedUser, UserCreator };
+export { User, SearchedUser, StatlessSearchedUser, UserCreator };

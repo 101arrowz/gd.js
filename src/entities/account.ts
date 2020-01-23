@@ -1,14 +1,23 @@
-import {
-  Credentials,
-  UserCredentials,
-  GDRequestParams,
-  accountKey,
-  encrypt,
-  ParsedData,
-  parse
-} from '../util';
-import Creator from './entityCreator';
-import { User, SearchedUser } from './user';
+import { Credentials, GDRequestParams, ParsedData, parse } from '../util';
+import { User, StatlessSearchedUser, UserCreator } from './user';
+/**
+ * Types that can be converted to an account
+ */
+type ConvertibleToAccount = number | string | User | StatlessSearchedUser;
+/**
+ * Converts multiple datatypes into an account
+ * @param creator The creator of the caller
+ * @param id The identifier in some datatype
+ * @returns The account ID from that identifier
+ */
+const convertToAccount = async (
+  creator: UserCreator,
+  id: ConvertibleToAccount
+): Promise<Account> => {
+  if (typeof id === 'string') id = (await creator.get(id)).account.id;
+  else if (id instanceof StatlessSearchedUser || id instanceof User) id = id.account.id;
+  return new Account(creator, id);
+};
 
 /** A date from the Geometry Dash servers */
 type GDDate = {
@@ -87,16 +96,56 @@ class LoggedInAccountComment extends AccountComment {
 }
 
 /**
+ * A friend request
+ */
+abstract class FriendRequest<O extends boolean> {
+  /** The friend request ID */
+  id: number;
+  /** The message with the friend request */
+  msg: string;
+  /** Whether the friend request has been read yet */
+  read: boolean;
+  /** Who the friend request is from */
+  from: O extends true ? LoggedInAccount : StatlessSearchedUser;
+  /** Who the friend request is to */
+  to: O extends true ? StatlessSearchedUser : LoggedInAccount;
+  constructor(data: ParsedData) {
+    this.id = +data[32];
+    this.msg = atob(data[35]);
+    this.read = !+data[41];
+  }
+}
+
+class OutgoingFriendRequest extends FriendRequest<true> {
+  constructor(account: LoggedInAccount, creator: UserCreator, rawData: string) {
+    const data = parse(rawData);
+    super(data);
+    this.from = account;
+    this.to = new StatlessSearchedUser(creator, rawData);
+  }
+}
+
+class IncomingFriendRequest extends FriendRequest<false> {
+  constructor(account: LoggedInAccount, creator: UserCreator, rawData: string) {
+    const data = parse(rawData);
+    super(data);
+    this.to = account;
+    this.from = new StatlessSearchedUser(creator, rawData);
+  }
+}
+
+/**
  * A Geometry Dash player's account
  */
 class Account {
   /**
    * Create info about a player's account.
-   * @param _creator The creator of this account (to connect with the client)
+   * @param _user The user connected to this account
+   * @param id The account ID
    */
   constructor(
     /** @internal */
-    protected _creator: AccountCreator,
+    protected _creator: UserCreator,
     /** This account's ID */
     public id: number
   ) {}
@@ -143,12 +192,11 @@ class Account {
   }
 
   /**
-   * Gets the user profile associated with this account.
-   * @returns The user whose account ID matches this account's ID
-   * @async
+   * Gets the user associated with this account
+   * @returns The user associated with the account
    */
   async getUser(): Promise<User> {
-    return await this._creator._client.users.get(this);
+    return this._creator.get(this);
   }
 }
 
@@ -161,7 +209,7 @@ class LoggedInAccount extends Account {
    * @param _creator The creator of the account (to connect with the client)
    * @param _creds The login credentials
    */
-  constructor(_creator: AccountCreator, private _creds: Credentials) {
+  constructor(_creator: UserCreator, private _creds: Credentials) {
     super(_creator, _creds.accountID);
   }
 
@@ -210,7 +258,7 @@ class LoggedInAccount extends Account {
       else return false;
     }
     const params = new GDRequestParams({
-      accountID: this._creds.accountID,
+      accountID: this.id,
       gjp: this._creds.gjp,
       commentID
     });
@@ -223,83 +271,69 @@ class LoggedInAccount extends Account {
       })) === '1'
     );
   }
-}
-
-/**
- * A creator for Geometry Dash accounts
- */
-class AccountCreator extends Creator {
-  /**
-   * Gets an account from an account ID, username, user, or searched user
-   * @param id The account ID, username, user, or searched user to get the account from
-   * @returns The account that matches the given ID
-   * @async
-   */
-  async get(id: number | string | User | SearchedUser): Promise<Account> {
-    switch (typeof id) {
-      case 'number':
-        return await this.getByAccountID(id);
-      case 'string':
-        return await this.getByUsername(id);
-      case 'object': {
-        if (id instanceof User || id instanceof SearchedUser)
-          return await this.getByAccountID(id.accountID);
-      }
-      default:
-        return null;
-    }
-  }
 
   /**
-   * Log in to a Geometry Dash account
-   * @param userCreds The username and password to log in with
-   * @throws {TypeError} Credentials must be valid
+   * Send a friend request to another player
+   * @param id The account ID, username, user, or searched user to send a friend request to
+   * @param msg The message to send with the friend request
    * @async
    */
-  async login(userCreds: UserCredentials): Promise<LoggedInAccount> {
-    const params = new GDRequestParams();
-    params.insertParams({
-      userName: userCreds.username,
-      password: userCreds.password,
-      udid: "Hi RobTop, it's gd.js!"
+  async sendFriendRequest(id: ConvertibleToAccount, msg = ''): Promise<boolean> {
+    const acc = await convertToAccount(this._creator, id);
+    const params = new GDRequestParams({
+      accountID: this.id,
+      gjp: this._creds.gjp,
+      toAccountID: acc.id,
+      comment: msg
     });
-    params.authorize('account');
-    const data = await this._client.req('/accounts/loginGJAccount.php', {
-      method: 'POST',
-      body: params
-    });
-    if (data === '-1') throw new TypeError('could not log in because the credentials were invalid');
-    // TODO: What to do with userID (index 1)?
-    const [accountIDStr] = data.split(',');
-    const gjp = encrypt(userCreds.password, accountKey);
-    return new LoggedInAccount(this, {
-      userName: userCreds.username,
-      accountID: +accountIDStr,
-      gjp
-    });
-  }
-
-  /**
-   * Get an account by its ID
-   * @param accountID The account's ID
-   * @returns The account with the given ID
-   * @async
-   */
-  async getByAccountID(accountID: number): Promise<Account> {
-    return new Account(this, accountID);
-  }
-
-  /**
-   * Get an account by its username
-   * @param str The username to search for
-   * @returns The account with the given username
-   * @async
-   */
-  async getByUsername(str: string): Promise<Account> {
-    return await this.getByAccountID(
-      (await this._client.users.getByUsername(str, false)).accountID
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/uploadFriendRequest20.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
     );
   }
+
+  /**
+   * Gets friend requests
+   * @param num The number of friend requests to get. Default 10.
+   * @param outgoing Whether to get outgoing or incoming friend requests. Defaults to incoming.
+   */
+  async getFriendRequests(num?: number, outgoing?: false): Promise<IncomingFriendRequest[]>;
+  async getFriendRequests(num: number, outgoing: true): Promise<OutgoingFriendRequest[]>;
+  async getFriendRequests(
+    num = 10,
+    outgoing = false
+  ): Promise<IncomingFriendRequest[] | OutgoingFriendRequest[]> {
+    const numToGet = Math.ceil(num / 10);
+    const reqs = [];
+    for (let page = 0; page < numToGet; page++) {
+      const params = new GDRequestParams({
+        accountID: this.id,
+        gjp: this._creds.gjp,
+        page,
+        getSent: +outgoing,
+        total: 0
+      });
+      params.authorize('db');
+      const data = await this._creator._client.req('/getGJFriendRequests20.php', {
+        method: 'POST',
+        body: params
+      });
+      if (data === '-1') return reqs;
+      const split = data.slice(0, data.indexOf('#')).split('|');
+      reqs.push(
+        ...split.map(str =>
+          outgoing
+            ? new OutgoingFriendRequest(this, this._creator, str)
+            : new IncomingFriendRequest(this, this._creator, str)
+        )
+      );
+      if (split.length < 10) break;
+    }
+    return reqs.slice(0, num);
+  }
 }
 
-export { Account, AccountCreator };
+export { Account, LoggedInAccount };

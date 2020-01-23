@@ -58,7 +58,7 @@ const gd = new GD({
 
 Now you have an instance of the client, which means you can start making requests! Make sure you are connected to the internet and that nothing is blocking requests to the GD server. If you're having issues with `NaN` and `undefined` appearing in your objects, it's probably a network error. To see the raw output for network requests, set `logLevel` to 2.
 
-As of now, the only things you can access are **users** and **accounts**. All API methods are asynchronous, so make sure you know how to use `Promise`, `async`/`await` or both!
+As of now, the only things you can access are **users**. All API methods are asynchronous, so make sure you know how to use `Promise`, `async`/`await` or both!
 
 Quick, self-explanatory examples (detailed info is in autocomplete/in-code documentation):
 ```js
@@ -89,8 +89,8 @@ const autoAccountComment = (account, message, timeout) => {
 }
 
 // Every ten minutes, GD Colon will post an account comment saying "I'm actually a furry"
-gd.accounts.login({ username: 'colon', password: 'colonspassword' })
-  .then(colon => autoAccountComment(colon, "I'm actually a furry", 60000));
+gd.users.login({ username: 'colon', password: 'colonspassword' })
+  .then(colon => autoAccountComment(colon.account, "I'm actually a furry", 60000));
 ```
 
 ### Advanced: Notes About Compatibility
