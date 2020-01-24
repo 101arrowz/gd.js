@@ -3,12 +3,13 @@ import { User, StatlessSearchedUser, UserCreator } from './user';
 /**
  * Types that can be converted to an account
  */
-type ConvertibleToAccount = number | string | User | StatlessSearchedUser;
+type ConvertibleToAccount = number | string | User | StatlessSearchedUser | Account;
 /**
  * Converts multiple datatypes into an account
  * @param creator The creator of the caller
  * @param id The identifier in some datatype
  * @returns The account ID from that identifier
+ * @async
  */
 const convertToAccount = async (
   creator: UserCreator,
@@ -16,6 +17,7 @@ const convertToAccount = async (
 ): Promise<Account> => {
   if (typeof id === 'string') id = (await creator.get(id)).account.id;
   else if (id instanceof StatlessSearchedUser || id instanceof User) id = id.account.id;
+  else if (id instanceof Account) return id;
   return new Account(creator, id);
 };
 
@@ -91,7 +93,7 @@ class LoggedInAccountComment extends AccountComment {
    * @async
    */
   async delete(): Promise<boolean> {
-    return this.owner.deleteComment(this);
+    return this.owner.deleteAccountComment(this);
   }
 }
 
@@ -109,6 +111,11 @@ abstract class FriendRequest<O extends boolean> {
   from: O extends true ? LoggedInAccount : StatlessSearchedUser;
   /** Who the friend request is to */
   to: O extends true ? StatlessSearchedUser : LoggedInAccount;
+
+  /**
+   * Create data about a friend request
+   * @param data The parsed data to evaluate
+   */
   constructor(data: ParsedData) {
     this.id = +data[32];
     this.msg = atob(data[35]);
@@ -116,21 +123,72 @@ abstract class FriendRequest<O extends boolean> {
   }
 }
 
+/**
+ * An outgoing friend request
+ */
 class OutgoingFriendRequest extends FriendRequest<true> {
+  /**
+   * Creates info about an outgoing friend request
+   * @param account The account that sent the friend request
+   * @param creator The creator of the user the account belongs to
+   * @param rawData The raw data to parse
+   */
   constructor(account: LoggedInAccount, creator: UserCreator, rawData: string) {
     const data = parse(rawData);
     super(data);
     this.from = account;
     this.to = new StatlessSearchedUser(creator, rawData);
   }
+
+  /**
+   * Cancels a friend request, deleting it from the server
+   * @returns Whether the cancellation was successful
+   * @async
+   */
+  async cancel(): Promise<boolean> {
+    return this.from.cancelFriendRequest(this);
+  }
 }
 
 class IncomingFriendRequest extends FriendRequest<false> {
+  /**
+   * Creates info about an incoming friend request
+   * @param account The account that received the friend request
+   * @param creator The creator of the user the account belongs to
+   * @param rawData The raw data to parse
+   */
   constructor(account: LoggedInAccount, creator: UserCreator, rawData: string) {
     const data = parse(rawData);
     super(data);
     this.to = account;
     this.from = new StatlessSearchedUser(creator, rawData);
+  }
+
+  /**
+   * Mark a friend request as read
+   * @returns Whether marking as read was successful
+   * @async
+   */
+  async markAsRead(): Promise<boolean> {
+    return this.read || (this.read = await this.to.markFriendRequestAsRead(this));
+  }
+
+  /**
+   * Accept a friend request
+   * @returns Whether accepting the friend request was successful
+   * @async
+   */
+  async accept(): Promise<boolean> {
+    return this.to.acceptFriendRequest(this);
+  }
+
+  /**
+   * Rejects a friend request, deleting it from the server
+   * @returns Whether the rejection was successful
+   * @async
+   */
+  async reject(): Promise<boolean> {
+    return this.to.rejectFriendRequest(this);
   }
 }
 
@@ -194,6 +252,7 @@ class Account {
   /**
    * Gets the user associated with this account
    * @returns The user associated with the account
+   * @async
    */
   async getUser(): Promise<User> {
     return this._creator.get(this);
@@ -232,7 +291,7 @@ class LoggedInAccount extends Account {
    * @returns The comment that was just created (may not be 100% accurate); null if it failed
    * @async
    */
-  async postComment(msg: string): Promise<AccountComment> {
+  async postAccountComment(msg: string): Promise<AccountComment> {
     const comment = btoa(msg);
     const params = new GDRequestParams({
       ...this._creds,
@@ -248,14 +307,14 @@ class LoggedInAccount extends Account {
   }
 
   /**
-   *
+   * Deletes an account comment from the server
    * @param commentID The comment (or its ID) to delete
    * @async
    */
-  async deleteComment(commentID: number | LoggedInAccountComment): Promise<boolean> {
+  async deleteAccountComment(commentID: number | LoggedInAccountComment): Promise<boolean> {
     if (commentID instanceof LoggedInAccountComment) {
-      if (commentID.owner.id === this.id) commentID = commentID.id;
-      else return false;
+      if (commentID.owner.id !== this.id) return false;
+      commentID = commentID.id;
     }
     const params = new GDRequestParams({
       accountID: this.id,
@@ -284,7 +343,7 @@ class LoggedInAccount extends Account {
       accountID: this.id,
       gjp: this._creds.gjp,
       toAccountID: acc.id,
-      comment: msg
+      comment: btoa(msg)
     });
     params.authorize('db');
     return (
@@ -299,6 +358,7 @@ class LoggedInAccount extends Account {
    * Gets friend requests
    * @param num The number of friend requests to get. Default 10.
    * @param outgoing Whether to get outgoing or incoming friend requests. Defaults to incoming.
+   * @async
    */
   async getFriendRequests(num?: number, outgoing?: false): Promise<IncomingFriendRequest[]>;
   async getFriendRequests(num: number, outgoing: true): Promise<OutgoingFriendRequest[]>;
@@ -321,7 +381,7 @@ class LoggedInAccount extends Account {
         method: 'POST',
         body: params
       });
-      if (data === '-1') return reqs;
+      if (['-1', '-2'].includes(data)) return reqs;
       const split = data.slice(0, data.indexOf('#')).split('|');
       reqs.push(
         ...split.map(str =>
@@ -333,6 +393,138 @@ class LoggedInAccount extends Account {
       if (split.length < 10) break;
     }
     return reqs.slice(0, num);
+  }
+
+  /**
+   * Mark a friend request as read
+   * @param fr The friend request to mark
+   * @returns Whether marking as read was successful or not
+   * @async
+   */
+  async markFriendRequestAsRead(fr: IncomingFriendRequest): Promise<boolean> {
+    if (fr.to.id !== this.id) return false;
+    const params = new GDRequestParams({
+      accountID: this.id,
+      gjp: this._creds.gjp,
+      requestID: fr.id
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/readGJFriendRequest20.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
+  }
+
+  /**
+   * Accepts a friend request
+   * @param fr The friend request to accept
+   * @returns Whether accepting the friend request was successful
+   * @async
+   */
+  async acceptFriendRequest(fr: IncomingFriendRequest): Promise<boolean> {
+    if (fr.to.id !== this.id) return false;
+    const params = new GDRequestParams({
+      accountID: this.id,
+      gjp: this._creds.gjp,
+      requestID: fr.id,
+      targetAccountID: fr.from.account.id
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/acceptGJFriendRequest20.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
+  }
+
+  /**
+   * Rejects a friend request, deleting it from the server
+   * @param fr The friend request to reject
+   * @returns Whether the rejection was succesful
+   * @async
+   */
+  async rejectFriendRequest(fr: IncomingFriendRequest): Promise<boolean> {
+    if (fr.to.id !== this.id) return false;
+    const params = new GDRequestParams({
+      accountID: this.id,
+      gjp: this._creds.gjp,
+      targetAccountID: fr.from.account.id,
+      isSender: 0
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/deleteGJFriendRequests20.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
+  }
+
+  /**
+   * Cancels a friend request, deleting it from the server
+   * @param fr The friend request to cancel
+   * @returns Whether the cancellation was succesful
+   */
+  async cancelFriendRequest(fr: OutgoingFriendRequest): Promise<boolean> {
+    if (fr.from.id !== this.id) return false;
+    const params = new GDRequestParams({
+      accountID: this.id,
+      gjp: this._creds.gjp,
+      targetAccountID: fr.to.account.id,
+      isSender: 1
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/deleteGJFriendRequests20.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
+  }
+
+  /**
+   * Block a user
+   * @param user The user to block
+   * @returns Whether the blocking succeeded
+   * @async
+   */
+  async block(user: ConvertibleToAccount): Promise<boolean> {
+    const params = new GDRequestParams({
+      accountID: this.id,
+      gjp: this._creds.gjp,
+      targetAccountID: (await convertToAccount(this._creator, user)).id
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/blockGJUser20.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
+  }
+
+  /**
+   * Unblock a user
+   * @param user The user to unblock
+   * @returns Whether the unblocking succeeded
+   * @async
+   */
+  async unblock(user: ConvertibleToAccount): Promise<boolean> {
+    const params = new GDRequestParams({
+      accountID: this.id,
+      gjp: this._creds.gjp,
+      targetAccountID: (await convertToAccount(this._creator, user)).id
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/unblockGJUser20.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
   }
 }
 
