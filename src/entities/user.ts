@@ -70,16 +70,18 @@ const userColor = (colorValue: number): GDColor => ({
   parsed: colors[colorValue]
 });
 
-const PERMISSIONS = ['User', 'Moderator', 'Elder Moderator'];
+type PermissionLevel = 'User' | 'Moderator' | 'Elder Moderator';
+
+const PERMISSIONS: PermissionLevel[] = ['User', 'Moderator', 'Elder Moderator'];
 
 /**
  * A permission level for a Geometry Dash player.
  */
 type Permission = {
-  /** The raw permission number, as returned by the server. 1 = user, 2 = mod, 3 = elder mod. */
-  raw: number;
+  /** The raw permission number, as returned by the server. 0 = user, 1 = mod, 2 = elder mod. */
+  raw: 0 | 1 | 2;
   /** A prettified string for the permission level. One of "User", "Moderator" or "Elder Moderator" */
-  pretty: string;
+  pretty: PermissionLevel;
 };
 
 /**
@@ -88,7 +90,7 @@ type Permission = {
  * @returns The {@link Permission} representing the given permission number
  */
 const generatePermission = (raw: number): Permission => ({
-  raw,
+  raw: raw as Permission['raw'],
   pretty: PERMISSIONS[raw]
 });
 

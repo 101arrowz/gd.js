@@ -58,7 +58,7 @@ const gd = new GD({
 
 Now you have an instance of the client, which means you can start making requests! Make sure you are connected to the internet and that nothing is blocking requests to the GD server. If you're having issues with `NaN` and `undefined` appearing in your objects, it's probably a network error. To see the raw output for network requests, set `logLevel` to 2.
 
-As of now, the only things you can access are **users**. All API methods are asynchronous, so make sure you know how to use `Promise`, `async`/`await` or both!
+As of now, the only things you can access are **users** and **levels** (metadata only). All API methods are asynchronous, so make sure you know how to use `Promise`, `async`/`await` or both!
 
 Quick, self-explanatory examples (detailed info is in autocomplete/in-code documentation):
 ```js
@@ -82,6 +82,15 @@ const getMyInfo = async () => {
     rawIconResponse.on('end', () => resolve());
     rawIconResponse.on('error', reject);
   });
+}
+
+const getDumbLevels = async () => {
+  const extremeDemons = await gd.levels.search({ difficulty: 'Extreme Demon' }, 100);
+  const cantLetGo = await gd.levels.search({ str: "Can't Let Go" });
+  const wayTooLong = await gd.levels.search({ length: 'xl' }, 100);
+  const tooPopular = await gd.levels.search({ orderBy: 'downloads' }, 100);
+  console.log(extremeDemons[0].name); // Bloodbath
+  console.log(extremeDemons[0].stats.likes); // 1359617
 }
 
 const autoAccountComment = (account, message, timeout) => {

@@ -1,6 +1,6 @@
 import './polyfill';
 import { isNode, GDRequestParams as GDParams } from './util';
-import { UserCreator, User, Account } from './entities';
+import { UserCreator, User, Account, LevelCreator } from './entities';
 
 /**
  * Configuration for the [GD client]{@link Client}.
@@ -34,6 +34,8 @@ class Client {
 
   /** The database of Geometry Dash users */
   users: UserCreator;
+  /** The database of Geometry Dash levels */
+  levels: LevelCreator;
 
   /**
    * The configuration for the Geometry Dash client
@@ -58,6 +60,7 @@ class Client {
       corsURL
     };
     this.users = new UserCreator(this);
+    this.levels = new LevelCreator(this);
   }
 
   async req(url: string, conf: RequestConfig, returnRaw: true): Promise<Response>;

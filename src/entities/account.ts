@@ -15,9 +15,9 @@ const convertToAccount = async (
   creator: UserCreator,
   id: ConvertibleToAccount
 ): Promise<Account> => {
-  if (typeof id === 'string') id = (await creator.get(id)).account.id;
-  else if (id instanceof StatlessSearchedUser || id instanceof User) id = id.account.id;
-  else if (id instanceof Account) return id;
+  if (typeof id === 'string') return (await creator.get(id)).account;
+  if (id instanceof StatlessSearchedUser || id instanceof User) return id.account;
+  if (id instanceof Account) return id;
   return new Account(creator, id);
 };
 
