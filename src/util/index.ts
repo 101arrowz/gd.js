@@ -3,3 +3,4 @@ export { default as GDRequestParams } from './param';
 export * from './parse';
 export * from './auth';
 export * from './crypto';
+export * from './date';

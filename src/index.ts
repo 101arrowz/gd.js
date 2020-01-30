@@ -63,7 +63,9 @@ class Client {
     this.levels = new LevelCreator(this);
   }
 
+  /** @internal */
   async req(url: string, conf: RequestConfig, returnRaw: true): Promise<Response>;
+  /** @internal */
   async req(url: string, conf: RequestConfig, returnRaw?: false): Promise<string>;
   /**
    * Make a request to a Geometry Dash server.

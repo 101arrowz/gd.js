@@ -299,136 +299,6 @@ class LoggedInUser extends User {
 const ICONTYPEMAP: IconCosmetic[] = ['cube', 'ship', 'ball', 'ufo', 'wave', 'robot', 'spider'];
 
 /**
- * A creator for Geometry Dash players
- */
-class UserCreator extends Creator {
-  /**
-   * Find a player by accountID or username
-   * @param id The account ID or username of the player to get
-   * @returns The player with the provided account ID or username
-   * @async
-   */
-  async get(id: number | string | Account): Promise<User> {
-    switch (typeof id) {
-      case 'number':
-        return await this.getByAccountID(id);
-      case 'string':
-        return await this.getByUsername(id);
-      case 'object': {
-        if (id instanceof Account) return await this.getByAccountID(id.id);
-      }
-      default:
-        return null;
-    }
-  }
-
-  /**
-   * Gets the information about a player using its account ID
-   * @param id The account ID of the player to get
-   * @returns The player with the provided account ID
-   * @async
-   */
-  async getByAccountID(id: number): Promise<User> {
-    const params = new GDRequestParams({
-      targetAccountID: id
-    });
-    params.authorize('db');
-    const data = await this._client.req('/getGJUserInfo20.php', { method: 'POST', body: params });
-    if (data === '-1') return null;
-    return new User(this, data);
-  }
-
-  /**
-   * Searches for players with a given string in their names. Note that the official Geometry Dash servers will always only return the player (if any) whose name is exactly the provided string.
-   * @param str The string to search for
-   * @param num The maximum number of results to fetch. If not specified, a single player is returned rather than an array.
-   * @returns The user or array of users whose names match the given string
-   * @async
-   * @deprecated
-   */
-  async search(str: string): Promise<SearchedUser>;
-  async search(str: string, num: number): Promise<SearchedUser[]>;
-  async search(str: string, num?: number): Promise<SearchedUser | SearchedUser[]> {
-    let singleReturn = false;
-    if (!num) {
-      num = 1;
-      singleReturn = true;
-    }
-    const numToGet = Math.ceil(num / 10);
-    const searchedUsers: SearchedUser[] = [];
-    for (let page = 0; page < numToGet; page++) {
-      const params = new GDRequestParams({
-        str,
-        page,
-        total: 0
-      });
-      params.authorize('db');
-      const data = await this._client.req('/getGJUsers20.php', { method: 'POST', body: params });
-      if (data === '-1') return singleReturn ? null : searchedUsers;
-      const split = data.slice(0, data.indexOf('#')).split('|');
-      searchedUsers.push(...split.map(str => new SearchedUser(this, str)));
-      if (split.length < 10) break;
-    }
-    return singleReturn ? searchedUsers[0] || null : searchedUsers.slice(0, num);
-  }
-
-  /**
-   * Get information about a user by its username
-   * @param str The name of the user to search for
-   * @param resolve Whether to resolve the searched user into its full user, making another network request.
-   * @returns The user with the given username
-   * @async
-   */
-  async getByUsername(str: string, resolve?: true): Promise<User>;
-  async getByUsername(str: string, resolve: false): Promise<SearchedUser>;
-  async getByUsername(str: string, resolve = true): Promise<User | SearchedUser> {
-    const possibleUser = await this.search(str);
-    if (possibleUser && possibleUser.username.toLowerCase() === str.toLowerCase())
-      return resolve ? possibleUser.resolve() : possibleUser;
-    return null;
-  }
-
-  /**
-   * Log in to a Geometry Dash account
-   * @param userCreds The username and password to log in with
-   * @throws {TypeError} Credentials must be valid
-   * @async
-   */
-  async login(userCreds: UserCredentials): Promise<LoggedInUser> {
-    const params = new GDRequestParams();
-    params.insertParams({
-      userName: userCreds.username,
-      password: userCreds.password,
-      udid: "Hi RobTop, it's gd.js!"
-    });
-    params.authorize('account');
-    const data = await this._client.req('/accounts/loginGJAccount.php', {
-      method: 'POST',
-      body: params
-    });
-    if (data === '-1') throw new TypeError('could not log in because the credentials were invalid');
-    // TODO: What to do with userID (index 1)?
-    const [accountIDStr] = data.split(',');
-    const accountID = +accountIDStr;
-    const gjp = encrypt(userCreds.password, accountKey);
-    const infoParams = new GDRequestParams({
-      targetAccountID: accountID
-    });
-    infoParams.authorize('db');
-    const infoData = await this._client.req('/getGJUserInfo20.php', {
-      method: 'POST',
-      body: infoParams
-    });
-    if (infoData === '-1') return null;
-    return new LoggedInUser(this, infoData, {
-      userName: userCreds.username,
-      accountID,
-      gjp
-    });
-  }
-}
-
-/**
  * Cosmetics of a user found by a search
  */
 class SearchedUserCosmetics {
@@ -558,6 +428,136 @@ class SearchedUser extends StatlessSearchedUser {
       },
       cp: +d[8]
     };
+  }
+}
+
+/**
+ * A creator for Geometry Dash players
+ */
+class UserCreator extends Creator {
+  /**
+   * Find a player by accountID or username
+   * @param id The account ID or username of the player to get
+   * @returns The player with the provided account ID or username
+   * @async
+   */
+  async get(id: number | string | Account): Promise<User> {
+    switch (typeof id) {
+      case 'number':
+        return await this.getByAccountID(id);
+      case 'string':
+        return await this.getByUsername(id);
+      case 'object': {
+        if (id instanceof Account) return await this.getByAccountID(id.id);
+      }
+      default:
+        return null;
+    }
+  }
+
+  /**
+   * Gets the information about a player using its account ID
+   * @param id The account ID of the player to get
+   * @returns The player with the provided account ID
+   * @async
+   */
+  async getByAccountID(id: number): Promise<User> {
+    const params = new GDRequestParams({
+      targetAccountID: id
+    });
+    params.authorize('db');
+    const data = await this._client.req('/getGJUserInfo20.php', { method: 'POST', body: params });
+    if (data === '-1') return null;
+    return new User(this, data);
+  }
+
+  /**
+   * Searches for players with a given string in their names. Note that the official Geometry Dash servers will always only return the player (if any) whose name is exactly the provided string.
+   * @param str The string to search for
+   * @param num The maximum number of results to fetch. If not specified, a single player is returned rather than an array.
+   * @returns The user or array of users whose names match the given string
+   * @async
+   * @deprecated
+   */
+  async search(str: string): Promise<SearchedUser>;
+  async search(str: string, num: number): Promise<SearchedUser[]>;
+  async search(str: string, num?: number): Promise<SearchedUser | SearchedUser[]> {
+    let singleReturn = false;
+    if (!num) {
+      num = 1;
+      singleReturn = true;
+    }
+    const numToGet = Math.ceil(num / 10);
+    const searchedUsers: SearchedUser[] = [];
+    for (let page = 0; page < numToGet; page++) {
+      const params = new GDRequestParams({
+        str,
+        page,
+        total: 0
+      });
+      params.authorize('db');
+      const data = await this._client.req('/getGJUsers20.php', { method: 'POST', body: params });
+      if (data === '-1') return singleReturn ? null : searchedUsers;
+      const split = data.slice(0, data.indexOf('#')).split('|');
+      searchedUsers.push(...split.map(str => new SearchedUser(this, str)));
+      if (split.length < 10) break;
+    }
+    return singleReturn ? searchedUsers[0] || null : searchedUsers.slice(0, num);
+  }
+
+  /**
+   * Get information about a user by its username
+   * @param str The name of the user to search for
+   * @param resolve Whether to resolve the searched user into its full user, making another network request.
+   * @returns The user with the given username
+   * @async
+   */
+  async getByUsername(str: string, resolve?: true): Promise<User>;
+  async getByUsername(str: string, resolve: false): Promise<SearchedUser>;
+  async getByUsername(str: string, resolve = true): Promise<User | SearchedUser> {
+    const possibleUser = await this.search(str);
+    if (possibleUser && possibleUser.username.toLowerCase() === str.toLowerCase())
+      return resolve ? possibleUser.resolve() : possibleUser;
+    return null;
+  }
+
+  /**
+   * Log in to a Geometry Dash account
+   * @param userCreds The username and password to log in with
+   * @throws {TypeError} Credentials must be valid
+   * @async
+   */
+  async login(userCreds: UserCredentials): Promise<LoggedInUser> {
+    const params = new GDRequestParams();
+    params.insertParams({
+      userName: userCreds.username,
+      password: userCreds.password,
+      udid: "Hi RobTop, it's gd.js!"
+    });
+    params.authorize('account');
+    const data = await this._client.req('/accounts/loginGJAccount.php', {
+      method: 'POST',
+      body: params
+    });
+    if (data === '-1') throw new TypeError('could not log in because the credentials were invalid');
+    // TODO: What to do with userID (index 1)?
+    const [accountIDStr] = data.split(',');
+    const accountID = +accountIDStr;
+    const gjp = encrypt(userCreds.password, accountKey);
+    const infoParams = new GDRequestParams({
+      targetAccountID: accountID
+    });
+    infoParams.authorize('db');
+    const infoData = await this._client.req('/getGJUserInfo20.php', {
+      method: 'POST',
+      body: infoParams
+    });
+    if (infoData === '-1') return null;
+    return new LoggedInUser(this, infoData, {
+      userName: userCreds.username,
+      accountID,
+      gjp
+    });
   }
 }
 

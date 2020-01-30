@@ -1,4 +1,13 @@
-import { Credentials, GDRequestParams, ParsedData, parse } from '../util';
+import {
+  Credentials,
+  GDRequestParams,
+  ParsedData,
+  GDDate,
+  generateDate,
+  parse,
+  gdEncodeBase64,
+  gdDecodeBase64
+} from '../util';
 import { User, StatlessSearchedUser, UserCreator } from './user';
 /**
  * Types that can be converted to an account
@@ -21,29 +30,6 @@ const convertToAccount = async (
   return new Account(creator, id);
 };
 
-/** A date from the Geometry Dash servers */
-type GDDate = {
-  /** The human-readable response, as returned by the Geometry Dash servers */
-  pretty: string;
-  /** The time as a date. Note that this may not be completely accurate. Will only be present if the `ms` module is installed */
-  date?: Date;
-};
-
-/**
- * Creates a date from the human-readable response returned by Geometry Dash servers
- * @returns A date ready for use in the Comment class
- */
-let generateDate = (pretty: string): GDDate => ({
-  pretty
-});
-try {
-  const ms = require('ms');
-  generateDate = (pretty: string): GDDate => ({
-    pretty,
-    date: new Date(Date.now() - ms(pretty))
-  });
-} catch (e) {}
-
 /**
  * A comment made by a Geometry Dash player
  */
@@ -64,7 +50,7 @@ abstract class Comment {
    * @param data The parsed data for the comment
    */
   constructor(data: ParsedData) {
-    this.text = atob(data[2]);
+    this.text = gdDecodeBase64(data[2]);
     this.createdAt = generateDate(data[9]);
     this.id = +data[6];
     this.likes = +data[4];
@@ -118,7 +104,7 @@ abstract class FriendRequest<O extends boolean> {
    */
   constructor(data: ParsedData) {
     this.id = +data[32];
-    this.msg = atob(data[35]);
+    this.msg = gdDecodeBase64(data[35]);
     this.read = !+data[41];
   }
 }
@@ -292,7 +278,7 @@ class LoggedInAccount extends Account {
    * @async
    */
   async postAccountComment(msg: string): Promise<AccountComment> {
-    const comment = btoa(msg);
+    const comment = gdEncodeBase64(msg);
     const params = new GDRequestParams({
       ...this._creds,
       comment
@@ -343,7 +329,7 @@ class LoggedInAccount extends Account {
       accountID: this.id,
       gjp: this._creds.gjp,
       toAccountID: acc.id,
-      comment: btoa(msg)
+      comment: gdEncodeBase64(msg)
     });
     params.authorize('db');
     return (

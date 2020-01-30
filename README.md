@@ -86,7 +86,7 @@ const getMyInfo = async () => {
 
 const getDumbLevels = async () => {
   const extremeDemons = await gd.levels.search({ difficulty: 'Extreme Demon' }, 100);
-  const cantLetGo = await gd.levels.search({ str: "Can't Let Go" });
+  const cantLetGo = await gd.levels.search({ query: 'Cant Let Go' });
   const wayTooLong = await gd.levels.search({ length: 'xl' }, 100);
   const tooPopular = await gd.levels.search({ orderBy: 'downloads' }, 100);
   console.log(extremeDemons[0].name); // Bloodbath
@@ -115,3 +115,5 @@ If you use `gd.js` on Node.js, you'll need to have the `fetch` polyfill added to
 global.fetch = require('weird-custom-fetch-polyfill');
 const gd = require('gd.js'); // Now you can use in Node.js!
 ```
+
+Beyond `fetch()` issues, note that `gd.js` adds `atob()` and `btoa()` onto the global scope for Node.js environments to mimic their behaviors in the browser.
