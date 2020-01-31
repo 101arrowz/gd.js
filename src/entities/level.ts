@@ -84,6 +84,8 @@ type Award = {
   pretty: PrettyAward;
 };
 
+const ORBS = [0, 0, 50, 75, 125, 175, 225, 275, 350, 425, 500];
+
 /**
  * Gets the full award object from an award value
  * @param isRated Whether the level is rated
@@ -185,6 +187,10 @@ class SearchedLevel {
   coins: Coins;
   /** The award the level has recieved */
   award: Award;
+  /** The number of orbs the level gives */
+  orbs: number;
+  /** The number of diamonds the level gives */
+  diamonds: number;
   /** The ID of the original level the level was copied from. Only exists if the level was copied */
   original?: number;
   /** @internal */
@@ -237,6 +243,8 @@ class SearchedLevel {
     };
     if (this.coins.count > 0) this.coins.areSilver = !!+d[38];
     this.award = getAward(this.difficulty.stars > 0, +d[19], !!+d[42]);
+    this.orbs = ORBS[this.difficulty.stars];
+    this.diamonds = this.difficulty.stars < 2 ? 0 : this.difficulty.stars + 2;
     const orig = +d[30];
     if (orig !== 0) this.original = orig;
   }
@@ -279,8 +287,10 @@ class Level extends SearchedLevel {
   };
   /** The level's data */
   data: {
-    /** The raw level string. Only exposed because `gd.js` is not primarily a level API, so this can be passed to your own manipulation program. */
+    /** The raw level string after decoding and decompressing. Only offered because `gd.js` is not primarily a level API, so this can be passed to your own manipulation program. */
     raw: string;
+    /** The parsed level data: an array of objects with numeric keys. Each key has a different meaning. For example, 1 is ID, 2 is X position, and 3 is Y position. Friendlier parsing is a WIP. */
+    parsed: ParsedData[];
   };
 
   /**
@@ -305,10 +315,9 @@ class Level extends SearchedLevel {
       to: 'string'
     });
 
-    // TODO: Add other functionality
-
     this.data = {
-      raw
+      raw,
+      parsed: raw.split(';').map(str => parse(str, ','))
     };
   }
 }
@@ -460,7 +469,8 @@ const awardToParams = (award: BaseSearchConfig['award']): { epic?: 1; featured?:
 class LevelCreator extends Creator {
   /**
    * Gets a level by its ID
-   * @param levelID
+   * @param levelID The level ID to get
+   * @returns The level with the given ID
    */
   async getByLevelID(levelID: number): Promise<Level> {
     return (await this.search({ query: levelID })).resolve();
