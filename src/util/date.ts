@@ -2,7 +2,7 @@
 type GDDate = {
   /** The human-readable time in the "how long ago" format. */
   pretty: string;
-  /** The time as a date. Note that this may not be completely accurate. Will only be present if the `ms` module is installed */
+  /** The time as a date. Note that this may not be completely accurate. Will only be present if the `duration-converter` module is installed */
   date?: Date;
 };
 
@@ -19,12 +19,12 @@ let generateDate = (pretty: string): GDDate => {
 };
 
 try {
-  const ms: typeof import('ms') = require('ms');
+  const { Duration }: typeof import('duration-converter') = require('duration-converter');
   generateDate = (pretty: string): GDDate => {
     const data: GDDate = { pretty };
     const possibleDate = new Date(pretty); // Only on private servers will this work
     if (possibleDate.getTime()) data.date = possibleDate;
-    else data.date = new Date(Date.now() - ms(pretty));
+    else data.date = new Date(Date.now() - new Duration(pretty).MilliSeconds);
     return data;
   };
 } catch (e) {}

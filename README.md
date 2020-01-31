@@ -89,8 +89,11 @@ const getDumbLevels = async () => {
   const cantLetGo = await gd.levels.search({ query: 'Cant Let Go' });
   const wayTooLong = await gd.levels.search({ length: 'xl' }, 100);
   const tooPopular = await gd.levels.search({ orderBy: 'downloads' }, 100);
-  console.log(extremeDemons[0].name); // Bloodbath
-  console.log(extremeDemons[0].stats.likes); // 1359617
+  const bloodbath = extremeDemons[0];
+  console.log(bloodbath.name); // Bloodbath
+  console.log(bloodbath.stats.likes); // 1359617
+  bloodbath = await bloodbath.resolve();
+  console.log(bloodpath.password)
 }
 
 const autoAccountComment = (account, message, timeout) => {
