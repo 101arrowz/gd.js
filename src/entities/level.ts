@@ -307,9 +307,9 @@ class Level extends SearchedLevel {
     this.updatedAt = generateDate(d[29]);
     const pass = decrypt(d[27], levelKey); // Working on GDPS support
     this.copy = {
-      copyable: pass !== '-1'
+      copyable: !['', '0'].includes(pass)
     };
-    if (this.copy.copyable && pass !== '0')
+    if (this.copy.copyable && pass !== '1')
       this.copy.password = (+pass.slice(1)).toString().padStart(4, '0');
     const raw = inflate(isNode ? Buffer.from(d[4], 'base64') : gdDecodeBase64(d[4]), {
       to: 'string'
