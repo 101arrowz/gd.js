@@ -289,8 +289,15 @@ class Level extends SearchedLevel {
   data: {
     /** The raw level string after decoding and decompressing. Only offered because `gd.js` is not primarily a level API, so this can be passed to your own manipulation program. */
     raw: string;
-    /** The parsed level data: an array of objects with numeric keys. Each key has a different meaning. For example, 1 is ID, 2 is X position, and 3 is Y position. Friendlier parsing is a WIP. */
-    parsed: ParsedData[];
+    /** The parsed level data */
+    parsed: {
+      /** The colors used in the level. Friendlier API is WIP. */
+      colors: ParsedData[];
+      /** The metadata of the level */
+      meta: ParsedData;
+      /** An array of objects in the level with numeric key-value pair representations. Each key has a different meaning. For example, 1 is ID, 2 is X position, and 3 is Y position. Friendlier parsing is a WIP. */
+      objects: ParsedData[];
+    };
   };
 
   /**
@@ -314,10 +321,19 @@ class Level extends SearchedLevel {
     const raw = inflate(isNode ? Buffer.from(d[4], 'base64') : gdDecodeBase64(d[4]), {
       to: 'string'
     });
-
+    const [header, ...parsedData] = raw.split(';').map(str => parse(str, ','));
+    const colors = header.kS38
+      .split('|')
+      .slice(0, -1)
+      .map(str => parse(str, '_'));
+    delete header.kS38;
     this.data = {
       raw,
-      parsed: raw.split(';').map(str => parse(str, ','))
+      parsed: {
+        colors,
+        meta: header,
+        objects: parsedData
+      }
     };
   }
 }
