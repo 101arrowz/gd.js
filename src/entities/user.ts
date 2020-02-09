@@ -1,6 +1,294 @@
 import Creator from './entityCreator';
-import { Account, LoggedInAccount } from './account';
-import { parse, UserCredentials, GDRequestParams, accountKey, encrypt, Credentials } from '../util';
+import { SearchedLevel, Level } from './level';
+import {
+  parse,
+  UserCredentials,
+  GDRequestParams,
+  accountKey,
+  encrypt,
+  Credentials,
+  gdDecodeBase64,
+  gdEncodeBase64,
+  ParsedData,
+  GDDate,
+  generateDate
+} from '../util';
+/**
+ * Types that can be converted to an account ID
+ */
+type ConvertibleToAccountID = number | string | User | StatlessSearchedUser;
+/**
+ * Converts multiple datatypes into an account
+ * @param creator The creator of the caller
+ * @param id The identifier in some datatype
+ * @returns The account ID from that identifier
+ * @async
+ */
+const convertToAccountID = async (
+  creator: UserCreator,
+  id: ConvertibleToAccountID
+): Promise<number> => {
+  if (typeof id === 'string') return (await creator.get(id)).accountID;
+  if (id instanceof StatlessSearchedUser || id instanceof User) return id.accountID;
+  return id;
+};
+
+/**
+ * A comment made by a Geometry Dash player
+ */
+abstract class Comment {
+  /** The text in the comment */
+  text: string;
+  /** The time when the comment was created */
+  createdAt: GDDate;
+  /** The ID of the comment */
+  id: number;
+  /** The likes on the number */
+  likes: number;
+  /** Whether or not the comment has been marked as spam */
+  isSpam: boolean;
+  /** The comment's author */
+  author: StatlessSearchedUser | User;
+
+  /**
+   * Creates a comment from a server response
+   * @param data The parsed data for the comment
+   */
+  constructor(data: ParsedData) {
+    this.text = gdDecodeBase64(data[2]);
+    this.createdAt = generateDate(data[9]);
+    this.id = +data[6];
+    this.likes = +data[4];
+    this.isSpam = !!+data[7];
+  }
+}
+
+class AccountComment<T extends User | StatlessSearchedUser> extends Comment {
+  author: T;
+  constructor(author: T, rawData: string) {
+    super(parse(rawData, '~'));
+    this.author = author;
+  }
+}
+
+class LoggedInAccountComment extends AccountComment<LoggedInUser> {
+  /**
+   * Deletes the comment from the Geometry Dash servers
+   * @returns A promise that resolves with a boolean of whether deletion was successful
+   * @async
+   */
+  async delete(): Promise<boolean> {
+    return this.author.deleteAccountComment(this);
+  }
+}
+
+class LevelComment<T extends User | StatlessSearchedUser> extends Comment {
+  /** @internal */
+  protected _creator: UserCreator;
+  author: T;
+  /** The ID of the level this comment is from */
+  levelID: number;
+  /** The percentage the user reached on the level. Only present if the commenter opted to show percentage with their comment. */
+  percent?: number;
+  constructor(_creator: UserCreator, author: T, rawData: string) {
+    const d = parse(rawData, '~');
+    super(d);
+    this.author = author;
+    this._creator = _creator;
+    if (d[10] !== '0') this.percent = +d[10];
+  }
+
+  /**
+   * Gets the level associated with this comment
+   * @param resolve Whether or not to resolve the search into the full level
+   * @returns The level or searched level this comment belongs to
+   * @async
+   */
+  async getLevel(resolve?: true): Promise<Level>;
+  async getLevel(resolve: false): Promise<SearchedLevel>;
+  async getLevel(resolve = true): Promise<Level | SearchedLevel> {
+    const level = await this._creator._client.levels.getByLevelID(this.levelID);
+    return resolve ? level.resolve() : level;
+  }
+}
+
+class LoggedInLevelComment extends LevelComment<LoggedInUser> {
+  /**
+   * Deletes this comment from the servers
+   * @returns Whether the comment deletion was successful
+   * @async
+   */
+  async delete(): Promise<boolean> {
+    return await this.author.deleteComment(this);
+  }
+}
+
+/**
+ * A friend request
+ */
+abstract class FriendRequest<O extends boolean> {
+  /** The friend request ID */
+  id: number;
+  /** The message with the friend request */
+  msg: string;
+  /** Whether the friend request has been read yet */
+  read: boolean;
+  /** Who the friend request is from */
+  from: O extends true ? LoggedInUser : StatlessSearchedUser;
+  /** Who the friend request is to */
+  to: O extends true ? StatlessSearchedUser : LoggedInUser;
+
+  /**
+   * Create data about a friend request
+   * @param data The parsed data to evaluate
+   */
+  constructor(data: ParsedData) {
+    this.id = +data[32];
+    this.msg = gdDecodeBase64(data[35]);
+    this.read = !+data[41];
+  }
+}
+
+/**
+ * An outgoing friend request
+ */
+class OutgoingFriendRequest extends FriendRequest<true> {
+  /**
+   * Creates info about an outgoing friend request
+   * @param account The account that sent the friend request
+   * @param creator The creator of the user the account belongs to
+   * @param rawData The raw data to parse
+   */
+  constructor(account: LoggedInUser, creator: UserCreator, rawData: string) {
+    const data = parse(rawData);
+    super(data);
+    this.from = account;
+    this.to = new StatlessSearchedUser(creator, rawData);
+  }
+
+  /**
+   * Cancels a friend request, deleting it from the server
+   * @returns Whether the cancellation was successful
+   * @async
+   */
+  async cancel(): Promise<boolean> {
+    return this.from.cancelFriendRequest(this);
+  }
+}
+
+class IncomingFriendRequest extends FriendRequest<false> {
+  /**
+   * Creates info about an incoming friend request
+   * @param account The account that received the friend request
+   * @param creator The creator of the user the account belongs to
+   * @param rawData The raw data to parse
+   */
+  constructor(account: LoggedInUser, creator: UserCreator, rawData: string) {
+    const data = parse(rawData);
+    super(data);
+    this.to = account;
+    this.from = new StatlessSearchedUser(creator, rawData);
+  }
+
+  /**
+   * Mark a friend request as read
+   * @returns Whether marking as read was successful
+   * @async
+   */
+  async markAsRead(): Promise<boolean> {
+    return this.read || (await this.to.markFriendRequestAsRead(this));
+  }
+
+  /**
+   * Accept a friend request
+   * @returns Whether accepting the friend request was successful
+   * @async
+   */
+  async accept(): Promise<boolean> {
+    return this.to.acceptFriendRequest(this);
+  }
+
+  /**
+   * Rejects a friend request, deleting it from the server
+   * @returns Whether the rejection was successful
+   * @async
+   */
+  async reject(): Promise<boolean> {
+    return this.to.rejectFriendRequest(this);
+  }
+}
+type MessageUser = {
+  /** The player's username */
+  username: string;
+  /** The player's user ID */
+  id: number;
+  /** The player's account ID */
+  accountID: number;
+};
+class SearchedMessage<O extends boolean> {
+  /** The message's ID */
+  id: number;
+  /** The message's subject */
+  subject: string;
+  /** The message's sender */
+  from: O extends true ? LoggedInUser : MessageUser;
+  /** The message's recipient */
+  to: O extends true ? MessageUser : LoggedInUser;
+  /** When the message was sent */
+  sentAt: GDDate;
+  /** Whether the message has been read */
+  read: boolean;
+  /** Whether the message is outgoing or not */
+  outgoing: O;
+
+  constructor(account: LoggedInUser, rawData: string | ParsedData) {
+    const d = typeof rawData === 'string' ? parse(rawData) : rawData;
+    this.id = +d[1];
+    const otherAcc: MessageUser = {
+      username: d[6],
+      id: +d[3],
+      accountID: +d[2]
+    };
+    const outgoing = !!+d[9];
+    this.from = (outgoing ? account : otherAcc) as this['from'];
+    this.to = (outgoing ? otherAcc : account) as this['to'];
+    this.outgoing = outgoing as O;
+    this.subject = gdDecodeBase64(d[4]);
+    this.sentAt = generateDate(d[7]);
+    this.read = !+d[8];
+  }
+
+  /**
+   * Deletes this message from the server
+   * @returns Whether the message deletion was successful
+   */
+  async delete(): Promise<boolean> {
+    return await ((this.outgoing ? this.from : this.to) as LoggedInUser).deleteMessage(this);
+  }
+
+  /**
+   * Resolves the message into a full message
+   * @returns The full message from this searched message
+   */
+  async resolve(): Promise<Message<O>> {
+    return await ((this.outgoing ? this.from : this.to) as LoggedInUser).getFullMessage(this);
+  }
+}
+
+class Message<O extends boolean> extends SearchedMessage<O> {
+  /** The message's body */
+  body: string;
+  constructor(account: LoggedInUser, rawData: string) {
+    const d = parse(rawData);
+    super(account, d);
+    this.body = gdDecodeBase64(d[5]);
+  }
+
+  async resolve(): Promise<this> {
+    return this;
+  }
+}
+
 const colors = [
   '#7dff00',
   '#00ff00',
@@ -213,8 +501,8 @@ class User {
   username: string;
   /** The player's user ID */
   id: number;
-  /** The player's account */
-  account: Account;
+  /** The player's account ID */
+  accountID: number;
   /** The player's stats */
   stats: {
     /** The number of stars the player has collected */
@@ -245,11 +533,15 @@ class User {
    * @param _creator The creator associated with this user
    * @param rawData The raw data returned from the Geometry Dash request for this user
    */
-  constructor(_creator: UserCreator, rawData: string) {
+  constructor(
+    /** @internal */
+    protected _creator: UserCreator,
+    rawData: string
+  ) {
     const d = parse(rawData);
     this.username = d[1];
     this.id = +d[2];
-    this.account = new Account(_creator, +d[16]);
+    this.accountID = +d[16];
     this.stats = {
       stars: +d[3],
       diamonds: +d[46],
@@ -283,16 +575,559 @@ class User {
     );
     this.permissions = generatePermission(+d[49]);
   }
+
+  /**
+   * Get comments posted to this account's page
+   * @param num The maximum number of results to fetch. If not specified, a single comment (the most recent one) is returned rather than an array.
+   * @returns A comment or an array of comments
+   * @async
+   */
+  async getAccountComments(): Promise<AccountComment<User>>;
+  async getAccountComments(num: number): Promise<AccountComment<User>[]>;
+  async getAccountComments(num?: number): Promise<AccountComment<User> | AccountComment<User>[]> {
+    let singleReturn = false;
+    if (!num) {
+      num = 1;
+      singleReturn = true;
+    }
+    const numToGet = Math.ceil(num / 10);
+    const comments: AccountComment<User>[] = [];
+    for (let page = 0; page < numToGet; page++) {
+      const params = new GDRequestParams({
+        accountID: this.accountID,
+        page,
+        total: 0
+      });
+      params.authorize('db');
+      const data = await this._creator._client.req('/getGJAccountComments20.php', {
+        method: 'POST',
+        body: params
+      });
+      if (data === '-1') return singleReturn ? null : [];
+      const split = data.slice(0, data.indexOf('#')).split('|');
+      comments.push(
+        ...split.map(str =>
+          this instanceof LoggedInUser
+            ? new LoggedInAccountComment(this, str)
+            : new AccountComment(this, str)
+        )
+      );
+      if (split.length < 10) break;
+    }
+    return singleReturn ? comments[0] || null : comments.slice(0, num);
+  }
+
+  /**
+   * Gets the comment history of the user
+   * @param byLikes Whether to sort by likes or not
+   * @param num The number of comments to get
+   * @returns The most recent or most liked comment or array of comments made by this user
+   * @async
+   */
+  async getComments(byLikes?: boolean): Promise<LevelComment<User>>;
+  async getComments(byLikes: boolean, num: number): Promise<LevelComment<User>[]>;
+  async getComments(
+    byLikes = false,
+    num?: number
+  ): Promise<LevelComment<User> | LevelComment<User>[]> {
+    let singleReturn = false;
+    if (!num) {
+      num = 1;
+      singleReturn = true;
+    }
+    const params = new GDRequestParams({
+      count: num,
+      userID: this.id,
+      mode: +byLikes,
+      page: 0,
+      total: 0
+    });
+    params.authorize('db');
+    const data = await this._creator._client.req('/getGJCommentHistory.php', {
+      method: 'POST',
+      body: params
+    });
+    if (data === '-1') return singleReturn ? null : [];
+    return data.split('|').map(str => {
+      const comment = str.slice(str.indexOf(':'));
+      return this instanceof LoggedInUser
+        ? new LoggedInLevelComment(this._creator, this, comment)
+        : new LevelComment(this._creator, this, comment);
+    });
+  }
 }
 
 /**
  * A logged-in Geometry Dash player
  */
 class LoggedInUser extends User {
-  account: LoggedInAccount;
-  constructor(_creator: UserCreator, rawData: string, _creds: Credentials) {
+  constructor(
+    _creator: UserCreator,
+    rawData: string,
+    /** @internal */
+    private _creds: Credentials
+  ) {
     super(_creator, rawData);
-    this.account = new LoggedInAccount(_creator, _creds);
+  }
+
+  async getAccountComments(): Promise<LoggedInAccountComment>;
+  async getAccountComments(num: number): Promise<LoggedInAccountComment[]>;
+  async getAccountComments(
+    num?: number
+  ): Promise<LoggedInAccountComment | LoggedInAccountComment[]> {
+    if (typeof num === 'undefined')
+      return (await super.getAccountComments()) as LoggedInAccountComment;
+    return (await super.getAccountComments(num)) as LoggedInAccountComment[];
+  }
+
+  async getComments(byLikes?: boolean): Promise<LoggedInLevelComment>;
+  async getComments(byLikes: boolean, num: number): Promise<LoggedInLevelComment[]>;
+  async getComments(
+    byLikes = false,
+    num?: number
+  ): Promise<LoggedInLevelComment | LoggedInLevelComment[]> {
+    if (typeof byLikes === 'undefined') return (await super.getComments()) as LoggedInLevelComment;
+    if (typeof num === 'undefined')
+      return (await super.getComments(byLikes)) as LoggedInLevelComment;
+    return (await super.getComments(byLikes, num)) as LoggedInLevelComment[];
+  }
+
+  /**
+   * Post a comment to this account's page
+   * @param msg The message to post
+   * @returns The comment that was just created (may not be 100% accurate); null if it failed
+   * @async
+   */
+  async postAccountComment(msg: string): Promise<LoggedInAccountComment> {
+    const comment = gdEncodeBase64(msg);
+    const params = new GDRequestParams({
+      ...this._creds,
+      comment
+    });
+    params.authorize('db');
+    const data = await this._creator._client.req('/uploadGJAccComment20.php', {
+      method: 'POST',
+      body: params
+    });
+    if (data === '-1') return null;
+    return new LoggedInAccountComment(this, `2~${comment}~9~0 seconds~6~${data}~4~0~7~0`); // best we can do
+  }
+
+  /**
+   * Post a comment to a level
+   * @param level The level to post the comment on
+   * @param msg The message to post
+   * @param percent The percentage to post with the comment. This can be any integer (even above 100)
+   * @returns The comment that was just created (may not be 100% accurate); null if it failed
+   * @async
+   */
+  async postComment(
+    level: SearchedLevel | number,
+    msg: string,
+    percent: number
+  ): Promise<LoggedInLevelComment> {
+    if (level instanceof SearchedLevel) level = level.id;
+    const comment = gdEncodeBase64(msg);
+    const params = new GDRequestParams({
+      ...this._creds,
+      comment,
+      percent
+    });
+    params.authorize('db');
+    const data = await this._creator._client.req('/uploadGJComment21.php', {
+      method: 'POST',
+      body: params
+    });
+    if (data === '-1') return null;
+    return new LoggedInLevelComment(
+      this._creator,
+      this,
+      `2~${comment}~9~0 seconds~6~${data}~4~0~7~0~10~${percent}`
+    );
+  }
+
+  /**
+   * Deletes an account comment from the server
+   * @param commentID The comment (or its ID) to delete
+   * @async
+   */
+  async deleteAccountComment(commentID: number | LoggedInAccountComment): Promise<boolean> {
+    if (commentID instanceof LoggedInAccountComment) {
+      if (commentID.author.accountID !== this.accountID) return false;
+      commentID = commentID.id;
+    }
+    const params = new GDRequestParams({
+      accountID: this.accountID,
+      gjp: this._creds.gjp,
+      commentID
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/deleteGJAccComment20.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
+  }
+
+  /**
+   * Deletes a comment from the server
+   * @param commentID The comment (or its ID) to delete
+   * @param levelID The level (or its ID) where the comment was posted. Only needed if your commentID is the numeric ID and not the comment object.
+   * @returns Whether the comment deletion was successful
+   * @async
+   */
+  async deleteComment(commentID: number, levelID: number | SearchedLevel): Promise<boolean>;
+  async deleteComment(commentID: LoggedInLevelComment): Promise<boolean>;
+  async deleteComment(
+    commentID: number | LoggedInLevelComment,
+    levelID?: number | SearchedLevel
+  ): Promise<boolean> {
+    if (commentID instanceof LoggedInLevelComment) {
+      if (commentID.author.accountID !== this.accountID) return false;
+      levelID = commentID.levelID;
+      commentID = commentID.id;
+    } else if (levelID instanceof SearchedLevel) {
+      levelID = levelID.id;
+    }
+    const params = new GDRequestParams({
+      accountID: this.accountID,
+      gjp: this._creds.gjp,
+      commentID,
+      levelID
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/deleteGJComment20.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
+  }
+
+  /**
+   * Send a friend request to another player
+   * @param id The account ID, username, user, or searched user to send a friend request to
+   * @param msg The message to send with the friend request
+   * @returns Whether the friend request sending was successful
+   * @async
+   */
+  async sendFriendRequest(id: ConvertibleToAccountID, msg = ''): Promise<boolean> {
+    const toAccountID = await convertToAccountID(this._creator, id);
+    const params = new GDRequestParams({
+      accountID: this.accountID,
+      gjp: this._creds.gjp,
+      toAccountID,
+      comment: gdEncodeBase64(msg)
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/uploadFriendRequest20.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
+  }
+
+  /**
+   * Sends a message to a friend
+   * @param id The account ID, username, user, or searched user to message. Must be a friend of this account.
+   * @param subject The subject of the message to send
+   * @param body The body of the message to send
+   * @returns Whether sending the message was successful
+   * @async
+   */
+  async sendMessage(id: ConvertibleToAccountID, subject: string, body: string): Promise<boolean> {
+    const toAccountID = await convertToAccountID(this._creator, id);
+    const params = new GDRequestParams({
+      accountID: this.accountID,
+      gjp: this._creds.gjp,
+      toAccountID,
+      subject: gdEncodeBase64(subject),
+      body: gdEncodeBase64(body)
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/uploadGJMessage20.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
+  }
+
+  /**
+   * Gets friend requests
+   * @param num The number of friend requests to get. Default 10.
+   * @param outgoing Whether to get outgoing or incoming friend requests. Defaults to incoming.
+   * @returns The array of friend requests based on the provided parameters
+   * @async
+   */
+  async getFriendRequests(num?: number, outgoing?: false): Promise<IncomingFriendRequest[]>;
+  async getFriendRequests(num: number, outgoing: true): Promise<OutgoingFriendRequest[]>;
+  async getFriendRequests(
+    num = 10,
+    outgoing = false
+  ): Promise<IncomingFriendRequest[] | OutgoingFriendRequest[]> {
+    const numToGet = Math.ceil(num / 10);
+    const reqs = [];
+    for (let page = 0; page < numToGet; page++) {
+      const params = new GDRequestParams({
+        accountID: this.accountID,
+        gjp: this._creds.gjp,
+        page,
+        getSent: +outgoing,
+        total: 0
+      });
+      params.authorize('db');
+      const data = await this._creator._client.req('/getGJFriendRequests20.php', {
+        method: 'POST',
+        body: params
+      });
+      if (['-1', '-2'].includes(data)) return reqs;
+      const split = data.slice(0, data.indexOf('#')).split('|');
+      reqs.push(
+        ...split.map(str =>
+          outgoing
+            ? new OutgoingFriendRequest(this, this._creator, str)
+            : new IncomingFriendRequest(this, this._creator, str)
+        )
+      );
+      if (split.length < 10) break;
+    }
+    return reqs.slice(0, num);
+  }
+
+  /**
+   * Gets messages
+   * @param num The number of messages to get. Default 10.
+   * @param outgoing Whether to get outgoing or incoming messages. Defaults to incoming.
+   * @returns The array of messages based on the provided parameters
+   * @async
+   */
+  async getMessages(num?: number, outgoing?: false): Promise<SearchedMessage<false>[]>;
+  async getMessages(num: number, outgoing: true): Promise<SearchedMessage<true>[]>;
+  async getMessages(num = 10, outgoing = false): Promise<SearchedMessage<boolean>[]> {
+    const numToGet = Math.ceil(num / 10);
+    const msgs: SearchedMessage<boolean>[] = [];
+    for (let page = 0; page < numToGet; page++) {
+      const params = new GDRequestParams({
+        accountID: this.accountID,
+        gjp: this._creds.gjp,
+        page,
+        getSent: +outgoing,
+        total: 0
+      });
+      params.authorize('db');
+      const data = await this._creator._client.req('/getGJMessages20.php', {
+        method: 'POST',
+        body: params
+      });
+      if (['-1', '-2'].includes(data)) return msgs;
+      const split = data.slice(0, data.indexOf('#')).split('|');
+      msgs.push(
+        ...split.map(str =>
+          outgoing ? new SearchedMessage<true>(this, str) : new SearchedMessage<false>(this, str)
+        )
+      );
+      if (split.length < 10) break;
+    }
+    return msgs.slice(0, num);
+  }
+
+  /**
+   * Gets the full message from a searched message or its ID
+   * @param message The message (or its ID) to resolve
+   * @returns The full message, including the body
+   * @async
+   */
+  async getFullMessage<T extends boolean>(message: SearchedMessage<T>): Promise<Message<T>> {
+    if ((message.outgoing ? message.from : message.to).accountID !== this.accountID) return null;
+    const params = new GDRequestParams({
+      accountID: this.accountID,
+      gjp: this._creds.gjp,
+      messageID: message.id,
+      isSender: +message.outgoing
+    });
+    params.authorize('db');
+    const data = await this._creator._client.req('/downloadGJMessage20.php', {
+      method: 'POST',
+      body: params
+    });
+    if (data === '-1') return null;
+    return new Message<T>(this, data);
+  }
+
+  /**
+   * Deletes a message from the servers
+   * @param message The message to delete
+   * @returns Whether the message deletion was successful
+   */
+  async deleteMessage(message: SearchedMessage<boolean>): Promise<boolean> {
+    if ((message.outgoing ? message.from : message.to).accountID !== this.accountID) return null;
+    const params = new GDRequestParams({
+      accountID: this.accountID,
+      gjp: this._creds.gjp,
+      messageID: message.id,
+      isSender: +message.outgoing
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/deleteGJMessages20.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
+  }
+
+  /**
+   * Mark a friend request as read
+   * @param fr The friend request to mark
+   * @returns Whether marking as read was successful or not
+   * @async
+   */
+  async markFriendRequestAsRead(fr: IncomingFriendRequest): Promise<boolean> {
+    if (fr.to.accountID !== this.accountID) return false;
+    const params = new GDRequestParams({
+      accountID: this.accountID,
+      gjp: this._creds.gjp,
+      requestID: fr.id
+    });
+    params.authorize('db');
+    return (fr.read =
+      (await this._creator._client.req('/readGJFriendRequest20.php', {
+        method: 'POST',
+        body: params
+      })) === '1');
+  }
+
+  /**
+   * Accepts a friend request
+   * @param fr The friend request to accept
+   * @returns Whether accepting the friend request was successful
+   * @async
+   */
+  async acceptFriendRequest(fr: IncomingFriendRequest): Promise<boolean> {
+    if (fr.to.accountID !== this.accountID) return false;
+    const params = new GDRequestParams({
+      accountID: this.accountID,
+      gjp: this._creds.gjp,
+      requestID: fr.id,
+      targetAccountID: fr.from.accountID
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/acceptGJFriendRequest20.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
+  }
+
+  /**
+   * Rejects a friend request, deleting it from the server
+   * @param fr The friend request to reject
+   * @returns Whether the rejection was succesful
+   * @async
+   */
+  async rejectFriendRequest(fr: IncomingFriendRequest): Promise<boolean> {
+    if (fr.to.accountID !== this.accountID) return false;
+    const params = new GDRequestParams({
+      accountID: this.accountID,
+      gjp: this._creds.gjp,
+      targetAccountID: fr.from.accountID,
+      isSender: 0
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/deleteGJFriendRequests20.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
+  }
+
+  /**
+   * Unfriends another player.
+   * @param id The account ID, username, user, or searched user to message. Must be a friend of this account.
+   * @returns Whether the unfriending was successful
+   */
+  async unfriend(id: ConvertibleToAccountID): Promise<boolean> {
+    const params = new GDRequestParams({
+      accountID: this.accountID,
+      gjp: this._creds.gjp,
+      targetAccountID: await convertToAccountID(this._creator, id)
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/removeGJFriend20.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
+  }
+
+  /**
+   * Cancels a friend request, deleting it from the server
+   * @param fr The friend request to cancel
+   * @returns Whether the cancellation was succesful
+   */
+  async cancelFriendRequest(fr: OutgoingFriendRequest): Promise<boolean> {
+    if (fr.from.accountID !== this.accountID) return false;
+    const params = new GDRequestParams({
+      accountID: this.accountID,
+      gjp: this._creds.gjp,
+      targetAccountID: fr.to.accountID,
+      isSender: 1
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/deleteGJFriendRequests20.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
+  }
+
+  /**
+   * Block a user
+   * @param user The user to block
+   * @returns Whether the blocking succeeded
+   * @async
+   */
+  async block(user: ConvertibleToAccountID): Promise<boolean> {
+    const params = new GDRequestParams({
+      accountID: this.accountID,
+      gjp: this._creds.gjp,
+      targetAccountID: await convertToAccountID(this._creator, user)
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/blockGJUser20.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
+  }
+
+  /**
+   * Unblock a user
+   * @param user The user to unblock
+   * @returns Whether the unblocking succeeded
+   * @async
+   */
+  async unblock(user: ConvertibleToAccountID): Promise<boolean> {
+    const params = new GDRequestParams({
+      accountID: this.accountID,
+      gjp: this._creds.gjp,
+      targetAccountID: await convertToAccountID(this._creator, user)
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/unblockGJUser20.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
   }
 }
 
@@ -355,8 +1190,8 @@ class StatlessSearchedUser {
   username: string;
   /** The player's user ID */
   id: number;
-  /** The player's account */
-  account: Account;
+  /** The player's account ID */
+  accountID: number;
   /** The player's cosmetics */
   cosmetics: SearchedUserCosmetics;
 
@@ -373,11 +1208,48 @@ class StatlessSearchedUser {
     const d = parse(rawData);
     this.username = d[1];
     this.id = +d[2];
-    this.account = new Account(this._creator, +d[16]);
+    this.accountID = +d[16];
     this.cosmetics = new SearchedUserCosmetics(+d[9], ICONTYPEMAP[+d[14]], {
       primary: userColor(+d[10]),
       secondary: userColor(+d[11])
     });
+  }
+
+  /**
+   * Get comments posted to this account's page
+   * @param num The maximum number of results to fetch. If not specified, a single comment (the most recent one) is returned rather than an array.
+   * @returns A comment or an array of comments
+   * @async
+   */
+  async getAccountComments(): Promise<AccountComment<StatlessSearchedUser>>;
+  async getAccountComments(num: number): Promise<AccountComment<StatlessSearchedUser>[]>;
+  async getAccountComments(
+    num?: number
+  ): Promise<AccountComment<StatlessSearchedUser> | AccountComment<StatlessSearchedUser>[]> {
+    let singleReturn = false;
+    if (!num) {
+      num = 1;
+      singleReturn = true;
+    }
+    const numToGet = Math.ceil(num / 10);
+    const comments: AccountComment<StatlessSearchedUser>[] = [];
+    for (let page = 0; page < numToGet; page++) {
+      const params = new GDRequestParams({
+        accountID: this.accountID,
+        page,
+        total: 0
+      });
+      params.authorize('db');
+      const data = await this._creator._client.req('/getGJAccountComments20.php', {
+        method: 'POST',
+        body: params
+      });
+      if (data === '-1') return singleReturn ? null : [];
+      const split = data.slice(0, data.indexOf('#')).split('|');
+      comments.push(...split.map(str => new AccountComment(this, str)));
+      if (split.length < 10) break;
+    }
+    return singleReturn ? comments[0] || null : comments.slice(0, num);
   }
 
   /**
@@ -386,7 +1258,7 @@ class StatlessSearchedUser {
    * @async
    */
   async resolve(): Promise<User> {
-    return await this._creator.get(this.account);
+    return await this._creator.get(this.accountID);
   }
 }
 
@@ -429,6 +1301,16 @@ class SearchedUser extends StatlessSearchedUser {
       cp: +d[8]
     };
   }
+
+  async getAccountComments(): Promise<AccountComment<SearchedUser>>;
+  async getAccountComments(num: number): Promise<AccountComment<SearchedUser>[]>;
+  async getAccountComments(
+    num?: number
+  ): Promise<AccountComment<SearchedUser> | AccountComment<SearchedUser>[]> {
+    if (typeof num === 'undefined')
+      return (await super.getAccountComments()) as AccountComment<SearchedUser>;
+    return (await super.getAccountComments(num)) as AccountComment<SearchedUser>[];
+  }
 }
 
 /**
@@ -441,14 +1323,15 @@ class UserCreator extends Creator {
    * @returns The player with the provided account ID or username
    * @async
    */
-  async get(id: number | string | Account): Promise<User> {
+  async get(id: number | string | StatlessSearchedUser | User): Promise<User> {
     switch (typeof id) {
       case 'number':
         return await this.getByAccountID(id);
       case 'string':
         return await this.getByUsername(id);
       case 'object': {
-        if (id instanceof Account) return await this.getByAccountID(id.id);
+        if (id instanceof StatlessSearchedUser || id instanceof User)
+          return await this.getByAccountID(id.accountID);
       }
       default:
         return null;
@@ -542,23 +1425,32 @@ class UserCreator extends Creator {
     if (data === '-1') throw new TypeError('could not log in because the credentials were invalid');
     // TODO: What to do with userID (index 1)?
     const [accountIDStr] = data.split(',');
-    const accountID = +accountIDStr;
-    const gjp = encrypt(userCreds.password, accountKey);
+    return this.authorize({
+      userName: userCreds.username,
+      accountID: +accountIDStr,
+      gjp: encrypt(userCreds.password, accountKey)
+    });
+  }
+
+  /**
+   * Log in to a Geometry Dash account using preprocessed credentials
+   * @param creds The credentials to log in with
+   * @throws {TypeError} Credentials must be valid
+   * @async
+   */
+  async authorize(creds: Credentials): Promise<LoggedInUser> {
     const infoParams = new GDRequestParams({
-      targetAccountID: accountID
+      targetAccountID: creds.accountID
     });
     infoParams.authorize('db');
     const infoData = await this._client.req('/getGJUserInfo20.php', {
       method: 'POST',
       body: infoParams
     });
-    if (infoData === '-1') return null;
-    return new LoggedInUser(this, infoData, {
-      userName: userCreds.username,
-      accountID,
-      gjp
-    });
+    if (infoData === '-1')
+      throw new TypeError('could not log in because the credentials were invalid');
+    return new LoggedInUser(this, infoData, creds);
   }
 }
 
-export { User, SearchedUser, StatlessSearchedUser, UserCreator };
+export { User, LoggedInUser, SearchedUser, StatlessSearchedUser, UserCreator };

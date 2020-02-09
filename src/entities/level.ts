@@ -11,8 +11,8 @@ import {
   GDRequestParams
 } from '../util';
 import { Song, DefaultSong } from './song';
-import { Account } from './account';
 import Creator from './entityCreator';
+import { User } from './user';
 
 type Difficulty = 'N/A' | 'Auto' | 'Easy' | 'Normal' | 'Hard' | 'Harder' | 'Insane';
 type DemonDifficulty =
@@ -161,8 +161,13 @@ class SearchedLevel {
   song: Song | DefaultSong;
   /** The level's description */
   description: string;
-  /** The level's creator. Will be a number representing the userID if the user is unregistered. */
-  creator: Account | number;
+  /** The level's creator */
+  creator: {
+    /** The creator's ID. Will be the user ID if the user is unregistered or the account ID if they are registered.*/
+    id: number;
+    /** Whether the creator is registered */
+    registered: boolean;
+  };
   /** The level's difficulty rating */
   difficulty: {
     /** The number of stars the level received. Will be 0 if it has no rating */
@@ -223,9 +228,16 @@ class SearchedLevel {
         : new Song(_creator, (this._songData = songData.find(song => songID === song[1])));
     this.description = gdDecodeBase64(d[3]);
     const user = (this._userData = userData.find(el => el[0] === d[6]));
-    if (!user) this.creator = +d[6];
+    if (!user)
+      this.creator = {
+        id: +d[6],
+        registered: false
+      };
     else {
-      this.creator = new Account(this._creator._client.users, +user[2]);
+      this.creator = {
+        id: +user[2],
+        registered: true
+      };
     }
     this.difficulty = {
       stars: +d[18],
@@ -267,6 +279,17 @@ class SearchedLevel {
       this._userData,
       this._songData
     );
+  }
+
+  /**
+   * Gets the level's creator. Will only succeed if the creator is registered
+   * @returns The creator if it was registered, otherwise null
+   * @async
+   */
+  async getCreator(): Promise<User> {
+    return this.creator.registered
+      ? await this._creator._client.users.getByAccountID(this.creator.id)
+      : null;
   }
 }
 
@@ -488,8 +511,11 @@ class LevelCreator extends Creator {
    * @param levelID The level ID to get
    * @returns The level with the given ID
    */
-  async getByLevelID(levelID: number): Promise<Level> {
-    return (await this.search({ query: levelID })).resolve();
+  async getByLevelID(levelID: number, resolve?: true): Promise<Level>;
+  async getByLevelID(levelID: number, resolve: false): Promise<SearchedLevel>;
+  async getByLevelID(levelID: number, resolve = true): Promise<SearchedLevel | Level> {
+    const level = await this.search({ query: levelID });
+    return resolve ? await level.resolve() : level;
   }
 
   /**
@@ -555,4 +581,4 @@ class LevelCreator extends Creator {
     return singleReturn ? levels[0] : levels.slice(0, num);
   }
 }
-export { SearchedLevel, LevelCreator };
+export { SearchedLevel, Level, LevelCreator };

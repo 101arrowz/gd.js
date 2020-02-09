@@ -93,16 +93,12 @@ const getDumbLevels = async () => {
   console.log(bloodbath.name); // Bloodbath
   console.log(bloodbath.stats.likes); // 1359617
   bloodbath = await bloodbath.resolve();
-  console.log(bloodpath.password)
-}
-
-const autoAccountComment = (account, message, timeout) => {
-  setInterval(() => account.postComment(message), timeout);
+  console.log(bloodpath.copy.copyable); // false
 }
 
 // Every ten minutes, GD Colon will post an account comment saying "I'm actually a furry"
 gd.users.login({ username: 'colon', password: 'colonspassword' })
-  .then(colon => autoAccountComment(colon.account, "I'm actually a furry", 60000));
+  .then(colon => setInterval(() => colon.postAccountComment("I'm actually a furry"), 60000));
 ```
 
 ### Advanced: Notes About Compatibility

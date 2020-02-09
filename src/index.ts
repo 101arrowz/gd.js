@@ -1,6 +1,6 @@
 import './polyfill';
 import { isNode, GDRequestParams as GDParams } from './util';
-import { UserCreator, User, Account, LevelCreator } from './entities';
+import { UserCreator, User, LevelCreator } from './entities';
 
 /**
  * Configuration for the [GD client]{@link Client}.
@@ -29,8 +29,6 @@ type RequestConfig = {
 class Client {
   /** A Geometry Dash player */
   static User = User;
-  /** A Geometry Dash account */
-  static Account = Account;
 
   /** The database of Geometry Dash users */
   users: UserCreator;
