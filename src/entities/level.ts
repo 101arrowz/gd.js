@@ -328,7 +328,6 @@ class SearchedLevel {
       .split('|')
       .map(str => {
         const [comment, user] = str.split(':');
-        console.log(user);
         return new LevelComment(
           this._creator._client.users,
           new StatlessSearchedUser(this._creator._client.users, user),
