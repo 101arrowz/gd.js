@@ -648,12 +648,16 @@ class User {
       body: params
     });
     if (data === '-1') return singleReturn ? null : [];
-    return data.split('|').map(str => {
-      const comment = str.slice(str.indexOf(':'));
-      return this instanceof LoggedInUser
-        ? new LoggedInLevelComment(this._creator, this, comment)
-        : new LevelComment(this._creator, this, comment);
-    });
+    const comments = data
+      .slice(0, data.indexOf('#'))
+      .split('|')
+      .map(str => {
+        const comment = str.slice(str.indexOf(':'));
+        return this instanceof LoggedInUser
+          ? new LoggedInLevelComment(this._creator, this, comment)
+          : new LevelComment(this._creator, this, comment);
+      });
+    return singleReturn ? comments[0] : comments;
   }
 }
 
@@ -724,15 +728,15 @@ class LoggedInUser extends User {
   async postComment(
     level: SearchedLevel | number,
     msg: string,
-    percent: number
+    percent?: number
   ): Promise<LoggedInLevelComment> {
     if (level instanceof SearchedLevel) level = level.id;
     const comment = gdEncodeBase64(msg);
     const params = new GDRequestParams({
       ...this._creds,
-      comment,
-      percent
+      comment
     });
+    if (typeof percent === 'number') params.insertParams({ percent });
     params.authorize('db');
     const data = await this._creator._client.req('/uploadGJComment21.php', {
       method: 'POST',
@@ -1188,8 +1192,8 @@ class SearchedUserCosmetics {
 class StatlessSearchedUser {
   /** The player's username  */
   username: string;
-  /** The player's user ID */
-  id: number;
+  /** The player's user ID. Will only be present if it is known */
+  id?: number;
   /** The player's account ID */
   accountID: number;
   /** The player's cosmetics */
@@ -1203,11 +1207,12 @@ class StatlessSearchedUser {
   constructor(
     /** @internal */
     private _creator: UserCreator,
-    rawData: string
+    rawData: string | ParsedData
   ) {
-    const d = parse(rawData);
+    const d = typeof rawData == 'string' ? parse(rawData, '~') : rawData;
     this.username = d[1];
-    this.id = +d[2];
+    const id = +d[2];
+    if (id) this.id = id;
     this.accountID = +d[16];
     this.cosmetics = new SearchedUserCosmetics(+d[9], ICONTYPEMAP[+d[14]], {
       primary: userColor(+d[10]),
@@ -1266,6 +1271,8 @@ class StatlessSearchedUser {
  * Details about a Geometry Dash player returned from a search
  */
 class SearchedUser extends StatlessSearchedUser {
+  /** The player's user ID */
+  id: number;
   /** The player's stats */
   stats: {
     /** The number of stars the player has collected */
@@ -1289,8 +1296,8 @@ class SearchedUser extends StatlessSearchedUser {
    * @param rawData The raw data to parse
    */
   constructor(_creator: UserCreator, rawData: string) {
-    super(_creator, rawData);
     const d = parse(rawData); // Inefficient, yes, but easier
+    super(_creator, d);
     this.stats = {
       stars: +d[3],
       demons: +d[4],
@@ -1453,4 +1460,4 @@ class UserCreator extends Creator {
   }
 }
 
-export { User, LoggedInUser, SearchedUser, StatlessSearchedUser, UserCreator };
+export { User, LoggedInUser, SearchedUser, StatlessSearchedUser, UserCreator, LevelComment };

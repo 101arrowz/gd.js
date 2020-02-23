@@ -12,7 +12,7 @@ import {
 } from '../util';
 import { Song, DefaultSong } from './song';
 import Creator from './entityCreator';
-import { User } from './user';
+import { User, LevelComment, StatlessSearchedUser } from './user';
 
 type Difficulty = 'N/A' | 'Auto' | 'Easy' | 'Normal' | 'Hard' | 'Harder' | 'Insane';
 type DemonDifficulty =
@@ -290,6 +290,52 @@ class SearchedLevel {
     return this.creator.registered
       ? await this._creator._client.users.getByAccountID(this.creator.id)
       : null;
+  }
+
+  /**
+   * Gets the comments on this level
+   * @param byLikes Whether to sort by likes or not
+   * @param num The number of comments to get
+   * @returns The most recent or most liked comment or array of comments made on this level
+   * @async
+   */
+  async getComments(byLikes?: boolean): Promise<LevelComment<StatlessSearchedUser>>;
+  async getComments(byLikes: boolean, num: number): Promise<LevelComment<StatlessSearchedUser>[]>;
+  async getComments(
+    byLikes = false,
+    num?: number
+  ): Promise<LevelComment<StatlessSearchedUser> | LevelComment<StatlessSearchedUser>[]> {
+    let singleReturn = false;
+    if (!num) {
+      num = 1;
+      singleReturn = true;
+    }
+    const params = new GDRequestParams({
+      count: num,
+      levelID: this.id,
+      mode: +byLikes,
+      page: 0,
+      total: 0
+    });
+    params.authorize('db');
+    const data = await this._creator._client.req('/getGJComments21.php', {
+      method: 'POST',
+      body: params
+    });
+    if (data === '-1') return singleReturn ? null : [];
+    const comments = data
+      .slice(0, data.indexOf('#'))
+      .split('|')
+      .map(str => {
+        const [comment, user] = str.split(':');
+        console.log(user);
+        return new LevelComment(
+          this._creator._client.users,
+          new StatlessSearchedUser(this._creator._client.users, user),
+          comment
+        );
+      });
+    return singleReturn ? comments[0] : comments;
   }
 }
 
