@@ -98,6 +98,7 @@ class LevelComment<T extends User | StatlessSearchedUser> extends Comment {
     super(d);
     this.author = author;
     this._creator = _creator;
+    this.levelID = +d[1];
     if (d[10] !== '0') this.percent = +d[10];
   }
 
@@ -655,7 +656,7 @@ class User {
       .slice(0, data.indexOf('#'))
       .split('|')
       .map(str => {
-        const comment = str.slice(str.indexOf(':'));
+        const comment = str.slice(0, str.indexOf(':'));
         return this instanceof LoggedInUser
           ? new LoggedInLevelComment(this._creator, this, comment)
           : new LevelComment(this._creator, this, comment);
