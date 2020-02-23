@@ -13,3 +13,8 @@ export const levelKey = '26364';
  * @internal
  */
 export const messageKey = '14251';
+/**
+ * The cipher key for comments
+ * @internal
+ */
+export const commentKey = '29481';

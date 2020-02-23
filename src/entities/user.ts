@@ -11,8 +11,11 @@ import {
   gdEncodeBase64,
   ParsedData,
   GDDate,
-  generateDate
+  generateDate,
+  commentKey
 } from '../util';
+import { sha1 } from 'sha.js';
+
 /**
  * Types that can be converted to an account ID
  */
@@ -731,12 +734,21 @@ class LoggedInUser extends User {
     percent?: number
   ): Promise<LoggedInLevelComment> {
     if (level instanceof SearchedLevel) level = level.id;
+    if (!percent) percent = 0;
     const comment = gdEncodeBase64(msg);
+    const chk = encrypt(
+      new sha1()
+        .update(this._creds.userName + comment + level + percent + '0xPT6iUrtws0J')
+        .digest('hex'),
+      commentKey
+    );
     const params = new GDRequestParams({
       ...this._creds,
-      comment
+      levelID: level,
+      comment,
+      percent,
+      chk
     });
-    if (typeof percent === 'number') params.insertParams({ percent });
     params.authorize('db');
     const data = await this._creator._client.req('/uploadGJComment21.php', {
       method: 'POST',
