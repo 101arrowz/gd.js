@@ -1412,6 +1412,38 @@ class UserCreator extends Creator {
   }
 
   /**
+   * Gets a user leaderboard
+   * @param type The type of leaderboard to get
+   * @param num The number of entries to get.
+   */
+  async getLeaderboard(creators?: boolean): Promise<SearchedUser>;
+  async getLeaderboard(creators: boolean, num: number): Promise<SearchedUser[]>;
+  async getLeaderboard(creators = false, num?: number): Promise<SearchedUser | SearchedUser[]> {
+    let singleReturn = false;
+    if (!num) {
+      num = 1;
+      singleReturn = true;
+    }
+    const params = new GDRequestParams({
+      count: num,
+      type: creators ? 'creators' : 'top',
+      page: 0,
+      total: 0
+    });
+    params.authorize('db');
+    const data = await this._client.req('/getGJScores20.php', {
+      method: 'POST',
+      body: params
+    });
+    if (data === '-1') return singleReturn ? null : [];
+    const leaders = data
+      .slice(0, data.indexOf('#'))
+      .split('|')
+      .map(str => new SearchedUser(this, str));
+    return singleReturn ? leaders[0] : leaders.slice(0, num);
+  }
+
+  /**
    * Log in to a Geometry Dash account
    * @param userCreds The username and password to log in with
    * @throws {TypeError} Credentials must be valid
