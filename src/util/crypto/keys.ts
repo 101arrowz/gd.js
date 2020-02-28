@@ -18,3 +18,8 @@ export const messageKey = '14251';
  * @internal
  */
 export const commentKey = '29481';
+/**
+ * The cipher key for liking
+ * @internal
+ */
+export const likeKey = '58281';

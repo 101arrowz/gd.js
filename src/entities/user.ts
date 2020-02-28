@@ -11,8 +11,15 @@ import {
   gdEncodeBase64,
   ParsedData,
   GDDate,
+  udid,
+  uuid,
   generateDate,
-  commentKey
+  genRS,
+  commentKey,
+  commentSalt,
+  likeKey,
+  likeSalt,
+  udidSafe
 } from '../util';
 import { sha1 } from 'sha.js';
 
@@ -111,7 +118,7 @@ class LevelComment<T extends User | StatlessSearchedUser> extends Comment {
   async getLevel(resolve?: true): Promise<Level>;
   async getLevel(resolve: false): Promise<SearchedLevel>;
   async getLevel(resolve = true): Promise<Level | SearchedLevel> {
-    const level = await this._creator._client.levels.getByLevelID(this.levelID);
+    const level = await this._creator._client.levels.get(this.levelID);
     return resolve ? level.resolve() : level;
   }
 }
@@ -265,6 +272,7 @@ class SearchedMessage<O extends boolean> {
   /**
    * Deletes this message from the server
    * @returns Whether the message deletion was successful
+   * @async
    */
   async delete(): Promise<boolean> {
     return await ((this.outgoing ? this.from : this.to) as LoggedInUser).deleteMessage(this);
@@ -273,6 +281,7 @@ class SearchedMessage<O extends boolean> {
   /**
    * Resolves the message into a full message
    * @returns The full message from this searched message
+   * @async
    */
   async resolve(): Promise<Message<O>> {
     return await ((this.outgoing ? this.from : this.to) as LoggedInUser).getFullMessage(this);
@@ -739,7 +748,7 @@ class LoggedInUser extends User {
     const comment = gdEncodeBase64(msg);
     const chk = encrypt(
       new sha1()
-        .update(this._creds.userName + comment + level + percent + '0xPT6iUrtws0J')
+        .update(this._creds.userName + comment + level + percent + '0' + commentSalt)
         .digest('hex'),
       commentKey
     );
@@ -978,6 +987,7 @@ class LoggedInUser extends User {
    * Deletes a message from the servers
    * @param message The message to delete
    * @returns Whether the message deletion was successful
+   * @async
    */
   async deleteMessage(message: SearchedMessage<boolean>): Promise<boolean> {
     if ((message.outgoing ? message.from : message.to).accountID !== this.accountID) return null;
@@ -1067,6 +1077,7 @@ class LoggedInUser extends User {
    * Unfriends another player.
    * @param id The account ID, username, user, or searched user to message. Must be a friend of this account.
    * @returns Whether the unfriending was successful
+   * @async
    */
   async unfriend(id: ConvertibleToAccountID): Promise<boolean> {
     const params = new GDRequestParams({
@@ -1087,6 +1098,7 @@ class LoggedInUser extends User {
    * Cancels a friend request, deleting it from the server
    * @param fr The friend request to cancel
    * @returns Whether the cancellation was succesful
+   * @async
    */
   async cancelFriendRequest(fr: OutgoingFriendRequest): Promise<boolean> {
     if (fr.from.accountID !== this.accountID) return false;
@@ -1146,6 +1158,368 @@ class LoggedInUser extends User {
       })) === '1'
     );
   }
+
+  /**
+   * Finds all friends of this player
+   * @returns An array of the player's friends
+   * @async
+   */
+  async getFriends(): Promise<StatlessSearchedUser[]> {
+    const params = new GDRequestParams({
+      accountID: this.accountID,
+      gjp: this._creds.gjp,
+      type: 0
+    });
+    params.authorize('db');
+    const data = await this._creator._client.req('/getGJUserList20.php', {
+      method: 'POST',
+      body: params
+    });
+    if (data === '-1') return [];
+    return data.split('|').map(str => new StatlessSearchedUser(this._creator, parse(str)));
+  }
+
+  /**
+   * Finds the users that have been blocked by this player
+   * @returns An array of blocked users
+   * @async
+   */
+  async getBlocked(): Promise<StatlessSearchedUser[]> {
+    const params = new GDRequestParams({
+      accountID: this.accountID,
+      gjp: this._creds.gjp,
+      type: 1
+    });
+    params.authorize('db');
+    const data = await this._creator._client.req('/getGJUserList20.php', {
+      method: 'POST',
+      body: params
+    });
+    if (data === '-1') return [];
+    return data.split('|').map(str => new StatlessSearchedUser(this._creator, parse(str)));
+  }
+
+  /**
+   * Gets the friends leaderboard
+   * @returns The leaderboard, with position being index + 1
+   * @async
+   */
+  async getFriendsLeaderboard(): Promise<SearchedUser[]> {
+    const params = new GDRequestParams({
+      accountID: this.accountID,
+      gjp: this._creds.gjp,
+      type: 'friends',
+      page: 0,
+      total: 0
+    });
+    params.authorize('db');
+    const data = await this._creator._client.req('/getGJScores20.php', {
+      method: 'POST',
+      body: params
+    });
+    if (data === '-1') return [];
+    const leaderboard = data
+      .slice(0, data.indexOf('#'))
+      .split('|')
+      .map(str => new SearchedUser(this._creator, str));
+    const me = leaderboard.pop();
+    let insertIndex = leaderboard.findIndex(val => val.stats.stars <= me.stats.stars);
+    if (insertIndex === -1) insertIndex = leaderboard.length;
+    leaderboard.splice(insertIndex, 0, me);
+    return leaderboard;
+  }
+
+  /**
+   * Likes a Geometry Dash entity
+   * @param id The object to like. This can be a level, account comment, or level comment
+   * @returns Whether the liking succeeded
+   * @async
+   */
+  async like(
+    id:
+      | SearchedLevel
+      | AccountComment<User | StatlessSearchedUser>
+      | LevelComment<User | StatlessSearchedUser>
+  ): Promise<boolean> {
+    return id instanceof SearchedLevel
+      ? this.likeLevel(id)
+      : id instanceof LevelComment
+      ? this.likeComment(id)
+      : id instanceof AccountComment
+      ? this.likeAccountComment(id)
+      : false;
+  }
+
+  /**
+   * Dislikes a Geometry Dash entity
+   * @param id The object to dislike. This can be a level, account comment, or level comment
+   * @returns Whether the disliking succeeded
+   * @async
+   */
+  async dislike(
+    id:
+      | SearchedLevel
+      | AccountComment<User | StatlessSearchedUser>
+      | LevelComment<User | StatlessSearchedUser>
+  ): Promise<boolean> {
+    return id instanceof SearchedLevel
+      ? this.dislikeLevel(id)
+      : id instanceof LevelComment
+      ? this.dislikeComment(id)
+      : id instanceof AccountComment
+      ? this.dislikeAccountComment(id)
+      : false;
+  }
+
+  /**
+   * Likes a level
+   * @param id The ID of the level to like (or the level itself)
+   * @returns Whether the liking succeeded
+   * @async
+   */
+  async likeLevel(id: SearchedLevel | number): Promise<boolean> {
+    if (id instanceof SearchedLevel) {
+      id = id.id;
+    }
+    const rs = genRS();
+    const chk = encrypt(
+      new sha1()
+        .update('0' + id + 1 + 1 + rs + this.accountID + udid + uuid + likeSalt)
+        .digest('hex'),
+      likeKey
+    );
+    const params = new GDRequestParams({
+      accountID: this.accountID,
+      gjp: this._creds.gjp,
+      type: 1,
+      special: 0,
+      itemID: id,
+      like: 1,
+      udid,
+      uuid,
+      rs,
+      chk
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/likeGJItem211.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
+  }
+
+  /**
+   * Dislikes a level
+   * @param id The ID of the level to dislike (or the level itself)
+   * @returns Whether the disliking succeeded
+   * @async
+   */
+  async dislikeLevel(id: SearchedLevel | number): Promise<boolean> {
+    if (id instanceof SearchedLevel) {
+      id = id.id;
+    }
+    const rs = genRS();
+    const chk = encrypt(
+      new sha1()
+        .update('0' + id + 1 + 1 + rs + this.accountID + udid + uuid + likeSalt)
+        .digest('hex'),
+      likeKey
+    );
+    const params = new GDRequestParams({
+      accountID: this.accountID,
+      gjp: this._creds.gjp,
+      type: 1,
+      special: 0,
+      itemID: id,
+      like: 0,
+      udid,
+      uuid,
+      rs,
+      chk
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/likeGJItem211.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
+  }
+
+  /**
+   * Likes a comment
+   * @param id The ID of the comment to like (or the comment itself)
+   * @param levelID The ID of the level the comment is on. Only needed if passing a numeric comment ID
+   * @returns Whether the liking succeeded
+   * @async
+   */
+  async likeComment(id: LevelComment<StatlessSearchedUser | User>): Promise<boolean>;
+  async likeComment(id: number, levelID: SearchedLevel | number): Promise<boolean>;
+  async likeComment(
+    id: LevelComment<StatlessSearchedUser | User> | number,
+    levelID?: SearchedLevel | number
+  ): Promise<boolean> {
+    if (id instanceof LevelComment) {
+      if (id.author.accountID === this.accountID) return false;
+      levelID = id.levelID;
+      id = id.id;
+    } else if (levelID instanceof SearchedLevel) levelID = levelID.id;
+    const rs = genRS();
+    const chk = encrypt(
+      new sha1()
+        .update(levelID.toString() + id + 1 + 2 + rs + this.accountID + udid + uuid + likeSalt)
+        .digest('hex'),
+      likeKey
+    );
+    const params = new GDRequestParams({
+      accountID: this.accountID,
+      gjp: this._creds.gjp,
+      type: 2,
+      special: levelID,
+      itemID: id,
+      like: 1,
+      udid,
+      uuid,
+      rs,
+      chk
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/likeGJItem211.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
+  }
+
+  /**
+   * Dislikes a comment
+   * @param id The ID of the comment to dislike (or the comment itself)
+   * @param levelID The ID of the level the comment is on. Only needed if passing a numeric comment ID
+   * @returns Whether the disliking succeeded
+   * @async
+   */
+  async dislikeComment(id: LevelComment<StatlessSearchedUser | User>): Promise<boolean>;
+  async dislikeComment(id: number, levelID: SearchedLevel | number): Promise<boolean>;
+  async dislikeComment(
+    id: LevelComment<StatlessSearchedUser | User> | number,
+    levelID?: SearchedLevel | number
+  ): Promise<boolean> {
+    if (id instanceof LevelComment) {
+      if (id.author.accountID === this.accountID) return false;
+      levelID = id.levelID;
+      id = id.id;
+    } else if (levelID instanceof SearchedLevel) levelID = levelID.id;
+    const rs = genRS();
+    const chk = encrypt(
+      new sha1()
+        .update(levelID.toString() + id + 0 + 2 + rs + this.accountID + udid + uuid + likeSalt)
+        .digest('hex'),
+      likeKey
+    );
+    const params = new GDRequestParams({
+      accountID: this.accountID,
+      gjp: this._creds.gjp,
+      type: 2,
+      special: levelID,
+      itemID: id,
+      like: 0,
+      udid,
+      uuid,
+      rs,
+      chk
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/likeGJItem211.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
+  }
+
+  /**
+   * Likes an account comment
+   * @param id The ID of the comment to like (or the comment itself)
+   * @returns Whether the liking succeeded
+   * @async
+   */
+  async likeAccountComment(
+    id: AccountComment<StatlessSearchedUser | User> | number
+  ): Promise<boolean> {
+    if (id instanceof AccountComment) {
+      if (id.author.accountID === this.accountID) return false;
+      id = id.id;
+    }
+    const rs = genRS();
+    const chk = encrypt(
+      new sha1()
+        .update(id.toString() + id + 1 + 3 + rs + this.accountID + udid + uuid + likeSalt)
+        .digest('hex'),
+      likeKey
+    );
+    const params = new GDRequestParams({
+      accountID: this.accountID,
+      gjp: this._creds.gjp,
+      type: 3,
+      special: id,
+      itemID: id,
+      like: 1,
+      udid,
+      uuid,
+      rs,
+      chk
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/likeGJItem211.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
+  }
+
+  /**
+   * Dislikes an account comment
+   * @param id The ID of the comment to dislike (or the comment itself)
+   * @returns Whether the disliking succeeded
+   * @async
+   */
+  async dislikeAccountComment(
+    id: AccountComment<StatlessSearchedUser | User> | number
+  ): Promise<boolean> {
+    if (id instanceof AccountComment) {
+      if (id.author.accountID === this.accountID) return false;
+      id = id.id;
+    }
+    const rs = genRS();
+    const chk = encrypt(
+      new sha1()
+        .update(id.toString() + id + 1 + 3 + rs + this.accountID + udid + uuid + likeSalt)
+        .digest('hex'),
+      likeKey
+    );
+    const params = new GDRequestParams({
+      accountID: this.accountID,
+      gjp: this._creds.gjp,
+      type: 3,
+      special: id,
+      itemID: id,
+      like: 0,
+      udid,
+      uuid,
+      rs,
+      chk
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/likeGJItem211.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
+  }
 }
 
 const ICONTYPEMAP: IconCosmetic[] = ['cube', 'ship', 'ball', 'ufo', 'wave', 'robot', 'spider'];
@@ -1170,7 +1544,13 @@ class SearchedUserCosmetics {
    * @param iconType The type of the icon
    * @param colors The colors the player uses
    */
-  constructor(icon: number, iconType: IconCosmetic, colors: Colors) {
+  constructor(
+    /** @internal */
+    private _creator: UserCreator,
+    icon: number,
+    iconType: IconCosmetic,
+    colors: Colors
+  ) {
     this.icon = {
       val: icon,
       type: iconType
@@ -1191,6 +1571,7 @@ class SearchedUserCosmetics {
       {
         glow: 0,
         [this.icon.type]: this.icon.val,
+        _creator: this._creator,
         colors: this.colors
       },
       this.icon.type,
@@ -1227,7 +1608,7 @@ class StatlessSearchedUser {
     const id = +d[2];
     if (id) this.id = id;
     this.accountID = +d[16];
-    this.cosmetics = new SearchedUserCosmetics(+d[9], ICONTYPEMAP[+d[14]], {
+    this.cosmetics = new SearchedUserCosmetics(_creator, +d[9], ICONTYPEMAP[+d[14]], {
       primary: userColor(+d[10]),
       secondary: userColor(+d[11])
     });
@@ -1268,6 +1649,47 @@ class StatlessSearchedUser {
       if (split.length < 10) break;
     }
     return singleReturn ? comments[0] || null : comments.slice(0, num);
+  }
+
+  /**
+   * Gets the comment history of the user
+   * @param byLikes Whether to sort by likes or not
+   * @param num The number of comments to get
+   * @returns The most recent or most liked comment or array of comments made by this user
+   * @async
+   */
+  async getComments(byLikes?: boolean): Promise<LevelComment<StatlessSearchedUser>>;
+  async getComments(byLikes: boolean, num: number): Promise<LevelComment<StatlessSearchedUser>[]>;
+  async getComments(
+    byLikes = false,
+    num?: number
+  ): Promise<LevelComment<StatlessSearchedUser> | LevelComment<StatlessSearchedUser>[]> {
+    let singleReturn = false;
+    if (!num) {
+      num = 1;
+      singleReturn = true;
+    }
+    const params = new GDRequestParams({
+      count: num,
+      userID: this.id,
+      mode: +byLikes,
+      page: 0,
+      total: 0
+    });
+    params.authorize('db');
+    const data = await this._creator._client.req('/getGJCommentHistory.php', {
+      method: 'POST',
+      body: params
+    });
+    if (data === '-1') return singleReturn ? null : [];
+    const comments = data
+      .slice(0, data.indexOf('#'))
+      .split('|')
+      .map(str => {
+        const comment = str.slice(0, str.indexOf(':'));
+        return new LevelComment(this._creator, this, comment);
+      });
+    return singleReturn ? comments[0] : comments;
   }
 
   /**
@@ -1330,6 +1752,19 @@ class SearchedUser extends StatlessSearchedUser {
     if (typeof num === 'undefined')
       return (await super.getAccountComments()) as AccountComment<SearchedUser>;
     return (await super.getAccountComments(num)) as AccountComment<SearchedUser>[];
+  }
+
+  async getComments(byLikes?: boolean): Promise<LevelComment<SearchedUser>>;
+  async getComments(byLikes: boolean, num: number): Promise<LevelComment<SearchedUser>[]>;
+  async getComments(
+    byLikes = false,
+    num?: number
+  ): Promise<LevelComment<SearchedUser> | LevelComment<SearchedUser>[]> {
+    if (typeof byLikes === 'undefined')
+      return (await super.getComments()) as LevelComment<SearchedUser>;
+    if (typeof num === 'undefined')
+      return (await super.getComments(byLikes)) as LevelComment<SearchedUser>;
+    return (await super.getComments(byLikes, num)) as LevelComment<SearchedUser>[];
   }
 }
 
@@ -1428,6 +1863,8 @@ class UserCreator extends Creator {
    * Gets a user leaderboard
    * @param type The type of leaderboard to get
    * @param num The number of entries to get.
+   * @returns The leaderboard, with position being index + 1
+   * @async
    */
   async getLeaderboard(creators?: boolean): Promise<SearchedUser>;
   async getLeaderboard(creators: boolean, num: number): Promise<SearchedUser[]>;
@@ -1460,6 +1897,7 @@ class UserCreator extends Creator {
    * Log in to a Geometry Dash account
    * @param userCreds The username and password to log in with
    * @throws {TypeError} Credentials must be valid
+   * @returns The logged in user associated with the provided credentials
    * @async
    */
   async login(userCreds: UserCredentials): Promise<LoggedInUser> {
@@ -1467,7 +1905,7 @@ class UserCreator extends Creator {
     params.insertParams({
       userName: userCreds.username,
       password: userCreds.password,
-      udid: "Hi RobTop, it's gd.js!"
+      udid: udidSafe
     });
     params.authorize('account');
     const data = await this._client.req('/accounts/loginGJAccount.php', {
@@ -1488,6 +1926,7 @@ class UserCreator extends Creator {
    * Log in to a Geometry Dash account using preprocessed credentials
    * @param creds The credentials to log in with
    * @throws {TypeError} Credentials must be valid
+   * @returns The logged in user associated with the provided credentials
    * @async
    */
   async authorize(creds: Credentials): Promise<LoggedInUser> {

@@ -6,7 +6,7 @@ export type Credentials = {
   userName: string;
   /** The player's account ID */
   accountID: number;
-  /** The player's password, XOR-encrypted with {@link accountKey} */
+  /** The player's password, XOR-encrypted */
   gjp: string;
 };
 

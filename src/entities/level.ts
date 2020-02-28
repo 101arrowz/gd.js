@@ -359,8 +359,6 @@ class Level extends SearchedLevel {
     raw: string;
     /** The parsed level data */
     parsed: {
-      /** The colors used in the level. Friendlier API is WIP. */
-      colors: ParsedData[];
       /** The metadata of the level */
       meta: ParsedData;
       /** An array of objects in the level with numeric key-value pair representations. Each key has a different meaning. For example, 1 is ID, 2 is X position, and 3 is Y position. Friendlier parsing is a WIP. */
@@ -390,15 +388,9 @@ class Level extends SearchedLevel {
       to: 'string'
     });
     const [header, ...parsedData] = raw.split(';').map(str => parse(str, ','));
-    const colors = header.kS38
-      .split('|')
-      .slice(0, -1)
-      .map(str => parse(str, '_'));
-    delete header.kS38;
     this.data = {
       raw,
       parsed: {
-        colors,
         meta: header,
         objects: parsedData
       }
@@ -552,13 +544,14 @@ const awardToParams = (award: BaseSearchConfig['award']): { epic?: 1; featured?:
  */
 class LevelCreator extends Creator {
   /**
-   * Gets a level by its ID
-   * @param levelID The level ID to get
+   * Gets a level
+   * @param levelID The level name or ID to get
    * @returns The level with the given ID
+   * @async
    */
-  async getByLevelID(levelID: number, resolve?: true): Promise<Level>;
-  async getByLevelID(levelID: number, resolve: false): Promise<SearchedLevel>;
-  async getByLevelID(levelID: number, resolve = true): Promise<SearchedLevel | Level> {
+  async get(levelID: string | number, resolve?: false): Promise<SearchedLevel>;
+  async get(levelID: string | number, resolve: true): Promise<Level>;
+  async get(levelID: string | number, resolve = false): Promise<SearchedLevel | Level> {
     const level = await this.search({ query: levelID });
     return resolve ? await level.resolve() : level;
   }
