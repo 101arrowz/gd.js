@@ -2,17 +2,13 @@
  * The UDID (needed for certain requests)
  * @internal
  */
-const udid = '0';
-
-/**
- * The UDID (needed for certain requests) but not banned
- */
-const udidSafe = "Hi RobTop, it's gd.js!";
-
+const udid = Math.random()
+  .toString(36)
+  .slice(2, 18);
 /**
  * The UUID (needed for certain requests)
  * @internal
  */
-const uuid = '0';
+const uuid = udid;
 
-export { udid, udidSafe, uuid };
+export { udid, uuid };

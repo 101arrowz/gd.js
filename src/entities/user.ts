@@ -18,8 +18,7 @@ import {
   commentKey,
   commentSalt,
   likeKey,
-  likeSalt,
-  udidSafe
+  likeSalt
 } from '../util';
 import { sha1 } from 'sha.js';
 
@@ -1905,7 +1904,7 @@ class UserCreator extends Creator {
     params.insertParams({
       userName: userCreds.username,
       password: userCreds.password,
-      udid: udidSafe
+      udid
     });
     params.authorize('account');
     const data = await this._client.req('/accounts/loginGJAccount.php', {
