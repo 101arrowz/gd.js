@@ -1,6 +1,6 @@
 {
   "name": "gd.js",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A Geometry Dash API wrapper for Node.js and the browser",
   "main": "lib/index.js",
   "author": "Arjun Barrett",
@@ -17,7 +17,11 @@
     "email": "arjunbarrett@gmail.com",
     "url": "https://github.com/101arrowz/gd.js/issues"
   },
-  "keywords": ["geometry dash", "gd", "api"],
+  "keywords": [
+    "geometry dash",
+    "gd",
+    "api"
+  ],
   "devDependencies": {
     "@types/node": "^13.1.6",
     "@types/node-fetch": "^2.5.4",
