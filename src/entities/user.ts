@@ -1321,7 +1321,7 @@ class LoggedInUser extends User {
     const rs = genRS();
     const chk = encrypt(
       new sha1()
-        .update('0' + id + 1 + 1 + rs + this.accountID + udid + uuid + likeSalt)
+        .update('0' + id + 0 + 1 + rs + this.accountID + udid + uuid + likeSalt)
         .digest('hex'),
       likeKey
     );
@@ -1441,20 +1441,29 @@ class LoggedInUser extends User {
   /**
    * Likes an account comment
    * @param id The ID of the comment to like (or the comment itself)
+   * @param accountID The account ID to which the comment belongs (or the account itself). Only needed if passing a numeric ID.
    * @returns Whether the liking succeeded
    * @async
    */
+  async likeAccountComment(id: AccountComment<StatlessSearchedUser | User>): Promise<boolean>;
   async likeAccountComment(
-    id: AccountComment<StatlessSearchedUser | User> | number
+    id: number,
+    accountID: StatlessSearchedUser | User | number
+  ): Promise<boolean>;
+  async likeAccountComment(
+    id: AccountComment<StatlessSearchedUser | User> | number,
+    accountID?: StatlessSearchedUser | User | number
   ): Promise<boolean> {
     if (id instanceof AccountComment) {
-      if (id.author.accountID === this.accountID) return false;
+      accountID = id.author.accountID;
+      if (accountID === this.accountID) return false;
       id = id.id;
-    }
+    } else if (accountID instanceof StatlessSearchedUser || accountID instanceof User)
+      accountID = accountID.accountID;
     const rs = genRS();
     const chk = encrypt(
       new sha1()
-        .update(id.toString() + id + 1 + 3 + rs + this.accountID + udid + uuid + likeSalt)
+        .update(accountID.toString() + id + 1 + 3 + rs + this.accountID + udid + uuid + likeSalt)
         .digest('hex'),
       likeKey
     );
@@ -1462,7 +1471,7 @@ class LoggedInUser extends User {
       accountID: this.accountID,
       gjp: this._creds.gjp,
       type: 3,
-      special: id,
+      special: accountID,
       itemID: id,
       like: 1,
       udid,
@@ -1482,20 +1491,29 @@ class LoggedInUser extends User {
   /**
    * Dislikes an account comment
    * @param id The ID of the comment to dislike (or the comment itself)
+   * @param accountID The account ID to which the comment belongs (or the account itself). Only needed if passing a numeric ID.
    * @returns Whether the disliking succeeded
    * @async
    */
+  async dislikeAccountComment(id: AccountComment<StatlessSearchedUser | User>): Promise<boolean>;
   async dislikeAccountComment(
-    id: AccountComment<StatlessSearchedUser | User> | number
+    id: number,
+    accountID: StatlessSearchedUser | User | number
+  ): Promise<boolean>;
+  async dislikeAccountComment(
+    id: AccountComment<StatlessSearchedUser | User> | number,
+    accountID?: StatlessSearchedUser | User | number
   ): Promise<boolean> {
     if (id instanceof AccountComment) {
-      if (id.author.accountID === this.accountID) return false;
+      accountID = id.author.accountID;
+      if (accountID === this.accountID) return false;
       id = id.id;
-    }
+    } else if (accountID instanceof StatlessSearchedUser || accountID instanceof User)
+      accountID = accountID.accountID;
     const rs = genRS();
     const chk = encrypt(
       new sha1()
-        .update(id.toString() + id + 1 + 3 + rs + this.accountID + udid + uuid + likeSalt)
+        .update(accountID.toString() + id + 0 + 3 + rs + this.accountID + udid + uuid + likeSalt)
         .digest('hex'),
       likeKey
     );
@@ -1503,7 +1521,7 @@ class LoggedInUser extends User {
       accountID: this.accountID,
       gjp: this._creds.gjp,
       type: 3,
-      special: id,
+      special: accountID,
       itemID: id,
       like: 0,
       udid,

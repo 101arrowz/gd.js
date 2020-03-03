@@ -331,7 +331,7 @@ class SearchedLevel {
         return new LevelComment(
           this._creator._client.users,
           new StatlessSearchedUser(this._creator._client.users, user),
-          comment
+          '1~' + this.id + '~' + comment
         );
       });
     return singleReturn ? comments[0] : comments;
