@@ -49,7 +49,7 @@ class Client {
     {
       logLevel = 1,
       dbURL = 'http://boomlings.com/database',
-      corsURL = 'https://cors-anywhere.com/'
+      corsURL = 'https://cors-anywhere.herokuapp.com/'
     }: Config = {} as Config
   ) {
     this.config = {
@@ -87,6 +87,7 @@ class Client {
       (isNode ? '' : this.config.corsURL) + (url.startsWith('http') ? '' : this.config.dbURL) + url,
       {
         method,
+        referrerPolicy: 'no-referrer',
         body: sentBody
       }
     );
