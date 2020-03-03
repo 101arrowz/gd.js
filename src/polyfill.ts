@@ -13,6 +13,7 @@ if (isNode) {
   }
   global.atob = (str: string): string => Buffer.from(str, 'base64').toString();
   global.btoa = (str: string): string => Buffer.from(str).toString('base64');
+  global.TextDecoder = require('util').TextDecoder;
 } else if (typeof fetch === 'undefined') {
   // Old browser
   throw new Error(

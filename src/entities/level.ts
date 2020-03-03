@@ -1,4 +1,4 @@
-import { inflate } from 'pako';
+import { inflate } from 'uzip';
 import {
   parse,
   generateDate,
@@ -13,6 +13,8 @@ import {
 import { Song, DefaultSong } from './song';
 import Creator from './entityCreator';
 import { User, LevelComment, StatlessSearchedUser } from './user';
+
+const dec = new TextDecoder();
 
 type Difficulty = 'N/A' | 'Auto' | 'Easy' | 'Normal' | 'Hard' | 'Harder' | 'Insane';
 type DemonDifficulty =
@@ -227,8 +229,8 @@ class SearchedLevel {
         ? new DefaultSong(_creator, +d[12])
         : new Song(_creator, (this._songData = songData.find(song => songID === song[1])));
     this.description = gdDecodeBase64(d[3]);
-    const user = (this._userData = userData.find(el => el[0] === d[6]));
-    if (!user)
+    const user = (this._userData = userData.find(el => el[0] === d[6]) || []);
+    if (!user.length)
       this.creator = {
         id: +d[6],
         registered: false
@@ -384,9 +386,17 @@ class Level extends SearchedLevel {
     };
     if (this.copy.copyable && pass !== '1')
       this.copy.password = (+pass.slice(1)).toString().padStart(4, '0');
-    const raw = inflate(isNode ? Buffer.from(d[4], 'base64') : gdDecodeBase64(d[4]), {
-      to: 'string'
-    });
+    const raw = dec.decode(
+      inflate(
+        isNode
+          ? Buffer.from(d[4], 'base64')
+          : new Uint8Array(
+              gdDecodeBase64(d[4])
+                .split('')
+                .map(str => str.charCodeAt(0))
+            )
+      )
+    );
     const [header, ...parsedData] = raw.split(';').map(str => parse(str, ','));
     this.data = {
       raw,

@@ -20,7 +20,7 @@ import {
   likeKey,
   likeSalt
 } from '../util';
-import { sha1 } from 'sha.js';
+import sha1 from 'sha1';
 
 /**
  * Types that can be converted to an account ID
@@ -746,9 +746,7 @@ class LoggedInUser extends User {
     if (!percent) percent = 0;
     const comment = gdEncodeBase64(msg);
     const chk = encrypt(
-      new sha1()
-        .update(this._creds.userName + comment + level + percent + '0' + commentSalt)
-        .digest('hex'),
+      sha1(this._creds.userName + comment + level + percent + '0' + commentSalt),
       commentKey
     );
     const params = new GDRequestParams({
@@ -1282,9 +1280,7 @@ class LoggedInUser extends User {
     }
     const rs = genRS();
     const chk = encrypt(
-      new sha1()
-        .update('0' + id + 1 + 1 + rs + this.accountID + udid + uuid + likeSalt)
-        .digest('hex'),
+      sha1('0' + id + 1 + 1 + rs + this.accountID + udid + uuid + likeSalt),
       likeKey
     );
     const params = new GDRequestParams({
@@ -1320,9 +1316,7 @@ class LoggedInUser extends User {
     }
     const rs = genRS();
     const chk = encrypt(
-      new sha1()
-        .update('0' + id + 0 + 1 + rs + this.accountID + udid + uuid + likeSalt)
-        .digest('hex'),
+      sha1('0' + id + 0 + 1 + rs + this.accountID + udid + uuid + likeSalt),
       likeKey
     );
     const params = new GDRequestParams({
@@ -1366,9 +1360,7 @@ class LoggedInUser extends User {
     } else if (levelID instanceof SearchedLevel) levelID = levelID.id;
     const rs = genRS();
     const chk = encrypt(
-      new sha1()
-        .update(levelID.toString() + id + 1 + 2 + rs + this.accountID + udid + uuid + likeSalt)
-        .digest('hex'),
+      sha1(levelID.toString() + id + 1 + 2 + rs + this.accountID + udid + uuid + likeSalt),
       likeKey
     );
     const params = new GDRequestParams({
@@ -1412,9 +1404,7 @@ class LoggedInUser extends User {
     } else if (levelID instanceof SearchedLevel) levelID = levelID.id;
     const rs = genRS();
     const chk = encrypt(
-      new sha1()
-        .update(levelID.toString() + id + 0 + 2 + rs + this.accountID + udid + uuid + likeSalt)
-        .digest('hex'),
+      sha1(levelID.toString() + id + 0 + 2 + rs + this.accountID + udid + uuid + likeSalt),
       likeKey
     );
     const params = new GDRequestParams({
@@ -1462,9 +1452,7 @@ class LoggedInUser extends User {
       accountID = accountID.accountID;
     const rs = genRS();
     const chk = encrypt(
-      new sha1()
-        .update(accountID.toString() + id + 1 + 3 + rs + this.accountID + udid + uuid + likeSalt)
-        .digest('hex'),
+      sha1(accountID.toString() + id + 1 + 3 + rs + this.accountID + udid + uuid + likeSalt),
       likeKey
     );
     const params = new GDRequestParams({
@@ -1512,9 +1500,7 @@ class LoggedInUser extends User {
       accountID = accountID.accountID;
     const rs = genRS();
     const chk = encrypt(
-      new sha1()
-        .update(accountID.toString() + id + 0 + 3 + rs + this.accountID + udid + uuid + likeSalt)
-        .digest('hex'),
+      sha1(accountID.toString() + id + 0 + 3 + rs + this.accountID + udid + uuid + likeSalt),
       likeKey
     );
     const params = new GDRequestParams({
