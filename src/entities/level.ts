@@ -1,4 +1,4 @@
-import { inflateRaw } from 'uzip';
+import { inflateRaw, inflate } from 'uzip';
 import {
   parse,
   generateDate,
@@ -388,7 +388,7 @@ class Level extends SearchedLevel {
       if (d[27] !== '1')
         this.copy.password = (+decrypt(d[27], levelKey).slice(1)).toString().padStart(4, '0'); // Working on GDPS support
     }
-    let rawBytes = isNode
+    const rawBytes = isNode
       ? Buffer.from(d[4], 'base64')
       : new Uint8Array(
           gdDecodeBase64(d[4])
@@ -396,8 +396,11 @@ class Level extends SearchedLevel {
             .map(str => str.charCodeAt(0))
         );
     // Check for GZIP encoding
-    if (GZIP_START_VALUES.every((num, i) => rawBytes[i] === num)) rawBytes = rawBytes.slice(10, -8);
-    const raw = dec.decode(inflateRaw(rawBytes));
+    const raw = dec.decode(
+      GZIP_START_VALUES.every((num, i) => rawBytes[i] === num)
+        ? inflateRaw(rawBytes.slice(10, -8))
+        : inflate(rawBytes)
+    );
     const [header, ...parsedData] = raw.split(';').map(str => parse(str, ','));
     this.data = {
       raw,
