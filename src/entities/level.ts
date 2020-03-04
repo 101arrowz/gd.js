@@ -1,4 +1,4 @@
-import { inflate } from 'uzip';
+import { inflateRaw } from 'uzip';
 import {
   parse,
   generateDate,
@@ -15,6 +15,7 @@ import Creator from './entityCreator';
 import { User, LevelComment, StatlessSearchedUser } from './user';
 
 const dec = new TextDecoder();
+const GZIP_START_VALUES = [31, 139, 8, 0, 0, 0, 0, 0, 0];
 
 type Difficulty = 'N/A' | 'Auto' | 'Easy' | 'Normal' | 'Hard' | 'Harder' | 'Insane';
 type DemonDifficulty =
@@ -380,23 +381,23 @@ class Level extends SearchedLevel {
     super(_creator, d, [userData], [songData]);
     this.uploadedAt = generateDate(d[28]);
     this.updatedAt = generateDate(d[29]);
-    const pass = decrypt(d[27], levelKey); // Working on GDPS support
-    this.copy = {
-      copyable: !['', '0'].includes(pass)
-    };
-    if (this.copy.copyable && pass !== '1')
-      this.copy.password = (+pass.slice(1)).toString().padStart(4, '0');
-    const raw = dec.decode(
-      inflate(
-        isNode
-          ? Buffer.from(d[4], 'base64')
-          : new Uint8Array(
-              gdDecodeBase64(d[4])
-                .split('')
-                .map(str => str.charCodeAt(0))
-            )
-      )
-    );
+    if (d[27] === '0') {
+      this.copy = { copyable: false };
+    } else {
+      this.copy = { copyable: true };
+      if (d[27] !== '1')
+        this.copy.password = (+decrypt(d[27], levelKey).slice(1)).toString().padStart(4, '0'); // Working on GDPS support
+    }
+    let rawBytes = isNode
+      ? Buffer.from(d[4], 'base64')
+      : new Uint8Array(
+          gdDecodeBase64(d[4])
+            .split('')
+            .map(str => str.charCodeAt(0))
+        );
+    // Check for GZIP encoding
+    if (GZIP_START_VALUES.every((num, i) => rawBytes[i] === num)) rawBytes = rawBytes.slice(10, -8);
+    const raw = dec.decode(inflateRaw(rawBytes));
     const [header, ...parsedData] = raw.split(';').map(str => parse(str, ','));
     this.data = {
       raw,

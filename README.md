@@ -89,11 +89,12 @@ const getDumbLevels = async () => {
   const cantLetGo = await gd.levels.search({ query: 'Cant Let Go' });
   const wayTooLong = await gd.levels.search({ length: 'xl' }, 100);
   const tooPopular = await gd.levels.search({ orderBy: 'downloads' }, 100);
-  const bloodbath = extremeDemons[0];
+  let bloodbath = extremeDemons[0];
   console.log(bloodbath.name); // Bloodbath
   console.log(bloodbath.stats.likes); // 1359617
   bloodbath = await bloodbath.resolve();
   console.log(bloodpath.copy.copyable); // false
+
 }
 
 // Every ten minutes, GD Colon will post an account comment saying "I'm actually a furry"
@@ -116,3 +117,21 @@ const gd = require('gd.js'); // Now you can use in Node.js!
 ```
 
 Beyond `fetch()` issues, note that `gd.js` adds `atob()` and `btoa()` onto the global scope for Node.js environments to mimic their behaviors in the browser.
+
+### Other Info
+If you need to parse an arbitrary string with the `key:value:key2:value2` format you can `require()`/`import` `'gd.js/lib/util/parse'` and use its `parse` method.
+
+```js
+const { parse } = require('gd.js/lib/util/parse');
+```
+ES Modules:
+```js
+import { parse } from 'gd.js/lib/util/parse';
+```
+
+Its first parameter is the string to parse and its second parameter is the splitter (defaults to `':'`). If you were to parse `kS38` in the level string, you could do:
+
+```js
+const levelEasy = await gd.levels.get('Level Easy', true);
+const colors = levelEasy.data.parsed.meta.kS38.split('|').map(str => parse(str, '_'));
+```

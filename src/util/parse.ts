@@ -5,6 +5,7 @@ export type ParsedData = { [k: string]: string };
 /**
  * Converts the raw string response from a Geometry Dash server into key-value pairs.
  * @param data The data to parse
+ * @param splitter The splitter for the data. Defaults to a colon
  * @returns The parsed data
  */
 export const parse = (data: string, splitter = ':'): ParsedData => {
