@@ -1,5 +1,5 @@
 # gd.js
-A Geometry Dash API for Node.js and the browser
+A tiny, fast, beautiful Geometry Dash API for Node.js and the browser
 
 Installation
 ---
@@ -15,12 +15,13 @@ import Client from 'gd.js'; // Yay! Compatibility!
 For both older browsers AND Node.js, `npm install isomorphic-fetch` and `require()`/`import` it before `gd.js`. For example:
 ```js
 require('isomorphic-fetch');
-const Client = require('gd.js');
+const GD = require('gd.js');
 ```
+Although ECMAScript Modules are used internally, UMD exports are used for compatibility with all platforms. If you want ECMAScript Module exports, use `'gd.js/esm'`.
 
-For more info on why you need to do all this, see
-
-Although ECMAScript Modules are used internally, CommonJS exports are used for compatibility with all platforms.
+```js
+import GD from 'gd.js/esm';
+```
 
 Documentation
 ---
@@ -119,14 +120,14 @@ const gd = require('gd.js'); // Now you can use in Node.js!
 Beyond `fetch()` issues, note that `gd.js` adds `atob()` and `btoa()` onto the global scope for Node.js environments to mimic their behaviors in the browser.
 
 ### Other Info
-If you need to parse an arbitrary string with the `key:value:key2:value2` format you can `require()`/`import` `'gd.js/lib/util/parse'` and use its `parse` method.
+If you need to parse an arbitrary string with the `key:value:key2:value2` format you can `require()`/`import` `'gd.js/esm/util/parse'` and use its `parse` method.
 
 ```js
-const { parse } = require('gd.js/lib/util/parse');
+const { parse } = require('gd.js/esm/util/parse');
 ```
 ES Modules:
 ```js
-import { parse } from 'gd.js/lib/util/parse';
+import { parse } from 'gd.js/esm/util/parse';
 ```
 
 Its first parameter is the string to parse and its second parameter is the splitter (defaults to `':'`). If you were to parse `kS38` in the level string, you could do:

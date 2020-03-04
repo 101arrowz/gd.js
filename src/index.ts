@@ -112,4 +112,4 @@ class Client {
     if (this.config.logLevel > 1) console.log(str);
   }
 }
-export = Client;
+export default Client;

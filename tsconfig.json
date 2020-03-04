@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
-    "target": "ES6",
+    "target": "ESNext",
     "module": "CommonJS",
     "moduleResolution": "node",
-    "outDir": "lib/",
+    "outDir": "esm/",
     "esModuleInterop": true,
     "declaration": true,
     "stripInternal": true
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/entry.ts"]
 }
