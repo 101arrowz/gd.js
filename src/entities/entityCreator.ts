@@ -1,3 +1,8 @@
+/**
+ * Entity creation base class
+ * @internal
+ * @packageDocumentation
+ */
 import Client from '..';
 
 /**
@@ -13,6 +18,7 @@ class Creator {
   /**
    * Creates an entity creator
    * @param client The client to register
+   * @internal
    */
   constructor(client: Client) {
     this._client = client;

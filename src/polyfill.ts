@@ -1,3 +1,8 @@
+/**
+ * Polyfilling for unsupported platforms
+ * @internal
+ * @packageDocumentation
+ */
 import isNode from './util/isNode';
 if (isNode) {
   // Node.js

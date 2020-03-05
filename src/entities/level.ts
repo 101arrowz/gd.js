@@ -1,3 +1,7 @@
+/**
+ * Level utilities
+ * @packageDocumentation
+ */
 import { inflateRaw, inflate } from 'uzip';
 import {
   parse,
@@ -10,11 +14,144 @@ import {
   ParsedData,
   GDRequestParams
 } from '../util';
-import { Song, DefaultSong } from './song';
 import Creator from './entityCreator';
 import { User, LevelComment, StatlessSearchedUser } from './user';
 
+// TODO: Try to add things to SongAuthor (like get all songs by this author)
+
+/**
+ * Information about a song author
+ */
+class SongAuthor {
+  /** @internal */
+  constructor(
+    /** The author's name */
+    public name: string,
+    /** The author's Newgrounds ID */
+    public id: number
+  ) {}
+}
+
+/** @internal */
+const DEFAULT_SONGS: [string, string][] = [
+  ['Stay Inside Me', 'OcularNebula'],
+  ['Stereo Madness', 'ForeverBound'],
+  ['Back on Track', 'DJVI'],
+  ['Polargeist', 'Step'],
+  ['Dry Out', 'DJVI'],
+  ['Base After Base', 'DJVI'],
+  ["Can't Let Go", 'DJVI'],
+  ['Jumper', 'Waterflame'],
+  ['Time Machine', 'Waterflame'],
+  ['Cycles', 'DJVI'],
+  ['xStep', 'DJVI'],
+  ['Clutterfunk', 'Waterflame'],
+  ['Theory of Everything', 'DJ-Nate'],
+  ['Electroman Adventures', 'Waterflame'],
+  ['Clubstep', 'DJ-Nate'],
+  ['Electrodynamix', 'DJ-Nate'],
+  ['Hexagon Force', 'Waterflame'],
+  ['Blast Processing', 'Waterflame'],
+  ['Theory of Everything 2', 'DJ-Nate'],
+  ['Geometrical Dominator', 'Waterflame'],
+  ['Deadlocked', 'F-777'],
+  ['Fingerdash', 'MDK'],
+  ['The Seven Seas', 'F-777'],
+  ['Viking Arena', 'F-777'],
+  ['Airborne Robots', 'F-777'],
+  ['The Challenge', 'RobTop'],
+  ['Payload', 'Dex Arson'],
+  ['Beast Mode', 'Dex Arson'],
+  ['Machina', 'Dex Arson'],
+  ['Years', 'Dex Arson'],
+  ['Frontlines', 'Dex Arson'],
+  ['Space Pirates', 'Waterflame'],
+  ['Striker', 'Waterflame'],
+  ['Round 1', 'Dex Arson'],
+  ['Embers', 'Dex Arson'],
+  ['Monster Dance Off', 'F-777'],
+  ['Press Start', 'MDK'],
+  ['Nock Em', 'Bossfight'],
+  ['Power Trip', 'Boom Kitty']
+];
+
+/**
+ * Base definition for a song
+ */
+interface BaseSong {
+  /** The name of the song */
+  name: string;
+  /** Whether or not the song is a custom song */
+  isCustom: boolean;
+}
+
+/**
+ * Information about a default song
+ */
+class DefaultSong implements BaseSong {
+  name: string;
+  /** The default song's Geometry Dash ID */
+  id: number;
+  /** The song author's name */
+  authorName: string;
+  isCustom: false = false;
+
+  /**
+   * Creates info about a song
+   * @param _creator The associated level's creator
+   * @param id The numeric ID of the song
+   * @internal
+   */
+  constructor(private _creator: LevelCreator, id: number) {
+    id += 1;
+    const song = DEFAULT_SONGS[id];
+    this.id = id;
+    this.name = song[0];
+    this.authorName = song[1];
+  }
+}
+
+/**
+ * Information about a song
+ */
+class Song implements BaseSong {
+  name: string;
+  /** The song's Newgrounds ID */
+  id: number;
+  /** The song's author */
+  author: SongAuthor;
+  /** The size of the song */
+  size: {
+    /** The raw number of bytes in the song. Note this may not be completely accurate. */
+    raw: number;
+    /** The size of the song in a human-readable format */
+    pretty: string;
+  };
+  /** The URL containing the raw audio file */
+  url: string;
+  isCustom: true = true;
+
+  /**
+   * Creates info about a song
+   * @param _creator The associated level's creator
+   * @param rawData The raw data to parse
+   * @internal
+   */
+  constructor(private _creator: LevelCreator, d: ParsedData) {
+    this.id = +d[1];
+    this.name = d[2];
+    this.author = new SongAuthor(d[4], +d[3]);
+    this.size = {
+      raw: Math.floor(+d[5] * 1048576),
+      pretty: d[5] + ' MB'
+    };
+    this.url = decodeURIComponent(d[10]);
+  }
+}
+
+/** @internal */
 const dec = new TextDecoder();
+/** @internal */
 const GZIP_START_VALUES = [31, 139, 8, 0, 0, 0, 0, 0, 0];
 
 type Difficulty = 'N/A' | 'Auto' | 'Easy' | 'Normal' | 'Hard' | 'Harder' | 'Insane';
@@ -28,6 +165,7 @@ type DemonDifficulty =
 type RawDemonDifficulty = 0 | 1 | 2 | 3 | 4 | 5;
 type RawDifficulty = -1 | RawDemonDifficulty;
 
+/** @internal */
 const DIFFICULTY_MAP: { [k in RawDifficulty]: Difficulty } = {
   [-1]: 'N/A',
   0: 'Auto',
@@ -37,6 +175,7 @@ const DIFFICULTY_MAP: { [k in RawDifficulty]: Difficulty } = {
   4: 'Harder',
   5: 'Insane'
 };
+/** @internal */
 const DEMON_DIFFICULTY_MAP: { [k in RawDemonDifficulty]: DemonDifficulty } = {
   0: 'Any',
   1: 'Easy Demon',
@@ -62,6 +201,7 @@ type DifficultyLevel = {
  * @param diff The difficulty of the level
  * @param special Whether the level is a demon or an auto (if it is either of those)
  * @returns The difficulty as a full object
+ * @internal
  */
 const getDifficulty = (diff: number, special?: 'auto' | 'demon'): DifficultyLevel => {
   const raw = (special === 'auto' ? 0 : diff === 0 ? -1 : diff / 10) as RawDifficulty;
@@ -72,6 +212,7 @@ const getDifficulty = (diff: number, special?: 'auto' | 'demon'): DifficultyLeve
 };
 
 type PrettyAward = 'None' | 'Star' | 'Feature' | 'Epic';
+/** @internal */
 const AWARDS: PrettyAward[] = ['None', 'Star', 'Feature', 'Epic'];
 
 /** A level's award */
@@ -87,6 +228,7 @@ type Award = {
   pretty: PrettyAward;
 };
 
+/** @internal */
 const ORBS = [0, 0, 50, 75, 125, 175, 225, 275, 350, 425, 500];
 
 /**
@@ -95,6 +237,7 @@ const ORBS = [0, 0, 50, 75, 125, 175, 225, 275, 350, 425, 500];
  * @param feature The position of the level feature
  * @param epic Whether the level is epic
  * @returns The award for the level
+ * @internal
  */
 const getAward = (isRated: boolean, feature: number, isEpic: boolean): Award => {
   if (feature > 0) {
@@ -114,6 +257,7 @@ const getAward = (isRated: boolean, feature: number, isEpic: boolean): Award => 
 
 type RawLevelLength = 0 | 1 | 2 | 3 | 4;
 type PrettyLevelLength = 'Tiny' | 'Short' | 'Medium' | 'Long' | 'XL';
+/** @internal */
 const LEVEL_LENGTH_MAP: { [k in RawLevelLength]: PrettyLevelLength } = {
   0: 'Tiny',
   1: 'Short',
@@ -134,6 +278,7 @@ type LevelLength = {
  * Gets the length of a level
  * @param raw The raw length from the server
  * @returns The length of the level in object form
+ * @internal
  */
 const getLevelLength = (raw: number): LevelLength => ({
   raw: raw as RawLevelLength,
@@ -203,14 +348,15 @@ class SearchedLevel {
   original?: number;
   /** @internal */
   private _userData: string[];
+  /** @internal */
   private _songData: ParsedData;
 
   /**
    * Creates info about a Geometry Dash level.
-   * @param _creator The level's creator
    * @param rawData The raw data to parse
    * @param userData The parsed user data
    * @param songData The parsed song data
+   * @internal
    */
   constructor(
     /** @internal */
@@ -296,13 +442,19 @@ class SearchedLevel {
   }
 
   /**
-   * Gets the comments on this level
+   * Gets the top comment on this level
    * @param byLikes Whether to sort by likes or not
-   * @param num The number of comments to get
-   * @returns The most recent or most liked comment or array of comments made on this level
+   * @returns The most recent or most liked comment made on this level
    * @async
    */
   async getComments(byLikes?: boolean): Promise<LevelComment<StatlessSearchedUser>>;
+  /**
+   * Gets the comments on this level
+   * @param byLikes Whether to sort by likes or not
+   * @param num The number of comments to get
+   * @returns The most recent or most liked comments made on this level
+   * @async
+   */
   async getComments(byLikes: boolean, num: number): Promise<LevelComment<StatlessSearchedUser>[]>;
   async getComments(
     byLikes = false,
@@ -375,6 +527,7 @@ class Level extends SearchedLevel {
    * @param rawData The raw data to parse
    * @param userData The parsed user data
    * @param songData The parsed song data
+   * @internal
    */
   constructor(_creator: LevelCreator, rawData: string, userData: string[], songData: ParsedData) {
     const d = parse(rawData.slice(0, rawData.indexOf('#')));
@@ -422,6 +575,7 @@ type Order =
   | 'awarded'
   | 'hof';
 type OrderInt = 0 | 1 | 3 | 4 | 6 | 7 | 11 | 16;
+/** @internal */
 const ORDER_MAP: { [k in Order]: OrderInt } = {
   likes: 0,
   downloads: 1,
@@ -474,8 +628,11 @@ type DemonDiffConfig = {
 
 type SearchConfig = BaseSearchConfig & (NonDemonDiffConfig | DemonDiffConfig);
 
+/** @internal */
 const DIFFICULTY_KEYS = Object.keys(DIFFICULTY_MAP).map(v => +v);
+/** @internal */
 const DEMON_DIFFICULTY_KEYS = Object.keys(DEMON_DIFFICULTY_MAP).map(v => +v);
+/** @internal */
 const LENGTH_KEYS = Object.keys(LEVEL_LENGTH_MAP);
 
 /**
@@ -483,6 +640,7 @@ const LENGTH_KEYS = Object.keys(LEVEL_LENGTH_MAP);
  * @param diff The difficulty to parse
  * @param isDemon Whether the user asked for a demon
  * @returns The difficulty from the string difficulty and whether to default to demon or not
+ * @internal
  */
 const diffToString = (
   diff:
@@ -522,6 +680,7 @@ const diffToString = (
  * Converts a client length to a server-compatible length
  * @param len The length to parse
  * @returns A server-compatible length
+ * @internal
  */
 const lengthToString = (
   len: RawLevelLength | PrettyLevelLength | (RawLevelLength | PrettyLevelLength)[]
@@ -538,6 +697,7 @@ const lengthToString = (
  * Convert a client-provided order into an integer
  * @param order The order to parse
  * @returns The integer order
+ * @internal
  */
 const orderToInt = (order: Order | OrderInt): OrderInt =>
   typeof order === 'number' ? order : ORDER_MAP[order];
@@ -546,6 +706,7 @@ const orderToInt = (order: Order | OrderInt): OrderInt =>
  * Gets the params for a certain award search
  * @param award The award to get
  * @returns The params to be inserted to match the given award request
+ * @internal
  */
 const awardToParams = (award: BaseSearchConfig['award']): { epic?: 1; featured?: 1 } => {
   if ([3, 'Epic', 'epic'].includes(award)) return { epic: 1, featured: 1 };
@@ -560,10 +721,18 @@ class LevelCreator extends Creator {
   /**
    * Gets a level
    * @param levelID The level name or ID to get
+   * @param resolve Whether to get the full level or not. Will cause an extra request.
    * @returns The level with the given ID
    * @async
    */
   async get(levelID: string | number, resolve?: false): Promise<SearchedLevel>;
+  /**
+   * Gets a level
+   * @param levelID The level name or ID to get
+   * @param resolve Whether to get the full level or not. Will cause an extra request.
+   * @returns The level with the given ID
+   * @async
+   */
   async get(levelID: string | number, resolve: true): Promise<Level>;
   async get(levelID: string | number, resolve = false): Promise<SearchedLevel | Level> {
     const level = await this.search({ query: levelID });
@@ -571,13 +740,26 @@ class LevelCreator extends Creator {
   }
 
   /**
-   * Search for levels with a query
+   * Search for a level with a query
    * @param config The query to use when searching for the level
-   * @returns The level(s) that match the query
+   * @returns The level that matches the query
    * @async
    */
   async search(config: SearchConfig & { query: number | string }): Promise<SearchedLevel>;
+  /**
+   * Search for levels with their numeric IDs
+   * @param config The IDs of levels to get
+   * @returns The levels with the associated IDs
+   * @async
+   */
   async search(config: SearchConfig & { query: number[] }): Promise<SearchedLevel[]>;
+  /**
+   * Search for levels with a query
+   * @param config The query to use when searching for the levels
+   * @param num The number of results to get
+   * @returns The levels that match the query
+   * @async
+   */
   async search(config: SearchConfig & { query: string }, num: number): Promise<SearchedLevel[]>;
   async search(
     {

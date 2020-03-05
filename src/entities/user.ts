@@ -1,3 +1,7 @@
+/**
+ * User utilities
+ * @packageDocumentation
+ */
 import Creator from './entityCreator';
 import { SearchedLevel, Level } from './level';
 import {
@@ -32,6 +36,7 @@ type ConvertibleToAccountID = number | string | User | StatlessSearchedUser;
  * @param id The identifier in some datatype
  * @returns The account ID from that identifier
  * @async
+ * @internal
  */
 const convertToAccountID = async (
   creator: UserCreator,
@@ -62,6 +67,7 @@ abstract class Comment {
   /**
    * Creates a comment from a server response
    * @param data The parsed data for the comment
+   * @internal
    */
   constructor(data: ParsedData) {
     this.text = gdDecodeBase64(data[2]);
@@ -74,6 +80,13 @@ abstract class Comment {
 
 class AccountComment<T extends User | StatlessSearchedUser> extends Comment {
   author: T;
+
+  /**
+   * Creates info about an account comment
+   * @param author The comment's author
+   * @param rawData The raw data to parse
+   * @internal
+   */
   constructor(author: T, rawData: string) {
     super(parse(rawData, '~'));
     this.author = author;
@@ -99,6 +112,14 @@ class LevelComment<T extends User | StatlessSearchedUser> extends Comment {
   levelID: number;
   /** The percentage the user reached on the level. Only present if the commenter opted to show percentage with their comment. */
   percent?: number;
+
+  /**
+   * Creates info about a level comment
+   * @param _creator The level creator associated with this comment
+   * @param author The comment's author
+   * @param rawData The raw data to parse
+   * @internal
+   */
   constructor(_creator: UserCreator, author: T, rawData: string) {
     const d = parse(rawData, '~');
     super(d);
@@ -114,9 +135,15 @@ class LevelComment<T extends User | StatlessSearchedUser> extends Comment {
    * @returns The level or searched level this comment belongs to
    * @async
    */
-  async getLevel(resolve?: true): Promise<Level>;
-  async getLevel(resolve: false): Promise<SearchedLevel>;
-  async getLevel(resolve = true): Promise<Level | SearchedLevel> {
+  async getLevel(resolve?: false): Promise<SearchedLevel>;
+  /**
+   * Gets the level associated with this comment
+   * @param resolve Whether or not to resolve the search into the full level
+   * @returns The level or searched level this comment belongs to
+   * @async
+   */
+  async getLevel(resolve: true): Promise<Level>;
+  async getLevel(resolve = false): Promise<Level | SearchedLevel> {
     const level = await this._creator._client.levels.get(this.levelID);
     return resolve ? level.resolve() : level;
   }
@@ -151,6 +178,7 @@ abstract class FriendRequest<O extends boolean> {
   /**
    * Create data about a friend request
    * @param data The parsed data to evaluate
+   * @internal
    */
   constructor(data: ParsedData) {
     this.id = +data[32];
@@ -192,6 +220,7 @@ class IncomingFriendRequest extends FriendRequest<false> {
    * @param account The account that received the friend request
    * @param creator The creator of the user the account belongs to
    * @param rawData The raw data to parse
+   * @internal
    */
   constructor(account: LoggedInUser, creator: UserCreator, rawData: string) {
     const data = parse(rawData);
@@ -251,6 +280,12 @@ class SearchedMessage<O extends boolean> {
   /** Whether the message is outgoing or not */
   outgoing: O;
 
+  /**
+   * Creates info about a searched message
+   * @param account The account associated with this message
+   * @param rawData The raw data to parse (or its parsed form)
+   * @internal
+   */
   constructor(account: LoggedInUser, rawData: string | ParsedData) {
     const d = typeof rawData === 'string' ? parse(rawData) : rawData;
     this.id = +d[1];
@@ -290,17 +325,21 @@ class SearchedMessage<O extends boolean> {
 class Message<O extends boolean> extends SearchedMessage<O> {
   /** The message's body */
   body: string;
+
+  /**
+   * Creates info about a message
+   * @param account The account associated with this message
+   * @param rawData The raw data to parse
+   * @internal
+   */
   constructor(account: LoggedInUser, rawData: string) {
     const d = parse(rawData);
     super(account, d);
     this.body = gdDecodeBase64(d[5]);
   }
-
-  async resolve(): Promise<this> {
-    return this;
-  }
 }
 
+/** @internal */
 const colors = [
   '#7dff00',
   '#00ff00',
@@ -364,6 +403,7 @@ type GDColor = {
  * Generates a {@link GDColor} from a number returned by the Geometry Dash servers.
  * @param colorValue The color number from the Geometry Dash servers
  * @returns The {@link GDColor} representing the given color number
+ * @internal
  */
 const userColor = (colorValue: number): GDColor => ({
   raw: colorValue,
@@ -372,6 +412,7 @@ const userColor = (colorValue: number): GDColor => ({
 
 type PermissionLevel = 'User' | 'Moderator' | 'Elder Moderator';
 
+/** @internal */
 const PERMISSIONS: PermissionLevel[] = ['User', 'Moderator', 'Elder Moderator'];
 
 /**
@@ -388,12 +429,14 @@ type Permission = {
  * Generates a {@link Permission} from a number returned by the Geometry Dash servers.
  * @param raw The permission number from the Geometry Dash servers
  * @returns The {@link Permission} representing the given permission number
+ * @internal
  */
 const generatePermission = (raw: number): Permission => ({
   raw: raw as Permission['raw'],
   pretty: PERMISSIONS[raw]
 });
 
+/** @internal */
 const SOCIALMAP = {
   youtube: 'https://youtube.com/channel/',
   twitch: 'https://twitch.tv/',
@@ -415,6 +458,7 @@ type SocialURL = {
  * @param path The path from the Geometry Dash servers
  * @param type The social media platform from the Geometry Dash servers
  * @returns The {@link SocialURL} representing the given social media
+ * @internal
  */
 const generateSocial = (path: string, type: keyof typeof SOCIALMAP): SocialURL => ({
   path,
@@ -436,6 +480,7 @@ class UserCosmetics {
   /** The player's raw explosion number */
   explosion?: number;
 
+  /** @internal */
   constructor(
     /** @internal */
     private _creator: UserCreator,
@@ -544,6 +589,7 @@ class User {
    * Constructs data about a Geometry Dash player
    * @param _creator The creator associated with this user
    * @param rawData The raw data returned from the Geometry Dash request for this user
+   * @internal
    */
   constructor(
     /** @internal */
@@ -589,21 +635,26 @@ class User {
   }
 
   /**
-   * Get comments posted to this account's page
-   * @param num The maximum number of results to fetch. If not specified, a single comment (the most recent one) is returned rather than an array.
-   * @returns A comment or an array of comments
+   * Get the most recent comment posted to this account's page
+   * @returns The most recent comment
    * @async
    */
-  async getAccountComments(): Promise<AccountComment<User>>;
-  async getAccountComments(num: number): Promise<AccountComment<User>[]>;
-  async getAccountComments(num?: number): Promise<AccountComment<User> | AccountComment<User>[]> {
+  async getAccountComments(): Promise<AccountComment<this>>;
+  /**
+   * Get the comments posted to this account's page
+   * @param num The maximum number of comments to get
+   * @returns An array of this user's profile comments
+   * @async
+   */
+  async getAccountComments(num: number): Promise<AccountComment<this>[]>;
+  async getAccountComments(num?: number): Promise<AccountComment<this> | AccountComment<this>[]> {
     let singleReturn = false;
     if (!num) {
       num = 1;
       singleReturn = true;
     }
     const numToGet = Math.ceil(num / 10);
-    const comments: AccountComment<User>[] = [];
+    const comments: AccountComment<this>[] = [];
     for (let page = 0; page < numToGet; page++) {
       const params = new GDRequestParams({
         accountID: this.accountID,
@@ -620,7 +671,7 @@ class User {
       comments.push(
         ...split.map(str =>
           this instanceof LoggedInUser
-            ? new LoggedInAccountComment(this, str)
+            ? ((new LoggedInAccountComment(this, str) as unknown) as AccountComment<this>)
             : new AccountComment(this, str)
         )
       );
@@ -630,18 +681,24 @@ class User {
   }
 
   /**
-   * Gets the comment history of the user
+   * Gets the most recent or most liked level comment by the user
    * @param byLikes Whether to sort by likes or not
-   * @param num The number of comments to get
-   * @returns The most recent or most liked comment or array of comments made by this user
+   * @returns The most recent or most liked comment made by this user
    * @async
    */
-  async getComments(byLikes?: boolean): Promise<LevelComment<User>>;
-  async getComments(byLikes: boolean, num: number): Promise<LevelComment<User>[]>;
+  async getComments(byLikes?: boolean): Promise<LevelComment<this>>;
+  /**
+   * Gets the most recent or most liked level comments by the user
+   * @param byLikes Whether to sort by likes or not
+   * @param num The number of comments to get
+   * @returns An array of the most recent or most liked comments made by this user
+   * @async
+   */
+  async getComments(byLikes: boolean, num: number): Promise<LevelComment<this>[]>;
   async getComments(
     byLikes = false,
     num?: number
-  ): Promise<LevelComment<User> | LevelComment<User>[]> {
+  ): Promise<LevelComment<this> | LevelComment<this>[]> {
     let singleReturn = false;
     if (!num) {
       num = 1;
@@ -666,7 +723,9 @@ class User {
       .map(str => {
         const comment = str.slice(0, str.indexOf(':'));
         return this instanceof LoggedInUser
-          ? new LoggedInLevelComment(this._creator, this, comment)
+          ? ((new LoggedInLevelComment(this._creator, this, comment) as unknown) as LevelComment<
+              this
+            >)
           : new LevelComment(this._creator, this, comment);
       });
     return singleReturn ? comments[0] : comments;
@@ -684,28 +743,6 @@ class LoggedInUser extends User {
     private _creds: Credentials
   ) {
     super(_creator, rawData);
-  }
-
-  async getAccountComments(): Promise<LoggedInAccountComment>;
-  async getAccountComments(num: number): Promise<LoggedInAccountComment[]>;
-  async getAccountComments(
-    num?: number
-  ): Promise<LoggedInAccountComment | LoggedInAccountComment[]> {
-    if (typeof num === 'undefined')
-      return (await super.getAccountComments()) as LoggedInAccountComment;
-    return (await super.getAccountComments(num)) as LoggedInAccountComment[];
-  }
-
-  async getComments(byLikes?: boolean): Promise<LoggedInLevelComment>;
-  async getComments(byLikes: boolean, num: number): Promise<LoggedInLevelComment[]>;
-  async getComments(
-    byLikes = false,
-    num?: number
-  ): Promise<LoggedInLevelComment | LoggedInLevelComment[]> {
-    if (typeof byLikes === 'undefined') return (await super.getComments()) as LoggedInLevelComment;
-    if (typeof num === 'undefined')
-      return (await super.getComments(byLikes)) as LoggedInLevelComment;
-    return (await super.getComments(byLikes, num)) as LoggedInLevelComment[];
   }
 
   /**
@@ -795,12 +832,18 @@ class LoggedInUser extends User {
 
   /**
    * Deletes a comment from the server
-   * @param commentID The comment (or its ID) to delete
-   * @param levelID The level (or its ID) where the comment was posted. Only needed if your commentID is the numeric ID and not the comment object.
+   * @param commentID The comment ID to delete
+   * @param levelID The level ID where the comment was posted
    * @returns Whether the comment deletion was successful
    * @async
    */
   async deleteComment(commentID: number, levelID: number | SearchedLevel): Promise<boolean>;
+  /**
+   * Deletes a comment from the server
+   * @param commentID The comment object to delete
+   * @returns Whether the comment deletion was successful
+   * @async
+   */
   async deleteComment(commentID: LoggedInLevelComment): Promise<boolean>;
   async deleteComment(
     commentID: number | LoggedInLevelComment,
@@ -886,6 +929,13 @@ class LoggedInUser extends User {
    * @async
    */
   async getFriendRequests(num?: number, outgoing?: false): Promise<IncomingFriendRequest[]>;
+  /**
+   * Gets friend requests
+   * @param num The number of friend requests to get. Default 10.
+   * @param outgoing Whether to get outgoing or incoming friend requests. Defaults to incoming.
+   * @returns The array of friend requests based on the provided parameters
+   * @async
+   */
   async getFriendRequests(num: number, outgoing: true): Promise<OutgoingFriendRequest[]>;
   async getFriendRequests(
     num = 10,
@@ -921,13 +971,20 @@ class LoggedInUser extends User {
   }
 
   /**
-   * Gets messages
-   * @param num The number of messages to get. Default 10.
+   * Gets messages sent to or from this user
+   * @param num The number of messages to get. Defaults to 10.
    * @param outgoing Whether to get outgoing or incoming messages. Defaults to incoming.
-   * @returns The array of messages based on the provided parameters
+   * @returns An array of incoming or outgoing messages
    * @async
    */
   async getMessages(num?: number, outgoing?: false): Promise<SearchedMessage<false>[]>;
+  /**
+   * Gets messages sent to or from this user
+   * @param num The number of messages to get. Defaults to 10.
+   * @param outgoing Whether to get outgoing or incoming messages. Defaults to incoming.
+   * @returns An array of incoming or outgoing messages
+   * @async
+   */
   async getMessages(num: number, outgoing: true): Promise<SearchedMessage<true>[]>;
   async getMessages(num = 10, outgoing = false): Promise<SearchedMessage<boolean>[]> {
     const numToGet = Math.ceil(num / 10);
@@ -958,18 +1015,38 @@ class LoggedInUser extends User {
   }
 
   /**
-   * Gets the full message from a searched message or its ID
-   * @param message The message (or its ID) to resolve
+   * Gets the full message from a searched message
+   * @param messageID The message object to resolve
    * @returns The full message, including the body
    * @async
    */
-  async getFullMessage<T extends boolean>(message: SearchedMessage<T>): Promise<Message<T>> {
-    if ((message.outgoing ? message.from : message.to).accountID !== this.accountID) return null;
+  async getFullMessage<T extends boolean>(messageID: SearchedMessage<T>): Promise<Message<T>>;
+  /**
+   * Gets the full message from a searched message
+   * @param messageID The message ID to resolve
+   * @param outgoing Whether the message is outgoing or not
+   * @returns The full message, including the body
+   * @async
+   */
+  async getFullMessage<T extends boolean>(
+    messageID: number,
+    outgoing: boolean
+  ): Promise<Message<T>>;
+  async getFullMessage<T extends boolean>(
+    messageID: SearchedMessage<T> | number,
+    outgoing?: boolean
+  ): Promise<Message<T>> {
+    if (messageID instanceof SearchedMessage) {
+      if ((messageID.outgoing ? messageID.from : messageID.to).accountID !== this.accountID)
+        return null;
+      outgoing = messageID.outgoing;
+      messageID = messageID.id;
+    }
     const params = new GDRequestParams({
       accountID: this.accountID,
       gjp: this._creds.gjp,
-      messageID: message.id,
-      isSender: +message.outgoing
+      messageID,
+      isSender: +outgoing
     });
     params.authorize('db');
     const data = await this._creator._client.req('/downloadGJMessage20.php', {
@@ -982,17 +1059,34 @@ class LoggedInUser extends User {
 
   /**
    * Deletes a message from the servers
-   * @param message The message to delete
+   * @param message The message object to delete
    * @returns Whether the message deletion was successful
    * @async
    */
-  async deleteMessage(message: SearchedMessage<boolean>): Promise<boolean> {
-    if ((message.outgoing ? message.from : message.to).accountID !== this.accountID) return null;
+  async deleteMessage(messageID: SearchedMessage<boolean>): Promise<boolean>;
+  /**
+   * Deletes a message from the servers
+   * @param message The message ID to delete
+   * @param outgoing Whether the message is outgoing or not
+   * @returns Whether the message deletion was successful
+   * @async
+   */
+  async deleteMessage(messageID: number, outgoing: boolean): Promise<boolean>;
+  async deleteMessage(
+    messageID: SearchedMessage<boolean> | number,
+    outgoing?: boolean
+  ): Promise<boolean> {
+    if (messageID instanceof SearchedMessage) {
+      if ((messageID.outgoing ? messageID.from : messageID.to).accountID !== this.accountID)
+        return null;
+      outgoing = messageID.outgoing;
+      messageID = messageID.id;
+    }
     const params = new GDRequestParams({
       accountID: this.accountID,
       gjp: this._creds.gjp,
-      messageID: message.id,
-      isSender: +message.outgoing
+      messageID,
+      isSender: +outgoing
     });
     params.authorize('db');
     return (
@@ -1342,12 +1436,18 @@ class LoggedInUser extends User {
 
   /**
    * Likes a comment
-   * @param id The ID of the comment to like (or the comment itself)
-   * @param levelID The ID of the level the comment is on. Only needed if passing a numeric comment ID
+   * @param id The comment object to like
    * @returns Whether the liking succeeded
    * @async
    */
   async likeComment(id: LevelComment<StatlessSearchedUser | User>): Promise<boolean>;
+  /**
+   * Likes a comment
+   * @param id The ID of the comment to like
+   * @param levelID The ID of the level the comment is on
+   * @returns Whether the liking succeeded
+   * @async
+   */
   async likeComment(id: number, levelID: SearchedLevel | number): Promise<boolean>;
   async likeComment(
     id: LevelComment<StatlessSearchedUser | User> | number,
@@ -1386,12 +1486,18 @@ class LoggedInUser extends User {
 
   /**
    * Dislikes a comment
-   * @param id The ID of the comment to dislike (or the comment itself)
-   * @param levelID The ID of the level the comment is on. Only needed if passing a numeric comment ID
+   * @param id The comment object to dislike
    * @returns Whether the disliking succeeded
    * @async
    */
   async dislikeComment(id: LevelComment<StatlessSearchedUser | User>): Promise<boolean>;
+  /**
+   * Dislikes a comment
+   * @param id The ID of the comment to dislike
+   * @param levelID The ID of the level the comment is on
+   * @returns Whether the disliking succeeded
+   * @async
+   */
   async dislikeComment(id: number, levelID: SearchedLevel | number): Promise<boolean>;
   async dislikeComment(
     id: LevelComment<StatlessSearchedUser | User> | number,
@@ -1430,12 +1536,18 @@ class LoggedInUser extends User {
 
   /**
    * Likes an account comment
-   * @param id The ID of the comment to like (or the comment itself)
-   * @param accountID The account ID to which the comment belongs (or the account itself). Only needed if passing a numeric ID.
+   * @param id The account comment object to like
    * @returns Whether the liking succeeded
    * @async
    */
   async likeAccountComment(id: AccountComment<StatlessSearchedUser | User>): Promise<boolean>;
+  /**
+   * Likes an account comment
+   * @param id The ID of the account comment to like
+   * @param accountID The account ID of the profile the comment is on
+   * @returns Whether the liking succeeded
+   * @async
+   */
   async likeAccountComment(
     id: number,
     accountID: StatlessSearchedUser | User | number
@@ -1478,12 +1590,18 @@ class LoggedInUser extends User {
 
   /**
    * Dislikes an account comment
-   * @param id The ID of the comment to dislike (or the comment itself)
-   * @param accountID The account ID to which the comment belongs (or the account itself). Only needed if passing a numeric ID.
+   * @param id The account comment object to dislike
    * @returns Whether the disliking succeeded
    * @async
    */
   async dislikeAccountComment(id: AccountComment<StatlessSearchedUser | User>): Promise<boolean>;
+  /**
+   * Dislikes an account comment
+   * @param id The ID of the account comment to dislike
+   * @param accountID The account ID of the profile the comment is on
+   * @returns Whether the disliking succeeded
+   * @async
+   */
   async dislikeAccountComment(
     id: number,
     accountID: StatlessSearchedUser | User | number
@@ -1525,6 +1643,7 @@ class LoggedInUser extends User {
   }
 }
 
+/** @internal */
 const ICONTYPEMAP: IconCosmetic[] = ['cube', 'ship', 'ball', 'ufo', 'wave', 'robot', 'spider'];
 
 /**
@@ -1563,11 +1682,17 @@ class SearchedUserCosmetics {
 
   /**
    * Renders the user's selected default icon as an image using the GDBrowser API
-   * @param returnRaw Whether to return a raw Response or an ArrayBuffer
+   * @param returnRaw Whether to return a raw Response (true) or an ArrayBuffer (false). Defaults to false.
    * @returns The Response or ArrayBuffer containing the image
    * @async
    */
   async renderIcon(returnRaw?: false): Promise<ArrayBuffer>;
+  /**
+   * Renders the user's selected default icon as an image using the GDBrowser API
+   * @param returnRaw Whether to return a raw Response (true) or an ArrayBuffer (false). Defaults to false.
+   * @returns The Response or ArrayBuffer containing the image
+   * @async
+   */
   async renderIcon(returnRaw: true): Promise<Response>;
   async renderIcon(returnRaw = false): Promise<Response | ArrayBuffer> {
     return await UserCosmetics.prototype.renderIcon.call(
@@ -1618,23 +1743,26 @@ class StatlessSearchedUser {
   }
 
   /**
-   * Get comments posted to this account's page
-   * @param num The maximum number of results to fetch. If not specified, a single comment (the most recent one) is returned rather than an array.
-   * @returns A comment or an array of comments
+   * Get the most recent comment posted to this account's page
+   * @returns The most recent comment
    * @async
    */
-  async getAccountComments(): Promise<AccountComment<StatlessSearchedUser>>;
-  async getAccountComments(num: number): Promise<AccountComment<StatlessSearchedUser>[]>;
-  async getAccountComments(
-    num?: number
-  ): Promise<AccountComment<StatlessSearchedUser> | AccountComment<StatlessSearchedUser>[]> {
+  async getAccountComments(): Promise<AccountComment<this>>;
+  /**
+   * Get the comments posted to this account's page
+   * @param num The maximum number of comments to get
+   * @returns An array of this user's profile comments
+   * @async
+   */
+  async getAccountComments(num: number): Promise<AccountComment<this>[]>;
+  async getAccountComments(num?: number): Promise<AccountComment<this> | AccountComment<this>[]> {
     let singleReturn = false;
     if (!num) {
       num = 1;
       singleReturn = true;
     }
     const numToGet = Math.ceil(num / 10);
-    const comments: AccountComment<StatlessSearchedUser>[] = [];
+    const comments: AccountComment<this>[] = [];
     for (let page = 0; page < numToGet; page++) {
       const params = new GDRequestParams({
         accountID: this.accountID,
@@ -1655,18 +1783,24 @@ class StatlessSearchedUser {
   }
 
   /**
-   * Gets the comment history of the user
-   * @param byLikes Whether to sort by likes or not
-   * @param num The number of comments to get
-   * @returns The most recent or most liked comment or array of comments made by this user
+   * Gets the most recent or most liked level comment by the user
+   * @param byLikes Whether to sort by likes or not. Defaults to false
+   * @returns The most recent or most liked comment made by this user
    * @async
    */
-  async getComments(byLikes?: boolean): Promise<LevelComment<StatlessSearchedUser>>;
-  async getComments(byLikes: boolean, num: number): Promise<LevelComment<StatlessSearchedUser>[]>;
+  async getComments(byLikes?: boolean): Promise<LevelComment<this>>;
+  /**
+   * Gets the most recent or most liked level comments by the user
+   * @param byLikes Whether to sort by likes or not. Defaults to false
+   * @param num The number of comments to get
+   * @returns An array of the most recent or most liked comments made by this user
+   * @async
+   */
+  async getComments(byLikes: boolean, num: number): Promise<LevelComment<this>[]>;
   async getComments(
     byLikes = false,
     num?: number
-  ): Promise<LevelComment<StatlessSearchedUser> | LevelComment<StatlessSearchedUser>[]> {
+  ): Promise<LevelComment<this> | LevelComment<this>[]> {
     let singleReturn = false;
     if (!num) {
       num = 1;
@@ -1746,29 +1880,6 @@ class SearchedUser extends StatlessSearchedUser {
       cp: +d[8]
     };
   }
-
-  async getAccountComments(): Promise<AccountComment<SearchedUser>>;
-  async getAccountComments(num: number): Promise<AccountComment<SearchedUser>[]>;
-  async getAccountComments(
-    num?: number
-  ): Promise<AccountComment<SearchedUser> | AccountComment<SearchedUser>[]> {
-    if (typeof num === 'undefined')
-      return (await super.getAccountComments()) as AccountComment<SearchedUser>;
-    return (await super.getAccountComments(num)) as AccountComment<SearchedUser>[];
-  }
-
-  async getComments(byLikes?: boolean): Promise<LevelComment<SearchedUser>>;
-  async getComments(byLikes: boolean, num: number): Promise<LevelComment<SearchedUser>[]>;
-  async getComments(
-    byLikes = false,
-    num?: number
-  ): Promise<LevelComment<SearchedUser> | LevelComment<SearchedUser>[]> {
-    if (typeof byLikes === 'undefined')
-      return (await super.getComments()) as LevelComment<SearchedUser>;
-    if (typeof num === 'undefined')
-      return (await super.getComments(byLikes)) as LevelComment<SearchedUser>;
-    return (await super.getComments(byLikes, num)) as LevelComment<SearchedUser>[];
-  }
 }
 
 /**
@@ -1813,14 +1924,23 @@ class UserCreator extends Creator {
   }
 
   /**
-   * Searches for players with a given string in their names. Note that the official Geometry Dash servers will always only return the player (if any) whose name is exactly the provided string.
+   * Searches for a player with a given string in their names.
+   * Note that the official Geometry Dash servers will always only return the player (if any) whose name is exactly the provided string.
    * @param str The string to search for
-   * @param num The maximum number of results to fetch. If not specified, a single player is returned rather than an array.
-   * @returns The user or array of users whose names match the given string
+   * @returns The first user whose name matches the given string
    * @async
    * @deprecated
    */
   async search(str: string): Promise<SearchedUser>;
+  /**
+   * Searches for players with a given string in their names.
+   * Note that the official Geometry Dash servers will always only return the player (if any) whose name is exactly the provided string.
+   * @param str The string to search for
+   * @param num The maximum number of users to get
+   * @returns The array of users whose names match the given string
+   * @async
+   * @deprecated
+   */
   async search(str: string, num: number): Promise<SearchedUser[]>;
   async search(str: string, num?: number): Promise<SearchedUser | SearchedUser[]> {
     let singleReturn = false;
@@ -1854,6 +1974,13 @@ class UserCreator extends Creator {
    * @async
    */
   async getByUsername(str: string, resolve?: true): Promise<User>;
+  /**
+   * Get information about a user by its username
+   * @param str The name of the user to search for
+   * @param resolve Whether to resolve the searched user into its full user, making another network request.
+   * @returns The user with the given username
+   * @async
+   */
   async getByUsername(str: string, resolve: false): Promise<SearchedUser>;
   async getByUsername(str: string, resolve = true): Promise<User | SearchedUser> {
     const possibleUser = await this.search(str);
@@ -1863,13 +1990,19 @@ class UserCreator extends Creator {
   }
 
   /**
+   * Gets the top player of a user leaderboard
+   * @param type The type of leaderboard to get
+   * @returns The top player in the given leaderboard category
+   * @async
+   */
+  async getLeaderboard(creators?: boolean): Promise<SearchedUser>;
+  /**
    * Gets a user leaderboard
    * @param type The type of leaderboard to get
    * @param num The number of entries to get.
    * @returns The leaderboard, with position being index + 1
    * @async
    */
-  async getLeaderboard(creators?: boolean): Promise<SearchedUser>;
   async getLeaderboard(creators: boolean, num: number): Promise<SearchedUser[]>;
   async getLeaderboard(creators = false, num?: number): Promise<SearchedUser | SearchedUser[]> {
     let singleReturn = false;
@@ -1899,7 +2032,7 @@ class UserCreator extends Creator {
   /**
    * Log in to a Geometry Dash account
    * @param userCreds The username and password to log in with
-   * @throws {TypeError} Credentials must be valid
+   * @throws {TypeError} if credentials are invalid
    * @returns The logged in user associated with the provided credentials
    * @async
    */
@@ -1928,7 +2061,7 @@ class UserCreator extends Creator {
   /**
    * Log in to a Geometry Dash account using preprocessed credentials
    * @param creds The credentials to log in with
-   * @throws {TypeError} Credentials must be valid
+   * @throws {TypeError} if credentials are invalid
    * @returns The logged in user associated with the provided credentials
    * @async
    */

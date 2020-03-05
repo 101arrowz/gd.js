@@ -1,9 +1,9 @@
 import './polyfill';
 import { isNode, GDRequestParams as GDParams } from './util';
-import { UserCreator, User, LevelCreator } from './entities';
+import { UserCreator, LevelCreator } from './entities';
 
 /**
- * Configuration for the [GD client]{@link Client}.
+ * Configuration for the GD Client
  */
 type Config = {
   /** The level of logging. 2 = verbose, 1 = warnings, 0 = off. Defaults to 1. */
@@ -13,6 +13,7 @@ type Config = {
   /** The URL to use as a CORS proxy when making requests from a browser. Defaults to https://cors-anywhere.herokuapp.com/. Note it should have a trailing slash. */
   corsURL: string;
 };
+
 /**
  * Configuration for a request to the GD servers
  */
@@ -23,13 +24,17 @@ type RequestConfig = {
   body?: GDParams;
 };
 
+/** @internal */
+const DEFAULT_CONFIG: Config = {
+  logLevel: 1,
+  dbURL: 'http://boomlings.com/database',
+  corsURL: 'https://cors-anywhere.herokuapp.com/'
+};
+
 /**
  * Client for Geometry Dash requests.
  */
 class Client {
-  /** A Geometry Dash player */
-  static User = User;
-
   /** The database of Geometry Dash users */
   users: UserCreator;
   /** The database of Geometry Dash levels */
@@ -45,18 +50,13 @@ class Client {
    * Creates a client for Geometry Dash requests.
    * @param config The configuration for the client.
    */
-  constructor(
-    {
-      logLevel = 1,
-      dbURL = 'http://boomlings.com/database',
-      corsURL = 'https://cors-anywhere.herokuapp.com/'
-    }: Config = {} as Config
-  ) {
-    this.config = {
-      logLevel,
-      dbURL,
-      corsURL
-    };
+  constructor(config?: Partial<Config>) {
+    this.config = config
+      ? DEFAULT_CONFIG
+      : {
+          ...DEFAULT_CONFIG,
+          ...config
+        };
     this.users = new UserCreator(this);
     this.levels = new LevelCreator(this);
   }

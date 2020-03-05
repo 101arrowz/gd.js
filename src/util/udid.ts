@@ -1,4 +1,10 @@
 /**
+ * A random UDID generator for each session
+ * @internal
+ * @packageDocumentation
+ */
+
+/**
  * The UDID (needed for certain requests)
  * @internal
  */

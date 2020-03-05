@@ -1,4 +1,9 @@
 /**
+ * Authentication info
+ * @packageDocumentation
+ */
+
+/**
  * Credentials to use in requests to Geometry Dash servers
  */
 export type Credentials = {

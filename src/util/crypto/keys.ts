@@ -1,4 +1,10 @@
 /**
+ * The XOR keys for GD response parsing
+ * @internal
+ * @packageDocumentation
+ */
+
+/**
  * The cipher key for accounts
  * @internal
  */

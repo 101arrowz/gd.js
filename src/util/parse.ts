@@ -1,4 +1,10 @@
 /**
+ * Parse the data from the server
+ * @internal
+ * @packageDocumentation
+ */
+
+/**
  * A parsed response from the Geometry Dash servers
  */
 export type ParsedData = { [k: string]: string };
@@ -7,6 +13,7 @@ export type ParsedData = { [k: string]: string };
  * @param data The data to parse
  * @param splitter The splitter for the data. Defaults to a colon
  * @returns The parsed data
+ * @internal
  */
 export const parse = (data: string, splitter = ':'): ParsedData => {
   const split = data.split(splitter);

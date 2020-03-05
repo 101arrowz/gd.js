@@ -1,3 +1,8 @@
+/**
+ * Date generation for parsing GD server responses
+ * @packageDocumentation
+ */
+
 /** A date from the Geometry Dash servers */
 type GDDate = {
   /** The human-readable time in the "how long ago" format. */
@@ -10,6 +15,7 @@ type GDDate = {
  * Creates a date from the human-readable response returned by the Geometry Dash servers
  * @param pretty The pretty string to parse
  * @returns A date ready for use by a client
+ * @internal
  */
 let generateDate = (pretty: string): GDDate => {
   const data: GDDate = { pretty };

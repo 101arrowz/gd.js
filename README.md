@@ -23,9 +23,14 @@ Although ECMAScript Modules are used internally, UMD exports are used for compat
 import GD from 'gd.js/esm';
 ```
 
-Documentation
+If you want to use a CDN, you can add the following tag to your HTML to create a global `GD` class.
+```html
+<script src="https://unpkg.com/gd.js"></script>
+```
+
+Quickstart
 ---
-Note: The code itself has excellent documentation. If you use TypeScript or any IDE that can read `.d.ts` files, autocomplete should also be great. That being said, it can be hard to know where to start, so this should act as more of a guide.
+[Documentation](#documentation) was a top priority for this project, so it should be excellent. If you use TypeScript or any IDE that can read `.d.ts` files, autocomplete should also be great. That being said, it can be hard to know where to start, so this should act as more of a guide.
 
 `gd.js` exports a single class `Client`, but I like importing it as `GD`. Make sure you've followed all the [additional installation instructions](#installation) regarding `fetch()` as well!
 ```js
@@ -59,9 +64,9 @@ const gd = new GD({
 
 Now you have an instance of the client, which means you can start making requests! Make sure you are connected to the internet and that nothing is blocking requests to the GD server. If you're having issues with `NaN` and `undefined` appearing in your objects, it's probably a network error. To see the raw output for network requests, set `logLevel` to 2.
 
-As of now, the only things you can access are **users** and **levels** (metadata only). All API methods are asynchronous, so make sure you know how to use `Promise`, `async`/`await` or both!
+As of now, the only things you can access are **users** and **levels**. All API methods are asynchronous, so make sure you know how to use `Promise`, `async`/`await` or both!
 
-Quick, self-explanatory examples (detailed info is in autocomplete/in-code documentation):
+Quick, self-explanatory examples (detailed info is in autocomplete/documentation website):
 ```js
 const GD = require('gd.js');
 const fs = require('fs'); // I'm using Node.js!
@@ -102,6 +107,10 @@ const getDumbLevels = async () => {
 gd.users.login({ username: 'colon', password: 'colonspassword' })
   .then(colon => setInterval(() => colon.postAccountComment("I'm actually a furry"), 60000));
 ```
+
+Documentation
+---
+The documentation is available online [here](https://101arrowz.github.io/gd.js). You can click the "Globals" tab to see all the available classes, types, etc. The client (which is what you get when you import `gd.js`) is available under the ["Client" class](https://101arrowz.github.io/gd.js/classes/client)
 
 ### Advanced: Notes About Compatibility
 
