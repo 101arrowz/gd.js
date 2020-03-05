@@ -1,4 +1,10 @@
 /**
+ * The salts for GD authentication
+ * @internal
+ * @packageDocumentation
+ */
+
+/**
  * The salt used for comments
  * @internal
  */

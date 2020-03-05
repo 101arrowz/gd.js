@@ -1,8 +1,13 @@
 /**
+ * Request parameter generator
+ * @internal
+ * @packageDocumentation
+ */
+
+/**
  * The "secrets" used to authenticate with Geometry Dash servers
- *
- * @remarks
- * Only exist because RobTop doesn't know how to use tokens.
+ * @remarks Only exist because RobTop doesn't know how to use tokens.
+ * @internal
  */
 const SECRETS = {
   db: 'Wmfd2893gb7',
@@ -12,6 +17,7 @@ const SECRETS = {
 
 /**
  * Parsed data returned from Geometry Dash requests
+ * @internal
  */
 export type GDRequestData = { [k: string]: string | number };
 

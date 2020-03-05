@@ -1,4 +1,10 @@
 /**
+ * Determine whether or not in Node.js
+ * @internal
+ * @packageDocumentation
+ */
+
+/**
  * Whether or not the current environment is Node.js
  * @internal
  */
