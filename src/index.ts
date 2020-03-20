@@ -51,12 +51,10 @@ class Client {
    * @param config The configuration for the client.
    */
   constructor(config?: Partial<Config>) {
-    this.config = config
-      ? DEFAULT_CONFIG
-      : {
-          ...DEFAULT_CONFIG,
-          ...config
-        };
+    this.config = {
+      ...DEFAULT_CONFIG,
+      ...config
+    };
     this.users = new UserCreator(this);
     this.levels = new LevelCreator(this);
   }

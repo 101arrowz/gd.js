@@ -77,6 +77,7 @@ const DEFAULT_SONGS: [string, string][] = [
 
 /**
  * Base definition for a song
+ * @internal
  */
 interface BaseSong {
   /** The name of the song */
@@ -505,7 +506,7 @@ class Level extends SearchedLevel {
   copy: {
     /** Whether the level can be copied */
     copyable: boolean;
-    /** The level's password. Will only be present if the level is copyable but not freely copyable. */
+    /** The level's password. Will only be present if the level is copyable and has a password set (i.e. won't be present if either not copyable or free copy) */
     password?: string;
   };
   /** The level's data */

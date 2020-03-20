@@ -110,7 +110,7 @@ gd.users.login({ username: 'colon', password: 'colonspassword' })
 
 Documentation
 ---
-The documentation is available online [here](https://101arrowz.github.io/gd.js). You can click the "Globals" tab to see all the available classes, types, etc. The client (which is what you get when you import `gd.js`) is available under the ["Client" class](https://101arrowz.github.io/gd.js/classes/client).
+The documentation is available online [here](https://101arrowz.github.io/gd.js). You can click the ["Globals" tab](https://101arrowz.github.io/gd.js/globals) to see all the available classes, types, etc. The client (which is what you get when you import `gd.js`) is available under the ["Client" class](https://101arrowz.github.io/gd.js/classes/client).
 
 ### Advanced: Notes About Compatibility
 

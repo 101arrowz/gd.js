@@ -8,13 +8,14 @@
   "license": "MIT",
   "scripts": {
     "build": "yarn lint && tsc && webpack && yarn build/docs",
-    "build/docs": "typedoc --mode file --out docs/ --readme none",
+    "build/docs": "typedoc --mode file --out docs/",
     "lint": "eslint --fix \"src/**/*.ts\""
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/101arrowz/gd.js"
   },
+  "homepage": "https://101arrowz.github.io/gd.js",
   "bugs": {
     "email": "arjunbarrett@gmail.com",
     "url": "https://github.com/101arrowz/gd.js/issues"

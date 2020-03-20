@@ -57,7 +57,7 @@ abstract class Comment {
   createdAt: GDDate;
   /** The ID of the comment */
   id: number;
-  /** The likes on the number */
+  /** The number of likes on the comment */
   likes: number;
   /** Whether or not the comment has been marked as spam */
   isSpam: boolean;
