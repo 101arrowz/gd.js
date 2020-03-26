@@ -141,16 +141,21 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-variable"><a href="globals.html#tinf_data_error" class="tsd-kind-icon">TINF_<wbr>DATA_<wbr>ERROR</a></li>
 								<li class="tsd-kind-variable"><a href="globals.html#tinf_ok" class="tsd-kind-icon">TINF_<wbr>OK</a></li>
+								<li class="tsd-kind-variable"><a href="globals.html#assert" class="tsd-kind-icon">assert</a></li>
 								<li class="tsd-kind-variable"><a href="globals.html#clcidx" class="tsd-kind-icon">clcidx</a></li>
 								<li class="tsd-kind-variable"><a href="globals.html#code_tree" class="tsd-kind-icon">code_<wbr>tree</a></li>
 								<li class="tsd-kind-variable"><a href="globals.html#dist_base" class="tsd-kind-icon">dist_<wbr>base</a></li>
 								<li class="tsd-kind-variable"><a href="globals.html#dist_bits" class="tsd-kind-icon">dist_<wbr>bits</a></li>
+								<li class="tsd-kind-variable"><a href="globals.html#fs" class="tsd-kind-icon">fs</a></li>
+								<li class="tsd-kind-variable"><a href="globals.html#inflate" class="tsd-kind-icon">inflate</a></li>
 								<li class="tsd-kind-variable"><a href="globals.html#length_base" class="tsd-kind-icon">length_<wbr>base</a></li>
 								<li class="tsd-kind-variable"><a href="globals.html#length_bits" class="tsd-kind-icon">length_<wbr>bits</a></li>
 								<li class="tsd-kind-variable"><a href="globals.html#lengths" class="tsd-kind-icon">lengths</a></li>
 								<li class="tsd-kind-variable"><a href="globals.html#offs" class="tsd-kind-icon">offs</a></li>
 								<li class="tsd-kind-variable"><a href="globals.html#sdtree" class="tsd-kind-icon">sdtree</a></li>
 								<li class="tsd-kind-variable"><a href="globals.html#sltree" class="tsd-kind-icon">sltree</a></li>
+								<li class="tsd-kind-variable"><a href="globals.html#uncompressed" class="tsd-kind-icon">uncompressed</a></li>
+								<li class="tsd-kind-variable"><a href="globals.html#zlib" class="tsd-kind-icon">zlib</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -188,7 +193,7 @@
 					<div class="tsd-signature tsd-kind-icon">Award<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>position<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>pretty<span class="tsd-signature-symbol">: </span><a href="globals.html#prettyaward" class="tsd-signature-type">PrettyAward</a><span class="tsd-signature-symbol">; </span>raw<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">3</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L214">entities/level.ts:214</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/level.ts#L214">src/entities/level.ts:214</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -230,10 +235,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
 					<a name="basesearchconfig" class="tsd-anchor"></a>
 					<h3>Base<wbr>Search<wbr>Config</h3>
-					<div class="tsd-signature tsd-kind-icon">Base<wbr>Search<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>award<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">3</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Feature"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Epic"</span><span class="tsd-signature-symbol">; </span>coins<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>demon<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>difficulty<span class="tsd-signature-symbol">?: </span><a href="globals.html#rawdifficulty" class="tsd-signature-type">RawDifficulty</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#difficulty" class="tsd-signature-type">Difficulty</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">3</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">5</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">4</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Any"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Easy Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Medium Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Hard Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Insane Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Extreme Demon"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><a href="globals.html#rawdemondifficulty" class="tsd-signature-type">RawDemonDifficulty</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#demondifficulty" class="tsd-signature-type">DemonDifficulty</a><span class="tsd-signature-symbol">; </span>length<span class="tsd-signature-symbol">?: </span><a href="globals.html#rawlevellength" class="tsd-signature-type">RawLevelLength</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#prettylevellength" class="tsd-signature-type">PrettyLevelLength</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">3</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">4</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Tiny"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Short"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Medium"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Long"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"XL"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>orderBy<span class="tsd-signature-symbol">?: </span><a href="globals.html#order" class="tsd-signature-type">Order</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#orderint" class="tsd-signature-type">OrderInt</a><span class="tsd-signature-symbol">; </span>original<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>query<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>twoPlayer<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Base<wbr>Search<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>award<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">3</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Feature"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Epic"</span><span class="tsd-signature-symbol">; </span>coins<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>demon<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>difficulty<span class="tsd-signature-symbol">?: </span><a href="globals.html#rawdifficulty" class="tsd-signature-type">RawDifficulty</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#difficulty" class="tsd-signature-type">Difficulty</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Any"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Easy Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Medium Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Hard Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Insane Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Extreme Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">3</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">4</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">5</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><a href="globals.html#rawdemondifficulty" class="tsd-signature-type">RawDemonDifficulty</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#demondifficulty" class="tsd-signature-type">DemonDifficulty</a><span class="tsd-signature-symbol">; </span>length<span class="tsd-signature-symbol">?: </span><a href="globals.html#rawlevellength" class="tsd-signature-type">RawLevelLength</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#prettylevellength" class="tsd-signature-type">PrettyLevelLength</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">3</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">4</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Tiny"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Short"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Medium"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Long"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"XL"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>orderBy<span class="tsd-signature-symbol">?: </span><a href="globals.html#order" class="tsd-signature-type">Order</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#orderint" class="tsd-signature-type">OrderInt</a><span class="tsd-signature-symbol">; </span>original<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>query<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>twoPlayer<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L602">entities/level.ts:602</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/level.ts#L602">src/entities/level.ts:602</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -269,7 +274,7 @@
 								</div>
 							</li>
 							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> difficulty<span class="tsd-signature-symbol">?: </span><a href="globals.html#rawdifficulty" class="tsd-signature-type">RawDifficulty</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#difficulty" class="tsd-signature-type">Difficulty</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">3</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">5</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">4</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Any"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Easy Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Medium Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Hard Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Insane Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Extreme Demon"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><a href="globals.html#rawdemondifficulty" class="tsd-signature-type">RawDemonDifficulty</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#demondifficulty" class="tsd-signature-type">DemonDifficulty</a></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> difficulty<span class="tsd-signature-symbol">?: </span><a href="globals.html#rawdifficulty" class="tsd-signature-type">RawDifficulty</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#difficulty" class="tsd-signature-type">Difficulty</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Any"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Easy Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Medium Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Hard Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Insane Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Extreme Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">3</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">4</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">5</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><a href="globals.html#rawdemondifficulty" class="tsd-signature-type">RawDemonDifficulty</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#demondifficulty" class="tsd-signature-type">DemonDifficulty</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>Difficulty level of levels to get. -1 = N/A, 0 = Auto, 1 = Easy, 2 = Normal, 3 = Hard, 4 = Harder, 5 = Insane.
@@ -278,7 +283,7 @@
 								</div>
 							</li>
 							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> length<span class="tsd-signature-symbol">?: </span><a href="globals.html#rawlevellength" class="tsd-signature-type">RawLevelLength</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#prettylevellength" class="tsd-signature-type">PrettyLevelLength</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">3</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">4</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Tiny"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Short"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Medium"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Long"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"XL"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> length<span class="tsd-signature-symbol">?: </span><a href="globals.html#rawlevellength" class="tsd-signature-type">RawLevelLength</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#prettylevellength" class="tsd-signature-type">PrettyLevelLength</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">3</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">4</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Tiny"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Short"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Medium"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Long"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"XL"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>The lengths of the levels to get. Can pass a length ID, its pretty name, or an array containing lengths to get.</p>
@@ -326,7 +331,7 @@
 					<div class="tsd-signature tsd-kind-icon">Coins<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>areSilver<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">3</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L284">entities/level.ts:284</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/level.ts#L284">src/entities/level.ts:284</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -362,7 +367,7 @@
 					<div class="tsd-signature tsd-kind-icon">Colors<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>primary<span class="tsd-signature-symbol">: </span><a href="globals.html#gdcolor" class="tsd-signature-type">GDColor</a><span class="tsd-signature-symbol">; </span>secondary<span class="tsd-signature-symbol">: </span><a href="globals.html#gdcolor" class="tsd-signature-type">GDColor</a><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/user.ts#L475">entities/user.ts:475</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/user.ts#L475">src/entities/user.ts:475</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -388,7 +393,7 @@
 					<div class="tsd-signature tsd-kind-icon">Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>corsURL<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>dbURL<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>logLevel<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/index.ts#L8">index.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/index.ts#L8">src/index.ts:8</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -432,7 +437,7 @@
 					<div class="tsd-signature tsd-kind-icon">Convertible<wbr>ToAccountID<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="classes/user.html" class="tsd-signature-type">User</a><span class="tsd-signature-symbol"> | </span><a href="classes/statlesssearcheduser.html" class="tsd-signature-type">StatlessSearchedUser</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/user.ts#L32">entities/user.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/user.ts#L32">src/entities/user.ts:32</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -447,7 +452,7 @@
 					<div class="tsd-signature tsd-kind-icon">Credentials<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>accountID<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>gjp<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>userName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/util/auth.ts#L9">util/auth.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/util/auth.ts#L9">src/util/auth.ts:9</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -491,7 +496,7 @@
 					<div class="tsd-signature tsd-kind-icon">Demon<wbr>Diff<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>demon<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>difficulty<span class="tsd-signature-symbol">?: </span><a href="globals.html#rawdemondifficulty" class="tsd-signature-type">RawDemonDifficulty</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#demondifficulty" class="tsd-signature-type">DemonDifficulty</a><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L635">entities/level.ts:635</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/level.ts#L635">src/entities/level.ts:635</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -512,7 +517,7 @@
 					<div class="tsd-signature tsd-kind-icon">Demon<wbr>Difficulty<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"Any"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Easy Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Medium Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Hard Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Insane Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Extreme Demon"</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L153">entities/level.ts:153</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/level.ts#L153">src/entities/level.ts:153</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -522,7 +527,7 @@
 					<div class="tsd-signature tsd-kind-icon">Difficulty<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"N/A"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Auto"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Easy"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Normal"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Hard"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Harder"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Insane"</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L152">entities/level.ts:152</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/level.ts#L152">src/entities/level.ts:152</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -532,7 +537,7 @@
 					<div class="tsd-signature tsd-kind-icon">Difficulty<wbr>Level<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>pretty<span class="tsd-signature-symbol">: </span><a href="globals.html#difficulty" class="tsd-signature-type">Difficulty</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#demondifficulty" class="tsd-signature-type">DemonDifficulty</a><span class="tsd-signature-symbol">; </span>raw<span class="tsd-signature-symbol">: </span><a href="globals.html#rawdifficulty" class="tsd-signature-type">RawDifficulty</a><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L184">entities/level.ts:184</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/level.ts#L184">src/entities/level.ts:184</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -569,7 +574,7 @@
 					<div class="tsd-signature tsd-kind-icon">Full<wbr>Level<wbr>Data<span class="tsd-signature-symbol">:</span> <a href="globals.html#leveldata" class="tsd-signature-type">LevelData</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>parsed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>meta<span class="tsd-signature-symbol">: </span><a href="globals.html#parseddata" class="tsd-signature-type">ParsedData</a><span class="tsd-signature-symbol">; </span>objects<span class="tsd-signature-symbol">: </span><a href="globals.html#parseddata" class="tsd-signature-type">ParsedData</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L498">entities/level.ts:498</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/level.ts#L498">src/entities/level.ts:498</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -584,7 +589,7 @@
 					<div class="tsd-signature tsd-kind-icon">GDColor<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>parsed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>raw<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/user.ts#L391">entities/user.ts:391</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/user.ts#L391">src/entities/user.ts:391</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -620,7 +625,7 @@
 					<div class="tsd-signature tsd-kind-icon">GDDate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>date<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Date</span><span class="tsd-signature-symbol">; </span>pretty<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/util/date.ts#L7">util/date.ts:7</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/util/date.ts#L7">src/util/date.ts:7</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -656,7 +661,7 @@
 					<div class="tsd-signature tsd-kind-icon">Icon<wbr>Cosmetic<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"cube"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"ship"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"ball"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"ufo"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"wave"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"spider"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"robot"</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/user.ts#L471">entities/user.ts:471</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/user.ts#L471">src/entities/user.ts:471</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -671,7 +676,7 @@
 					<div class="tsd-signature tsd-kind-icon">Level<wbr>Data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>raw<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L492">entities/level.ts:492</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/level.ts#L492">src/entities/level.ts:492</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -699,7 +704,7 @@
 					<div class="tsd-signature tsd-kind-icon">Level<wbr>Length<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>pretty<span class="tsd-signature-symbol">: </span><a href="globals.html#prettylevellength" class="tsd-signature-type">PrettyLevelLength</a><span class="tsd-signature-symbol">; </span>raw<span class="tsd-signature-symbol">: </span><a href="globals.html#rawlevellength" class="tsd-signature-type">RawLevelLength</a><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L265">entities/level.ts:265</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/level.ts#L265">src/entities/level.ts:265</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -735,7 +740,7 @@
 					<div class="tsd-signature tsd-kind-icon">Message<wbr>User<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>accountID<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/user.ts#L259">entities/user.ts:259</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/user.ts#L259">src/entities/user.ts:259</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -771,10 +776,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
 					<a name="nondemondiffconfig" class="tsd-anchor"></a>
 					<h3>Non<wbr>Demon<wbr>Diff<wbr>Config</h3>
-					<div class="tsd-signature tsd-kind-icon">Non<wbr>Demon<wbr>Diff<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>demon<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol">; </span>difficulty<span class="tsd-signature-symbol">?: </span><a href="globals.html#rawdifficulty" class="tsd-signature-type">RawDifficulty</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#difficulty" class="tsd-signature-type">Difficulty</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">3</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">5</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">4</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Any"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Easy Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Medium Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Hard Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Insane Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Extreme Demon"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Non<wbr>Demon<wbr>Diff<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>demon<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol">; </span>difficulty<span class="tsd-signature-symbol">?: </span><a href="globals.html#rawdifficulty" class="tsd-signature-type">RawDifficulty</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#difficulty" class="tsd-signature-type">Difficulty</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Any"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Easy Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Medium Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Hard Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Insane Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Extreme Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">3</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">4</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">5</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L631">entities/level.ts:631</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/level.ts#L631">src/entities/level.ts:631</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -784,7 +789,7 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> demon<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">false</span></h5>
 							</li>
 							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> difficulty<span class="tsd-signature-symbol">?: </span><a href="globals.html#rawdifficulty" class="tsd-signature-type">RawDifficulty</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#difficulty" class="tsd-signature-type">Difficulty</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">3</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">5</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">4</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Any"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Easy Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Medium Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Hard Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Insane Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Extreme Demon"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> difficulty<span class="tsd-signature-symbol">?: </span><a href="globals.html#rawdifficulty" class="tsd-signature-type">RawDifficulty</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#difficulty" class="tsd-signature-type">Difficulty</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Any"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Easy Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Medium Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Hard Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Insane Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Extreme Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">3</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">4</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">5</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></h5>
 							</li>
 						</ul>
 					</div>
@@ -795,7 +800,7 @@
 					<div class="tsd-signature tsd-kind-icon">Order<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"likes"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"downloads"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"trending"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"recent"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"featured"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"magic"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"awarded"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hof"</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L579">entities/level.ts:579</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/level.ts#L579">src/entities/level.ts:579</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -805,7 +810,7 @@
 					<div class="tsd-signature tsd-kind-icon">Order<wbr>Int<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">3</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">4</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">6</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">7</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">11</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">16</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L588">entities/level.ts:588</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/level.ts#L588">src/entities/level.ts:588</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -815,7 +820,7 @@
 					<div class="tsd-signature tsd-kind-icon">Parsed<wbr>Data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/util/parse.ts#L10">util/parse.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/util/parse.ts#L10">src/util/parse.ts:10</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -838,7 +843,7 @@
 					<div class="tsd-signature tsd-kind-icon">Permission<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>pretty<span class="tsd-signature-symbol">: </span><a href="globals.html#permissionlevel" class="tsd-signature-type">PermissionLevel</a><span class="tsd-signature-symbol">; </span>raw<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/user.ts#L421">entities/user.ts:421</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/user.ts#L421">src/entities/user.ts:421</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -874,7 +879,7 @@
 					<div class="tsd-signature tsd-kind-icon">Permission<wbr>Level<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"User"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Moderator"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Elder Moderator"</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/user.ts#L413">entities/user.ts:413</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/user.ts#L413">src/entities/user.ts:413</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -884,7 +889,7 @@
 					<div class="tsd-signature tsd-kind-icon">Pretty<wbr>Award<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"None"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Star"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Feature"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Epic"</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L209">entities/level.ts:209</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/level.ts#L209">src/entities/level.ts:209</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -894,7 +899,7 @@
 					<div class="tsd-signature tsd-kind-icon">Pretty<wbr>Level<wbr>Length<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"Tiny"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Short"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Medium"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Long"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"XL"</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L254">entities/level.ts:254</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/level.ts#L254">src/entities/level.ts:254</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -904,7 +909,7 @@
 					<div class="tsd-signature tsd-kind-icon">Raw<wbr>Demon<wbr>Difficulty<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">3</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">4</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">5</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L160">entities/level.ts:160</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/level.ts#L160">src/entities/level.ts:160</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -914,7 +919,7 @@
 					<div class="tsd-signature tsd-kind-icon">Raw<wbr>Difficulty<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">-1</span><span class="tsd-signature-symbol"> | </span><a href="globals.html#rawdemondifficulty" class="tsd-signature-type">RawDemonDifficulty</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L161">entities/level.ts:161</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/level.ts#L161">src/entities/level.ts:161</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -924,7 +929,7 @@
 					<div class="tsd-signature tsd-kind-icon">Raw<wbr>Level<wbr>Length<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">3</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">4</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L253">entities/level.ts:253</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/level.ts#L253">src/entities/level.ts:253</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -934,7 +939,7 @@
 					<div class="tsd-signature tsd-kind-icon">Request<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>body<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">GDParams</span><span class="tsd-signature-symbol">; </span>method<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">"GET"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"POST"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"PUT"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"DELETE"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"PATCH"</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/index.ts#L20">index.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/index.ts#L20">src/index.ts:20</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -967,10 +972,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
 					<a name="searchconfig" class="tsd-anchor"></a>
 					<h3>Search<wbr>Config</h3>
-					<div class="tsd-signature tsd-kind-icon">Search<wbr>Config<span class="tsd-signature-symbol">:</span> <a href="globals.html#basesearchconfig" class="tsd-signature-type">BaseSearchConfig</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>demon<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol">; </span>difficulty<span class="tsd-signature-symbol">?: </span><a href="globals.html#rawdifficulty" class="tsd-signature-type">RawDifficulty</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#difficulty" class="tsd-signature-type">Difficulty</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">3</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">5</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">4</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Any"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Easy Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Medium Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Hard Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Insane Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Extreme Demon"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>demon<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>difficulty<span class="tsd-signature-symbol">?: </span><a href="globals.html#rawdemondifficulty" class="tsd-signature-type">RawDemonDifficulty</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#demondifficulty" class="tsd-signature-type">DemonDifficulty</a><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Search<wbr>Config<span class="tsd-signature-symbol">:</span> <a href="globals.html#basesearchconfig" class="tsd-signature-type">BaseSearchConfig</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>demon<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol">; </span>difficulty<span class="tsd-signature-symbol">?: </span><a href="globals.html#rawdifficulty" class="tsd-signature-type">RawDifficulty</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#difficulty" class="tsd-signature-type">Difficulty</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">0</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">2</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Any"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Easy Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Medium Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Hard Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Insane Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"Extreme Demon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">1</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">3</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">4</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">5</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>demon<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>difficulty<span class="tsd-signature-symbol">?: </span><a href="globals.html#rawdemondifficulty" class="tsd-signature-type">RawDemonDifficulty</a><span class="tsd-signature-symbol"> | </span><a href="globals.html#demondifficulty" class="tsd-signature-type">DemonDifficulty</a><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L640">entities/level.ts:640</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/level.ts#L640">src/entities/level.ts:640</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -980,7 +985,7 @@
 					<div class="tsd-signature tsd-kind-icon">SocialURL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>fullURL<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/user.ts#L449">entities/user.ts:449</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/user.ts#L449">src/entities/user.ts:449</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1016,7 +1021,7 @@
 					<div class="tsd-signature tsd-kind-icon">Socials<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>twitch<span class="tsd-signature-symbol">?: </span><a href="globals.html#socialurl" class="tsd-signature-type">SocialURL</a><span class="tsd-signature-symbol">; </span>twitter<span class="tsd-signature-symbol">?: </span><a href="globals.html#socialurl" class="tsd-signature-type">SocialURL</a><span class="tsd-signature-symbol">; </span>youtube<span class="tsd-signature-symbol">?: </span><a href="globals.html#socialurl" class="tsd-signature-type">SocialURL</a><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/user.ts#L544">entities/user.ts:544</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/user.ts#L544">src/entities/user.ts:544</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1060,7 +1065,7 @@
 					<div class="tsd-signature tsd-kind-icon">User<wbr>Credentials<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>password<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/util/auth.ts#L21">util/auth.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/util/auth.ts#L21">src/util/auth.ts:21</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1099,7 +1104,7 @@
 					<div class="tsd-signature tsd-kind-icon">TINF_<wbr>DATA_<wbr>ERROR<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = -3</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in util/tiny-inflate.js:2</li>
+							<li>Defined in node_modules/tiny-inflate/index.js:7</li>
 						</ul>
 					</aside>
 				</section>
@@ -1109,7 +1114,17 @@
 					<div class="tsd-signature tsd-kind-icon">TINF_<wbr>OK<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 0</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in util/tiny-inflate.js:1</li>
+							<li>Defined in node_modules/tiny-inflate/index.js:6</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable">
+					<a name="assert" class="tsd-anchor"></a>
+					<h3>assert</h3>
+					<div class="tsd-signature tsd-kind-icon">assert<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">internal</span><span class="tsd-signature-symbol"> = require(&#x27;assert&#x27;)</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/tiny-inflate/test/index.js:4</li>
 						</ul>
 					</aside>
 				</section>
@@ -1119,7 +1134,7 @@
 					<div class="tsd-signature tsd-kind-icon">clcidx<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol"> = new Uint8Array([16, 17, 18, 0, 8, 7, 9, 6,10, 5, 11, 4, 12, 3, 13, 2,14, 1, 15])</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in util/tiny-inflate.js:38</li>
+							<li>Defined in node_modules/tiny-inflate/index.js:43</li>
 						</ul>
 					</aside>
 				</section>
@@ -1129,7 +1144,7 @@
 					<div class="tsd-signature tsd-kind-icon">code_<wbr>tree<span class="tsd-signature-symbol">:</span> <a href="globals.html#tree" class="tsd-signature-type">Tree</a><span class="tsd-signature-symbol"> = new Tree()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in util/tiny-inflate.js:45</li>
+							<li>Defined in node_modules/tiny-inflate/index.js:50</li>
 						</ul>
 					</aside>
 				</section>
@@ -1139,7 +1154,7 @@
 					<div class="tsd-signature tsd-kind-icon">dist_<wbr>base<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Uint16Array</span><span class="tsd-signature-symbol"> = new Uint16Array(30)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in util/tiny-inflate.js:35</li>
+							<li>Defined in node_modules/tiny-inflate/index.js:40</li>
 						</ul>
 					</aside>
 				</section>
@@ -1149,7 +1164,27 @@
 					<div class="tsd-signature tsd-kind-icon">dist_<wbr>bits<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol"> = new Uint8Array(30)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in util/tiny-inflate.js:34</li>
+							<li>Defined in node_modules/tiny-inflate/index.js:39</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable">
+					<a name="fs" class="tsd-anchor"></a>
+					<h3>fs</h3>
+					<div class="tsd-signature tsd-kind-icon">fs<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;fs&quot;</span><span class="tsd-signature-symbol"> = require(&#x27;fs&#x27;)</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/tiny-inflate/test/index.js:3</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable">
+					<a name="inflate" class="tsd-anchor"></a>
+					<h3>inflate</h3>
+					<div class="tsd-signature tsd-kind-icon">inflate<span class="tsd-signature-symbol">:</span> <a href="globals.html#tinf_uncompress" class="tsd-signature-type">tinf_uncompress</a><span class="tsd-signature-symbol"> = require(&#x27;../&#x27;)</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/tiny-inflate/test/index.js:1</li>
 						</ul>
 					</aside>
 				</section>
@@ -1159,7 +1194,7 @@
 					<div class="tsd-signature tsd-kind-icon">length_<wbr>base<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Uint16Array</span><span class="tsd-signature-symbol"> = new Uint16Array(30)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in util/tiny-inflate.js:31</li>
+							<li>Defined in node_modules/tiny-inflate/index.js:36</li>
 						</ul>
 					</aside>
 				</section>
@@ -1169,7 +1204,7 @@
 					<div class="tsd-signature tsd-kind-icon">length_<wbr>bits<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol"> = new Uint8Array(30)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in util/tiny-inflate.js:30</li>
+							<li>Defined in node_modules/tiny-inflate/index.js:35</li>
 						</ul>
 					</aside>
 				</section>
@@ -1179,7 +1214,7 @@
 					<div class="tsd-signature tsd-kind-icon">lengths<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol"> = new Uint8Array(288 + 32)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in util/tiny-inflate.js:46</li>
+							<li>Defined in node_modules/tiny-inflate/index.js:51</li>
 						</ul>
 					</aside>
 				</section>
@@ -1189,7 +1224,7 @@
 					<div class="tsd-signature tsd-kind-icon">offs<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Uint16Array</span><span class="tsd-signature-symbol"> = new Uint16Array(16)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in util/tiny-inflate.js:92</li>
+							<li>Defined in node_modules/tiny-inflate/index.js:97</li>
 						</ul>
 					</aside>
 				</section>
@@ -1199,7 +1234,7 @@
 					<div class="tsd-signature tsd-kind-icon">sdtree<span class="tsd-signature-symbol">:</span> <a href="globals.html#tree" class="tsd-signature-type">Tree</a><span class="tsd-signature-symbol"> = new Tree()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in util/tiny-inflate.js:27</li>
+							<li>Defined in node_modules/tiny-inflate/index.js:32</li>
 						</ul>
 					</aside>
 				</section>
@@ -1209,7 +1244,27 @@
 					<div class="tsd-signature tsd-kind-icon">sltree<span class="tsd-signature-symbol">:</span> <a href="globals.html#tree" class="tsd-signature-type">Tree</a><span class="tsd-signature-symbol"> = new Tree()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in util/tiny-inflate.js:26</li>
+							<li>Defined in node_modules/tiny-inflate/index.js:31</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable">
+					<a name="uncompressed" class="tsd-anchor"></a>
+					<h3>uncompressed</h3>
+					<div class="tsd-signature tsd-kind-icon">uncompressed<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol"> = fs.readFileSync(__dirname + &#x27;/lorem.txt&#x27;)</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/tiny-inflate/test/index.js:5</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable">
+					<a name="zlib" class="tsd-anchor"></a>
+					<h3>zlib</h3>
+					<div class="tsd-signature tsd-kind-icon">zlib<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;zlib&quot;</span><span class="tsd-signature-symbol"> = require(&#x27;zlib&#x27;)</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in node_modules/tiny-inflate/test/index.js:2</li>
 						</ul>
 					</aside>
 				</section>
@@ -1226,7 +1281,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util/tiny-inflate.js:9</li>
+									<li>Defined in node_modules/tiny-inflate/index.js:14</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1252,7 +1307,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util/tiny-inflate.js:4</li>
+									<li>Defined in node_modules/tiny-inflate/index.js:9</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1269,7 +1324,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util/decompress.ts:10</li>
+									<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/util/decompress.ts#L10">src/util/decompress.ts:10</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1303,7 +1358,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/user.ts#L744">entities/user.ts:744</a></li>
+									<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/74a85cd/src/entities/user.ts#L744">src/entities/user.ts:744</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1376,7 +1431,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util/tiny-inflate.js:53</li>
+									<li>Defined in node_modules/tiny-inflate/index.js:58</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1408,7 +1463,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util/tiny-inflate.js:68</li>
+									<li>Defined in node_modules/tiny-inflate/index.js:73</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1434,7 +1489,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util/tiny-inflate.js:94</li>
+									<li>Defined in node_modules/tiny-inflate/index.js:99</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1466,7 +1521,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util/tiny-inflate.js:154</li>
+									<li>Defined in node_modules/tiny-inflate/index.js:159</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1492,7 +1547,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util/tiny-inflate.js:180</li>
+									<li>Defined in node_modules/tiny-inflate/index.js:185</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1521,7 +1576,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util/tiny-inflate.js:430</li>
+									<li>Defined in node_modules/tiny-inflate/index.js:435</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1556,7 +1611,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util/tiny-inflate.js:122</li>
+									<li>Defined in node_modules/tiny-inflate/index.js:127</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1579,7 +1634,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util/tiny-inflate.js:399</li>
+									<li>Defined in node_modules/tiny-inflate/index.js:404</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1614,7 +1669,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util/tiny-inflate.js:383</li>
+									<li>Defined in node_modules/tiny-inflate/index.js:388</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1649,7 +1704,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util/tiny-inflate.js:328</li>
+									<li>Defined in node_modules/tiny-inflate/index.js:333</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1675,7 +1730,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util/tiny-inflate.js:246</li>
+									<li>Defined in node_modules/tiny-inflate/index.js:251</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1704,7 +1759,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util/tiny-inflate.js:280</li>
+									<li>Defined in node_modules/tiny-inflate/index.js:285</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1727,7 +1782,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util/tiny-inflate.js:138</li>
+									<li>Defined in node_modules/tiny-inflate/index.js:143</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1756,7 +1811,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util/tiny-inflate.js:315</li>
+									<li>Defined in node_modules/tiny-inflate/index.js:320</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1785,7 +1840,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in util/tiny-inflate.js:450</li>
+									<li>Defined in node_modules/tiny-inflate/index.js:455</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2007,6 +2062,9 @@
 						<a href="globals.html#tinf_ok" class="tsd-kind-icon">TINF_<wbr>OK</a>
 					</li>
 					<li class=" tsd-kind-variable">
+						<a href="globals.html#assert" class="tsd-kind-icon">assert</a>
+					</li>
+					<li class=" tsd-kind-variable">
 						<a href="globals.html#clcidx" class="tsd-kind-icon">clcidx</a>
 					</li>
 					<li class=" tsd-kind-variable">
@@ -2017,6 +2075,12 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#dist_bits" class="tsd-kind-icon">dist_<wbr>bits</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#fs" class="tsd-kind-icon">fs</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#inflate" class="tsd-kind-icon">inflate</a>
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#length_base" class="tsd-kind-icon">length_<wbr>base</a>
@@ -2035,6 +2099,12 @@
 					</li>
 					<li class=" tsd-kind-variable">
 						<a href="globals.html#sltree" class="tsd-kind-icon">sltree</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#uncompressed" class="tsd-kind-icon">uncompressed</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#zlib" class="tsd-kind-icon">zlib</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#data" class="tsd-kind-icon">Data</a>

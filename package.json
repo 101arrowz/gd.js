@@ -23,6 +23,7 @@
   },
   "keywords": [
     "geometry dash",
+    "geometry dash api",
     "gd",
     "api"
   ],
@@ -49,9 +50,11 @@
     "postinstall-postinstall": "^2.0.0",
     "prettier": "^1.19.1",
     "terser-webpack-plugin": "^2.3.5",
+    "tiny-inflate": "^1.0.3",
     "typedoc": "^0.16.11",
     "typescript": "^3.7.4",
     "webpack": "^4.42.0",
+    "webpack-bundle-analyzer": "^3.6.1",
     "webpack-cli": "^3.3.11",
     "worker-loader": "^2.0.0"
   },

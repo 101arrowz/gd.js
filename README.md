@@ -149,5 +149,6 @@ Its first parameter is the string to parse and its second parameter is the split
 
 ```js
 const levelEasy = await gd.levels.get('Level Easy', true);
-const colors = levelEasy.data.parsed.meta.kS38.split('|').map(str => parse(str, '_'));
+const levelEasyData = await levelEasy.decodeData(true);
+const colors = levelEasyData.parsed.meta.kS38.split('|').map(str => parse(str, '_'));
 ```

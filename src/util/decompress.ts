@@ -1,4 +1,4 @@
-import inflate from './tiny-inflate';
+import inflate from 'tiny-inflate';
 import isNode from './isNode';
 import { gdDecodeBase64 } from './crypto';
 
