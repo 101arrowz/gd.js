@@ -3,6 +3,8 @@ declare namespace NodeJS {
     fetch: typeof import('node-fetch');
     atob: (str: string) => string;
     btoa: (str: string) => string;
-    TextDecoder: typeof import('util').TextDecoder;
+    URL: typeof URL;
+    URLSearchParams: typeof URLSearchParams;
+    Worker: typeof Worker;
   }
 }

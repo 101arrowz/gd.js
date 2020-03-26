@@ -733,6 +733,50 @@ class User {
 }
 
 /**
+ * Likes an arbitrary Geometry Dash object
+ * @param id The ID of the object to like
+ * @param special The special string associated with this like type
+ * @param type The like type
+ * @param shouldLike Whather to like or not
+ * @param accountID The account ID from which to like
+ * @param gjp The GJP of the account
+ */
+const like = async (
+  id: number,
+  special: number,
+  type: number,
+  shouldLike: boolean,
+  accountID: number,
+  gjp: string
+): Promise<boolean> => {
+  const rs = genRS();
+  const like = +shouldLike;
+  const chk = encrypt(
+    sha1('' + special + id + like + type + rs + accountID + udid + uuid + likeSalt),
+    likeKey
+  );
+  const params = new GDRequestParams({
+    accountID,
+    gjp,
+    type,
+    special,
+    itemID: id,
+    like,
+    udid,
+    uuid,
+    rs,
+    chk
+  });
+  params.authorize('db');
+  return (
+    (await this._creator._client.req('/likeGJItem211.php', {
+      method: 'POST',
+      body: params
+    })) === '1'
+  );
+};
+
+/**
  * A logged-in Geometry Dash player
  */
 class LoggedInUser extends User {
@@ -1372,30 +1416,7 @@ class LoggedInUser extends User {
     if (id instanceof SearchedLevel) {
       id = id.id;
     }
-    const rs = genRS();
-    const chk = encrypt(
-      sha1('0' + id + 1 + 1 + rs + this.accountID + udid + uuid + likeSalt),
-      likeKey
-    );
-    const params = new GDRequestParams({
-      accountID: this.accountID,
-      gjp: this._creds.gjp,
-      type: 1,
-      special: 0,
-      itemID: id,
-      like: 1,
-      udid,
-      uuid,
-      rs,
-      chk
-    });
-    params.authorize('db');
-    return (
-      (await this._creator._client.req('/likeGJItem211.php', {
-        method: 'POST',
-        body: params
-      })) === '1'
-    );
+    return await like(id, 0, 1, true, this.accountID, this._creds.gjp);
   }
 
   /**
@@ -1408,30 +1429,7 @@ class LoggedInUser extends User {
     if (id instanceof SearchedLevel) {
       id = id.id;
     }
-    const rs = genRS();
-    const chk = encrypt(
-      sha1('0' + id + 0 + 1 + rs + this.accountID + udid + uuid + likeSalt),
-      likeKey
-    );
-    const params = new GDRequestParams({
-      accountID: this.accountID,
-      gjp: this._creds.gjp,
-      type: 1,
-      special: 0,
-      itemID: id,
-      like: 0,
-      udid,
-      uuid,
-      rs,
-      chk
-    });
-    params.authorize('db');
-    return (
-      (await this._creator._client.req('/likeGJItem211.php', {
-        method: 'POST',
-        body: params
-      })) === '1'
-    );
+    return await like(id, 0, 1, false, this.accountID, this._creds.gjp);
   }
 
   /**
@@ -1458,30 +1456,7 @@ class LoggedInUser extends User {
       levelID = id.levelID;
       id = id.id;
     } else if (levelID instanceof SearchedLevel) levelID = levelID.id;
-    const rs = genRS();
-    const chk = encrypt(
-      sha1(levelID.toString() + id + 1 + 2 + rs + this.accountID + udid + uuid + likeSalt),
-      likeKey
-    );
-    const params = new GDRequestParams({
-      accountID: this.accountID,
-      gjp: this._creds.gjp,
-      type: 2,
-      special: levelID,
-      itemID: id,
-      like: 1,
-      udid,
-      uuid,
-      rs,
-      chk
-    });
-    params.authorize('db');
-    return (
-      (await this._creator._client.req('/likeGJItem211.php', {
-        method: 'POST',
-        body: params
-      })) === '1'
-    );
+    return await like(id, levelID, 2, true, this.accountID, this._creds.gjp);
   }
 
   /**
@@ -1508,30 +1483,7 @@ class LoggedInUser extends User {
       levelID = id.levelID;
       id = id.id;
     } else if (levelID instanceof SearchedLevel) levelID = levelID.id;
-    const rs = genRS();
-    const chk = encrypt(
-      sha1(levelID.toString() + id + 0 + 2 + rs + this.accountID + udid + uuid + likeSalt),
-      likeKey
-    );
-    const params = new GDRequestParams({
-      accountID: this.accountID,
-      gjp: this._creds.gjp,
-      type: 2,
-      special: levelID,
-      itemID: id,
-      like: 0,
-      udid,
-      uuid,
-      rs,
-      chk
-    });
-    params.authorize('db');
-    return (
-      (await this._creator._client.req('/likeGJItem211.php', {
-        method: 'POST',
-        body: params
-      })) === '1'
-    );
+    return await like(id, levelID, 2, false, this.accountID, this._creds.gjp);
   }
 
   /**
@@ -1562,30 +1514,7 @@ class LoggedInUser extends User {
       id = id.id;
     } else if (accountID instanceof StatlessSearchedUser || accountID instanceof User)
       accountID = accountID.accountID;
-    const rs = genRS();
-    const chk = encrypt(
-      sha1(accountID.toString() + id + 1 + 3 + rs + this.accountID + udid + uuid + likeSalt),
-      likeKey
-    );
-    const params = new GDRequestParams({
-      accountID: this.accountID,
-      gjp: this._creds.gjp,
-      type: 3,
-      special: accountID,
-      itemID: id,
-      like: 1,
-      udid,
-      uuid,
-      rs,
-      chk
-    });
-    params.authorize('db');
-    return (
-      (await this._creator._client.req('/likeGJItem211.php', {
-        method: 'POST',
-        body: params
-      })) === '1'
-    );
+    return await like(id, accountID, 3, true, this.accountID, this._creds.gjp);
   }
 
   /**
@@ -1616,30 +1545,7 @@ class LoggedInUser extends User {
       id = id.id;
     } else if (accountID instanceof StatlessSearchedUser || accountID instanceof User)
       accountID = accountID.accountID;
-    const rs = genRS();
-    const chk = encrypt(
-      sha1(accountID.toString() + id + 0 + 3 + rs + this.accountID + udid + uuid + likeSalt),
-      likeKey
-    );
-    const params = new GDRequestParams({
-      accountID: this.accountID,
-      gjp: this._creds.gjp,
-      type: 3,
-      special: accountID,
-      itemID: id,
-      like: 0,
-      udid,
-      uuid,
-      rs,
-      chk
-    });
-    params.authorize('db');
-    return (
-      (await this._creator._client.req('/likeGJItem211.php', {
-        method: 'POST',
-        body: params
-      })) === '1'
-    );
+    return await like(id, accountID, 3, false, this.accountID, this._creds.gjp);
   }
 }
 

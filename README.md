@@ -23,6 +23,12 @@ Although ECMAScript Modules are used internally, UMD exports are used for compat
 import GD from 'gd.js/esm';
 ```
 
+Note that the `esm` build may be slower than the standard build. Most ES Module environments will also allow you to do:
+```js
+import GD from 'gd.js';
+```
+which could potentially have better performance.
+
 If you want to use a CDN, you can add the following tag to your HTML to create a global `GD` class.
 ```html
 <script src="https://unpkg.com/gd.js"></script>
@@ -38,7 +44,7 @@ const GD = require('gd.js');
 ```
 ES modules:
 ```js
-import GD from 'gd.js';
+import GD from 'gd.js/esm';
 ```
 ---
 Now you should create an instance of this class to create your client.

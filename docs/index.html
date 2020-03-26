@@ -82,6 +82,9 @@
 <span class="hljs-keyword">const</span> GD = <span class="hljs-built_in">require</span>(<span class="hljs-string">'gd.js'</span>);</code></pre>
 				<p>Although ECMAScript Modules are used internally, UMD exports are used for compatibility with all platforms. If you want ECMAScript Module exports, use <code>&#39;gd.js/esm&#39;</code>.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">import</span> GD <span class="hljs-keyword">from</span> <span class="hljs-string">'gd.js/esm'</span>;</code></pre>
+				<p>Note that the <code>esm</code> build may be slower than the standard build. Most ES Module environments will also allow you to do:</p>
+				<pre><code class="language-js"><span class="hljs-keyword">import</span> GD <span class="hljs-keyword">from</span> <span class="hljs-string">'gd.js'</span>;</code></pre>
+				<p>which could potentially have better performance.</p>
 				<p>If you want to use a CDN, you can add the following tag to your HTML to create a global <code>GD</code> class.</p>
 				<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/gd.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 				<a href="#quickstart" id="quickstart" style="color: inherit; text-decoration: none;">
@@ -91,7 +94,7 @@
 				<p><code>gd.js</code> exports a single class <code>Client</code>, but I like importing it as <code>GD</code>. Make sure you&#39;ve followed all the <a href="#installation">additional installation instructions</a> regarding <code>fetch()</code> as well!</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> GD = <span class="hljs-built_in">require</span>(<span class="hljs-string">'gd.js'</span>);</code></pre>
 				<p>ES modules:</p>
-				<pre><code class="language-js"><span class="hljs-keyword">import</span> GD <span class="hljs-keyword">from</span> <span class="hljs-string">'gd.js'</span>;</code></pre>
+				<pre><code class="language-js"><span class="hljs-keyword">import</span> GD <span class="hljs-keyword">from</span> <span class="hljs-string">'gd.js/esm'</span>;</code></pre>
 				<hr>
 				<p>Now you should create an instance of this class to create your client.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> gd = <span class="hljs-keyword">new</span> GD();</code></pre>
@@ -291,6 +294,9 @@ gd.users.login({ <span class="hljs-attr">username</span>: <span class="hljs-stri
 						<a href="globals.html#difficultylevel" class="tsd-kind-icon">Difficulty<wbr>Level</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#fullleveldata" class="tsd-kind-icon">Full<wbr>Level<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#gdcolor" class="tsd-kind-icon">GDColor</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
@@ -298,6 +304,9 @@ gd.users.login({ <span class="hljs-attr">username</span>: <span class="hljs-stri
 					</li>
 					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#iconcosmetic" class="tsd-kind-icon">Icon<wbr>Cosmetic</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#leveldata" class="tsd-kind-icon">Level<wbr>Data</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#levellength" class="tsd-kind-icon">Level<wbr>Length</a>
@@ -352,6 +361,99 @@ gd.users.login({ <span class="hljs-attr">username</span>: <span class="hljs-stri
 					</li>
 					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#usercredentials" class="tsd-kind-icon">User<wbr>Credentials</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#tinf_data_error" class="tsd-kind-icon">TINF_<wbr>DATA_<wbr>ERROR</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#tinf_ok" class="tsd-kind-icon">TINF_<wbr>OK</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#clcidx" class="tsd-kind-icon">clcidx</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#code_tree" class="tsd-kind-icon">code_<wbr>tree</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#dist_base" class="tsd-kind-icon">dist_<wbr>base</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#dist_bits" class="tsd-kind-icon">dist_<wbr>bits</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#length_base" class="tsd-kind-icon">length_<wbr>base</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#length_bits" class="tsd-kind-icon">length_<wbr>bits</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#lengths" class="tsd-kind-icon">lengths</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#offs" class="tsd-kind-icon">offs</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#sdtree" class="tsd-kind-icon">sdtree</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#sltree" class="tsd-kind-icon">sltree</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#data" class="tsd-kind-icon">Data</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tree" class="tsd-kind-icon">Tree</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#decompress" class="tsd-kind-icon">decompress</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#like" class="tsd-kind-icon">like</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tinf_build_bits_base" class="tsd-kind-icon">tinf_<wbr>build_<wbr>bits_<wbr>base</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tinf_build_fixed_trees" class="tsd-kind-icon">tinf_<wbr>build_<wbr>fixed_<wbr>trees</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tinf_build_tree" class="tsd-kind-icon">tinf_<wbr>build_<wbr>tree</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tinf_decode_symbol" class="tsd-kind-icon">tinf_<wbr>decode_<wbr>symbol</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tinf_decode_trees" class="tsd-kind-icon">tinf_<wbr>decode_<wbr>trees</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tinf_decompress" class="tsd-kind-icon">tinf_<wbr>decompress</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tinf_getbit" class="tsd-kind-icon">tinf_<wbr>getbit</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tinf_gunzip" class="tsd-kind-icon">tinf_<wbr>gunzip</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tinf_inflate" class="tsd-kind-icon">tinf_<wbr>inflate</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tinf_inflate_base" class="tsd-kind-icon">tinf_<wbr>inflate_<wbr>base</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tinf_inflate_block_data" class="tsd-kind-icon">tinf_<wbr>inflate_<wbr>block_<wbr>data</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tinf_inflate_uncompressed_block" class="tsd-kind-icon">tinf_<wbr>inflate_<wbr>uncompressed_<wbr>block</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tinf_read_bits" class="tsd-kind-icon">tinf_<wbr>read_<wbr>bits</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tinf_readle" class="tsd-kind-icon">tinf_<wbr>readle</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tinf_uncompress" class="tsd-kind-icon">tinf_<wbr>uncompress</a>
 					</li>
 				</ul>
 			</nav>

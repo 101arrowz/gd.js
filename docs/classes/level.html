@@ -113,9 +113,10 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="level.html#version" class="tsd-kind-icon">version</a></li>
 							</ul>
 						</section>
-						<section class="tsd-index-section tsd-is-inherited">
+						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="level.html#decodedata" class="tsd-kind-icon">decode<wbr>Data</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="level.html#getcomments" class="tsd-kind-icon">get<wbr>Comments</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="level.html#getcreator" class="tsd-kind-icon">get<wbr>Creator</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="level.html#resolve" class="tsd-kind-icon">resolve</a></li>
@@ -133,7 +134,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="searchedlevel.html">SearchedLevel</a>.<a href="searchedlevel.html#award">award</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/9559fa5/src/entities/level.ts#L343">entities/level.ts:343</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L337">entities/level.ts:337</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -149,7 +150,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="searchedlevel.html">SearchedLevel</a>.<a href="searchedlevel.html#coins">coins</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/9559fa5/src/entities/level.ts#L341">entities/level.ts:341</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L335">entities/level.ts:335</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -164,7 +165,7 @@
 					<div class="tsd-signature tsd-kind-icon">copy<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>copyable<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>password<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/9559fa5/src/entities/level.ts#L506">entities/level.ts:506</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L517">entities/level.ts:517</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -201,7 +202,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="searchedlevel.html">SearchedLevel</a>.<a href="searchedlevel.html#creator">creator</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/9559fa5/src/entities/level.ts#L314">entities/level.ts:314</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L308">entities/level.ts:308</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -234,55 +235,16 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="data" class="tsd-anchor"></a>
 					<h3>data</h3>
-					<div class="tsd-signature tsd-kind-icon">data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>parsed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>meta<span class="tsd-signature-symbol">: </span><a href="../globals.html#parseddata" class="tsd-signature-type">ParsedData</a><span class="tsd-signature-symbol">; </span>objects<span class="tsd-signature-symbol">: </span><a href="../globals.html#parseddata" class="tsd-signature-type">ParsedData</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>raw<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/9559fa5/src/entities/level.ts#L513">entities/level.ts:513</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L524">entities/level.ts:524</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The level&#39;s data</p>
+							<p>The raw level string before decoding and decompressing. Only offered because <code>gd.js</code> is not primarily a level API, so this can be passed to your own manipulation program.</p>
 						</div>
-					</div>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter">
-								<h5>parsed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>meta<span class="tsd-signature-symbol">: </span><a href="../globals.html#parseddata" class="tsd-signature-type">ParsedData</a><span class="tsd-signature-symbol">; </span>objects<span class="tsd-signature-symbol">: </span><a href="../globals.html#parseddata" class="tsd-signature-type">ParsedData</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<div class="lead">
-										<p>The parsed level data</p>
-									</div>
-								</div>
-								<ul class="tsd-parameters">
-									<li class="tsd-parameter">
-										<h5>meta<span class="tsd-signature-symbol">: </span><a href="../globals.html#parseddata" class="tsd-signature-type">ParsedData</a></h5>
-										<div class="tsd-comment tsd-typography">
-											<div class="lead">
-												<p>The metadata of the level</p>
-											</div>
-										</div>
-									</li>
-									<li class="tsd-parameter">
-										<h5>objects<span class="tsd-signature-symbol">: </span><a href="../globals.html#parseddata" class="tsd-signature-type">ParsedData</a><span class="tsd-signature-symbol">[]</span></h5>
-										<div class="tsd-comment tsd-typography">
-											<div class="lead">
-												<p>An array of objects in the level with numeric key-value pair representations. Each key has a different meaning. For example, 1 is ID, 2 is X position, and 3 is Y position. Friendlier parsing is a WIP.</p>
-											</div>
-										</div>
-									</li>
-								</ul>
-							</li>
-							<li class="tsd-parameter">
-								<h5>raw<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<div class="lead">
-										<p>The raw level string after decoding and decompressing. Only offered because <code>gd.js</code> is not primarily a level API, so this can be passed to your own manipulation program.</p>
-									</div>
-								</div>
-							</li>
-						</ul>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
@@ -292,7 +254,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="searchedlevel.html">SearchedLevel</a>.<a href="searchedlevel.html#description">description</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/9559fa5/src/entities/level.ts#L312">entities/level.ts:312</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L306">entities/level.ts:306</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -308,7 +270,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="searchedlevel.html">SearchedLevel</a>.<a href="searchedlevel.html#diamonds">diamonds</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/9559fa5/src/entities/level.ts#L347">entities/level.ts:347</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L341">entities/level.ts:341</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -324,7 +286,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="searchedlevel.html">SearchedLevel</a>.<a href="searchedlevel.html#difficulty">difficulty</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/9559fa5/src/entities/level.ts#L321">entities/level.ts:321</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L315">entities/level.ts:315</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -369,7 +331,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="searchedlevel.html">SearchedLevel</a>.<a href="searchedlevel.html#gameversion">gameVersion</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/9559fa5/src/entities/level.ts#L308">entities/level.ts:308</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L302">entities/level.ts:302</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -385,7 +347,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="searchedlevel.html">SearchedLevel</a>.<a href="searchedlevel.html#id-1">id</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/9559fa5/src/entities/level.ts#L304">entities/level.ts:304</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L298">entities/level.ts:298</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -401,7 +363,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="searchedlevel.html">SearchedLevel</a>.<a href="searchedlevel.html#name">name</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/9559fa5/src/entities/level.ts#L302">entities/level.ts:302</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L296">entities/level.ts:296</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -417,7 +379,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="searchedlevel.html">SearchedLevel</a>.<a href="searchedlevel.html#orbs">orbs</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/9559fa5/src/entities/level.ts#L345">entities/level.ts:345</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L339">entities/level.ts:339</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -433,7 +395,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="searchedlevel.html">SearchedLevel</a>.<a href="searchedlevel.html#original">original</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/9559fa5/src/entities/level.ts#L349">entities/level.ts:349</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L343">entities/level.ts:343</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -449,7 +411,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="searchedlevel.html">SearchedLevel</a>.<a href="searchedlevel.html#song">song</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/9559fa5/src/entities/level.ts#L310">entities/level.ts:310</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L304">entities/level.ts:304</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -465,7 +427,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="searchedlevel.html">SearchedLevel</a>.<a href="searchedlevel.html#stats">stats</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/9559fa5/src/entities/level.ts#L330">entities/level.ts:330</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L324">entities/level.ts:324</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -517,7 +479,7 @@
 					<div class="tsd-signature tsd-kind-icon">updated<wbr>At<span class="tsd-signature-symbol">:</span> <a href="../globals.html#gddate" class="tsd-signature-type">GDDate</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/9559fa5/src/entities/level.ts#L504">entities/level.ts:504</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L515">entities/level.ts:515</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -532,7 +494,7 @@
 					<div class="tsd-signature tsd-kind-icon">uploaded<wbr>At<span class="tsd-signature-symbol">:</span> <a href="../globals.html#gddate" class="tsd-signature-type">GDDate</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/9559fa5/src/entities/level.ts#L502">entities/level.ts:502</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L513">entities/level.ts:513</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -548,7 +510,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="searchedlevel.html">SearchedLevel</a>.<a href="searchedlevel.html#version">version</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/9559fa5/src/entities/level.ts#L306">entities/level.ts:306</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L300">entities/level.ts:300</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -558,8 +520,66 @@
 					</div>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
+			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="decodedata" class="tsd-anchor"></a>
+					<h3>decode<wbr>Data</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">decode<wbr>Data<span class="tsd-signature-symbol">(</span>full<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#leveldata" class="tsd-signature-type">LevelData</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">decode<wbr>Data<span class="tsd-signature-symbol">(</span>full<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#fullleveldata" class="tsd-signature-type">FullLevelData</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L555">entities/level.ts:555</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Decodes the level data</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> full: <span class="tsd-signature-type">false</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Whether to also parse the string level data</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#leveldata" class="tsd-signature-type">LevelData</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>The level data, with a parsed attribute if a full decode was
+							requested</p>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L562">entities/level.ts:562</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Decodes the level data</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>full: <span class="tsd-signature-type">true</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Whether to also parse the string level data</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#fullleveldata" class="tsd-signature-type">FullLevelData</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>The level data, with a parsed attribute if a full decode was
+							requested</p>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 					<a name="getcomments" class="tsd-anchor"></a>
 					<h3>get<wbr>Comments</h3>
@@ -572,7 +592,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="searchedlevel.html">SearchedLevel</a>.<a href="searchedlevel.html#getcomments">getComments</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/9559fa5/src/entities/level.ts#L451">entities/level.ts:451</a></li>
+									<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L445">entities/level.ts:445</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -600,7 +620,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="searchedlevel.html">SearchedLevel</a>.<a href="searchedlevel.html#getcomments">getComments</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/9559fa5/src/entities/level.ts#L459">entities/level.ts:459</a></li>
+									<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L453">entities/level.ts:453</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -643,7 +663,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="searchedlevel.html">SearchedLevel</a>.<a href="searchedlevel.html#getcreator">getCreator</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/9559fa5/src/entities/level.ts#L439">entities/level.ts:439</a></li>
+									<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L433">entities/level.ts:433</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -671,7 +691,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="searchedlevel.html">SearchedLevel</a>.<a href="searchedlevel.html#resolve">resolve</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/9559fa5/src/entities/level.ts#L419">entities/level.ts:419</a></li>
+									<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/2848cbe/src/entities/level.ts#L413">entities/level.ts:413</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -758,6 +778,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 								<a href="level.html#version" class="tsd-kind-icon">version</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="level.html#decodedata" class="tsd-kind-icon">decode<wbr>Data</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 								<a href="level.html#getcomments" class="tsd-kind-icon">get<wbr>Comments</a>

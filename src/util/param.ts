@@ -66,7 +66,7 @@ export default class GDRequestParams {
    */
   resolve(): URLSearchParams {
     return new URLSearchParams(
-      Object.entries(this.data).map(([paramName, paramValue]) => [paramName, paramValue.toString()])
+      Object.keys(this.data).map(paramName => [paramName, this.data[paramName].toString()])
     );
   }
 }

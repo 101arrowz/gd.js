@@ -9,7 +9,8 @@
   "scripts": {
     "build": "yarn lint && tsc && webpack && yarn build/docs",
     "build/docs": "typedoc --mode file --out docs/",
-    "lint": "eslint --fix \"src/**/*.ts\""
+    "lint": "eslint --fix \"src/**/*.ts\"",
+    "postinstall": "patch-package"
   },
   "repository": {
     "type": "git",
@@ -44,15 +45,17 @@
     "eslint-config-prettier": "^6.9.0",
     "eslint-plugin-prettier": "^3.1.2",
     "node-fetch": "^2.6.0",
+    "patch-package": "^6.2.1",
+    "postinstall-postinstall": "^2.0.0",
     "prettier": "^1.19.1",
     "terser-webpack-plugin": "^2.3.5",
     "typedoc": "^0.16.11",
     "typescript": "^3.7.4",
     "webpack": "^4.42.0",
-    "webpack-cli": "^3.3.11"
+    "webpack-cli": "^3.3.11",
+    "worker-loader": "^2.0.0"
   },
   "dependencies": {
-    "sha1": "^1.1.1",
-    "uzip": "^0.20200303.0"
+    "sha1": "^1.1.1"
   }
 }

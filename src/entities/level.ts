@@ -2,14 +2,13 @@
  * Level utilities
  * @packageDocumentation
  */
-import { inflateRaw, inflate } from 'uzip';
 import {
   parse,
   generateDate,
   decrypt,
   gdDecodeBase64,
+  decompress,
   levelKey,
-  isNode,
   GDDate,
   ParsedData,
   GDRequestParams
@@ -149,11 +148,6 @@ class Song implements BaseSong {
     this.url = decodeURIComponent(d[10]);
   }
 }
-
-/** @internal */
-const dec = new TextDecoder();
-/** @internal */
-const GZIP_START_VALUES = [31, 139, 8, 0, 0, 0, 0, 0, 0];
 
 type Difficulty = 'N/A' | 'Auto' | 'Easy' | 'Normal' | 'Hard' | 'Harder' | 'Insane';
 type DemonDifficulty =
@@ -494,6 +488,23 @@ class SearchedLevel {
   }
 }
 
+/** A level's raw data */
+type LevelData = {
+  /** The raw level string after decoding and decompressing. Only offered because `gd.js` is not primarily a level API, so this can be passed to your own manipulation program. */
+  raw: string;
+};
+
+/** Full data for a level */
+type FullLevelData = LevelData & {
+  /** The parsed level data */
+  parsed: {
+    /** The metadata of the level */
+    meta: ParsedData;
+    /** An array of objects in the level with numeric key-value pair representations. Each key has a different meaning. For example, 1 is ID, 2 is X position, and 3 is Y position. Friendlier parsing is a WIP. */
+    objects: ParsedData[];
+  };
+};
+
 /**
  * Details about a level, including its full representation
  */
@@ -509,21 +520,11 @@ class Level extends SearchedLevel {
     /** The level's password. Will only be present if the level is copyable and has a password set (i.e. won't be present if either not copyable or free copy) */
     password?: string;
   };
-  /** The level's data */
-  data: {
-    /** The raw level string after decoding and decompressing. Only offered because `gd.js` is not primarily a level API, so this can be passed to your own manipulation program. */
-    raw: string;
-    /** The parsed level data */
-    parsed: {
-      /** The metadata of the level */
-      meta: ParsedData;
-      /** An array of objects in the level with numeric key-value pair representations. Each key has a different meaning. For example, 1 is ID, 2 is X position, and 3 is Y position. Friendlier parsing is a WIP. */
-      objects: ParsedData[];
-    };
-  };
+  /** The raw level string before decoding and decompressing. Only offered because `gd.js` is not primarily a level API, so this can be passed to your own manipulation program. */
+  data: string;
 
   /**
-   * Creates information about a Geometry Dash level, including its string representation1
+   * Creates information about a Geometry Dash level, including its string representation
    * @param _creator The creator of the level
    * @param rawData The raw data to parse
    * @param userData The parsed user data
@@ -542,27 +543,36 @@ class Level extends SearchedLevel {
       if (d[27] !== '1')
         this.copy.password = (+decrypt(d[27], levelKey).slice(1)).toString().padStart(4, '0'); // Working on GDPS support
     }
-    const rawBytes = isNode
-      ? Buffer.from(d[4], 'base64')
-      : new Uint8Array(
-          gdDecodeBase64(d[4])
-            .split('')
-            .map(str => str.charCodeAt(0))
-        );
-    // Check for GZIP encoding
-    const raw = dec.decode(
-      GZIP_START_VALUES.every((num, i) => rawBytes[i] === num)
-        ? inflateRaw(rawBytes.slice(10, -8))
-        : inflate(rawBytes)
-    );
-    const [header, ...parsedData] = raw.split(';').map(str => parse(str, ','));
-    this.data = {
-      raw,
-      parsed: {
-        meta: header,
-        objects: parsedData
-      }
-    };
+    this.data = d[4];
+  }
+
+  /**
+   * Decodes the level data
+   * @param full Whether to also parse the string level data
+   * @returns The level data, with a parsed attribute if a full decode was
+   *          requested
+   */
+  async decodeData(full?: false): Promise<LevelData>;
+  /**
+   * Decodes the level data
+   * @param full Whether to also parse the string level data
+   * @returns The level data, with a parsed attribute if a full decode was
+   *          requested
+   */
+  async decodeData(full: true): Promise<FullLevelData>;
+  async decodeData(full: boolean): Promise<LevelData> {
+    const raw = await decompress(this.data);
+    if (full) {
+      const [header, ...parsedData] = raw.split(';').map(str => parse(str, ','));
+      return {
+        raw,
+        parsed: {
+          meta: header,
+          objects: parsedData
+        }
+      } as FullLevelData;
+    }
+    return { raw };
   }
 }
 

@@ -18,7 +18,11 @@ if (isNode) {
   }
   global.atob = (str: string): string => Buffer.from(str, 'base64').toString();
   global.btoa = (str: string): string => Buffer.from(str).toString('base64');
-  global.TextDecoder = require('util').TextDecoder;
+  global.URL = require('url').URL;
+  global.URLSearchParams = require('url').URLSearchParams;
+  try {
+    global.Worker = require('worker_threads').Worker;
+  } catch (e) {}
 } else if (typeof fetch === 'undefined') {
   // Old browser
   throw new Error(
