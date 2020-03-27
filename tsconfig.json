@@ -9,6 +9,6 @@
     "declaration": true,
     "stripInternal": true
   },
-  "include": ["src/**/*.ts", "node_modules/tiny-inflate/**/*.js", "src/util/decompression.worker.js", "src/util/decompression.webworker.js"],
+  "include": ["src/**/*.ts", "src/**/*.js"],
   "exclude": ["src/entry.ts"]
 }

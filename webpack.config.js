@@ -55,4 +55,12 @@ module.exports = [{
   externals: {
     'worker_threads': 'commonjs2 worker_threads'
   }
+}, {
+  mode: 'production',
+  entry: './src/util/decompression.webworker.js',
+  output: {
+    filename: 'decompression.webworker.js',
+    path: join(__dirname, 'lib/')
+  },
+  target: 'web'
 }]

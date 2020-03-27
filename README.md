@@ -152,3 +152,7 @@ const levelEasy = await gd.levels.get('Level Easy', true);
 const levelEasyData = await levelEasy.decodeData(true);
 const colors = levelEasyData.parsed.meta.kS38.split('|').map(str => parse(str, '_'));
 ```
+
+### Development
+
+If you want to contribute, make sure to run `yarn run patch-package` or `npx patch-package` after installing dependencies. Thanks for your help!

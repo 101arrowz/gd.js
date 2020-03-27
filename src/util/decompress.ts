@@ -1,4 +1,4 @@
-import inflate from 'tiny-inflate';
+import inflate from './tiny-inflate';
 import isNode from './isNode';
 import { gdDecodeBase64 } from './crypto';
 
@@ -11,13 +11,12 @@ const decompress = async (data: string): Promise<string> => {
   const rawBytes = isNode
     ? Buffer.from(data, 'base64')
     : new Uint8Array(
-        gdDecodeBase64(this.data)
+        gdDecodeBase64(data)
           .split('')
           .map(str => str.charCodeAt(0))
       );
   let resultBytes: Uint8Array;
-  let usedWorker = typeof Worker !== 'undefined';
-  if (usedWorker) {
+  if (typeof Worker !== 'undefined') {
     resultBytes = await new Promise((res, rej) => {
       if (isNode) {
         const NodeWorker = (Worker as unknown) as typeof import('worker_threads').Worker;
@@ -30,27 +29,13 @@ const decompress = async (data: string): Promise<string> => {
           if (code !== 0) rej();
         });
       } else {
-        let getDecompressionWorker: () => Worker;
-        try {
-          const DecompressionWorker = require('worker-loader?{"inline":true,"fallback":false}!./decompression.webworker');
-          getDecompressionWorker = (): Worker => new DecompressionWorker();
-        } catch (e) {
-          try {
-            getDecompressionWorker = (): Worker => new Worker('./decompression.webworker.js');
-          } catch (e) {
-            usedWorker = false;
-          }
-        }
-        if (usedWorker) {
-          const worker = getDecompressionWorker();
-          worker.addEventListener('message', ev => res(ev.data));
-          worker.addEventListener('error', ev => rej(ev.error));
-          worker.postMessage(rawBytes, [rawBytes.buffer]);
-        }
+        const worker = new Worker('./decompression.webworker.js');
+        worker.addEventListener('message', ev => res(ev.data));
+        worker.addEventListener('error', ev => rej(ev.error));
+        worker.postMessage(rawBytes, [rawBytes.buffer]);
       }
     });
-  }
-  if (!usedWorker) {
+  } else {
     resultBytes = inflate(rawBytes);
   }
   let out = '';
