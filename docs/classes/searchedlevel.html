@@ -82,6 +82,9 @@
 							<li>
 								<a href="level.html" class="tsd-signature-type">Level</a>
 							</li>
+							<li>
+								<a href="loggedinsearchedlevel.html" class="tsd-signature-type">LoggedInSearchedLevel</a>
+							</li>
 						</ul>
 					</li>
 				</ul>
@@ -128,7 +131,7 @@
 					<div class="tsd-signature tsd-kind-icon">award<span class="tsd-signature-symbol">:</span> <a href="../globals.html#award" class="tsd-signature-type">Award</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/dd94fcb/src/entities/level.ts#L337">entities/level.ts:337</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/87168ec/src/entities/level.ts#L337">entities/level.ts:337</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -143,7 +146,7 @@
 					<div class="tsd-signature tsd-kind-icon">coins<span class="tsd-signature-symbol">:</span> <a href="../globals.html#coins" class="tsd-signature-type">Coins</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/dd94fcb/src/entities/level.ts#L335">entities/level.ts:335</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/87168ec/src/entities/level.ts#L335">entities/level.ts:335</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -155,10 +158,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="creator" class="tsd-anchor"></a>
 					<h3>creator</h3>
-					<div class="tsd-signature tsd-kind-icon">creator<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>registered<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">creator<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>accountID<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/dd94fcb/src/entities/level.ts#L308">entities/level.ts:308</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/87168ec/src/entities/level.ts#L308">entities/level.ts:308</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -170,18 +173,18 @@
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
-								<h5>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> accountID<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The creator&#39;s ID. Will be the user ID if the user is unregistered or the account ID if they are registered.</p>
+										<p>The creator&#39;s account ID (if the user is registered)</p>
 									</div>
 								</div>
 							</li>
 							<li class="tsd-parameter">
-								<h5>registered<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								<h5>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>Whether the creator is registered</p>
+										<p>The creator&#39;s user ID.</p>
 									</div>
 								</div>
 							</li>
@@ -194,7 +197,7 @@
 					<div class="tsd-signature tsd-kind-icon">description<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/dd94fcb/src/entities/level.ts#L306">entities/level.ts:306</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/87168ec/src/entities/level.ts#L306">entities/level.ts:306</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -209,7 +212,7 @@
 					<div class="tsd-signature tsd-kind-icon">diamonds<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/dd94fcb/src/entities/level.ts#L341">entities/level.ts:341</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/87168ec/src/entities/level.ts#L341">entities/level.ts:341</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -224,7 +227,7 @@
 					<div class="tsd-signature tsd-kind-icon">difficulty<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>level<span class="tsd-signature-symbol">: </span><a href="../globals.html#difficultylevel" class="tsd-signature-type">DifficultyLevel</a><span class="tsd-signature-symbol">; </span>requestedStars<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>stars<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/dd94fcb/src/entities/level.ts#L315">entities/level.ts:315</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/87168ec/src/entities/level.ts#L315">entities/level.ts:315</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -268,7 +271,7 @@
 					<div class="tsd-signature tsd-kind-icon">game<wbr>Version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/dd94fcb/src/entities/level.ts#L302">entities/level.ts:302</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/87168ec/src/entities/level.ts#L302">entities/level.ts:302</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -283,7 +286,7 @@
 					<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/dd94fcb/src/entities/level.ts#L298">entities/level.ts:298</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/87168ec/src/entities/level.ts#L298">entities/level.ts:298</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -298,7 +301,7 @@
 					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/dd94fcb/src/entities/level.ts#L296">entities/level.ts:296</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/87168ec/src/entities/level.ts#L296">entities/level.ts:296</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -313,7 +316,7 @@
 					<div class="tsd-signature tsd-kind-icon">orbs<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/dd94fcb/src/entities/level.ts#L339">entities/level.ts:339</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/87168ec/src/entities/level.ts#L339">entities/level.ts:339</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -328,7 +331,7 @@
 					<div class="tsd-signature tsd-kind-icon">original<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/dd94fcb/src/entities/level.ts#L343">entities/level.ts:343</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/87168ec/src/entities/level.ts#L343">entities/level.ts:343</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -343,7 +346,7 @@
 					<div class="tsd-signature tsd-kind-icon">song<span class="tsd-signature-symbol">:</span> <a href="song.html" class="tsd-signature-type">Song</a><span class="tsd-signature-symbol"> | </span><a href="defaultsong.html" class="tsd-signature-type">DefaultSong</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/dd94fcb/src/entities/level.ts#L304">entities/level.ts:304</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/87168ec/src/entities/level.ts#L304">entities/level.ts:304</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -358,7 +361,7 @@
 					<div class="tsd-signature tsd-kind-icon">stats<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>downloads<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>length<span class="tsd-signature-symbol">: </span><a href="../globals.html#levellength" class="tsd-signature-type">LevelLength</a><span class="tsd-signature-symbol">; </span>likes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>objects<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/dd94fcb/src/entities/level.ts#L324">entities/level.ts:324</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/87168ec/src/entities/level.ts#L324">entities/level.ts:324</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -410,7 +413,7 @@
 					<div class="tsd-signature tsd-kind-icon">version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/dd94fcb/src/entities/level.ts#L300">entities/level.ts:300</a></li>
+							<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/87168ec/src/entities/level.ts#L300">entities/level.ts:300</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -433,7 +436,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/dd94fcb/src/entities/level.ts#L445">entities/level.ts:445</a></li>
+									<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/87168ec/src/entities/level.ts#L439">entities/level.ts:439</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -460,7 +463,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/dd94fcb/src/entities/level.ts#L453">entities/level.ts:453</a></li>
+									<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/87168ec/src/entities/level.ts#L447">entities/level.ts:447</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -502,7 +505,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/dd94fcb/src/entities/level.ts#L433">entities/level.ts:433</a></li>
+									<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/87168ec/src/entities/level.ts#L427">entities/level.ts:427</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -529,7 +532,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/dd94fcb/src/entities/level.ts#L413">entities/level.ts:413</a></li>
+									<li>Defined in <a href="https://github.com/101arrowz/gd.js/blob/87168ec/src/entities/level.ts#L407">entities/level.ts:407</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">

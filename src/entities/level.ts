@@ -14,7 +14,7 @@ import {
   GDRequestParams
 } from '../util';
 import Creator from './entityCreator';
-import { User, LevelComment, StatlessSearchedUser } from './user';
+import { User, LevelComment, StatlessSearchedUser, LoggedInUser } from './user';
 
 // TODO: Try to add things to SongAuthor (like get all songs by this author)
 
@@ -306,10 +306,10 @@ class SearchedLevel {
   description: string;
   /** The level's creator */
   creator: {
-    /** The creator's ID. Will be the user ID if the user is unregistered or the account ID if they are registered.*/
+    /** The creator's user ID. */
     id: number;
-    /** Whether the creator is registered */
-    registered: boolean;
+    /** The creator's account ID (if the user is registered) */
+    accountID?: number;
   };
   /** The level's difficulty rating */
   difficulty: {
@@ -342,9 +342,9 @@ class SearchedLevel {
   /** The ID of the original level the level was copied from. Only exists if the level was copied */
   original?: number;
   /** @internal */
-  private _userData: string[];
+  protected _userData: string[];
   /** @internal */
-  private _songData: ParsedData;
+  protected _songData: ParsedData;
 
   /**
    * Creates info about a Geometry Dash level.
@@ -355,7 +355,7 @@ class SearchedLevel {
    */
   constructor(
     /** @internal */
-    private _creator: LevelCreator,
+    protected _creator: LevelCreator,
     rawData: string | ParsedData,
     userData: string[][],
     songData: ParsedData[]
@@ -372,17 +372,11 @@ class SearchedLevel {
         : new Song(_creator, (this._songData = songData.find(song => songID === song[1])));
     this.description = gdDecodeBase64(d[3]);
     const user = (this._userData = userData.find(el => el[0] === d[6]) || []);
-    if (!user.length)
-      this.creator = {
-        id: +d[6],
-        registered: false
-      };
-    else {
-      this.creator = {
-        id: +user[2],
-        registered: true
-      };
-    }
+    this.creator = {
+      id: +d[6]
+    };
+    if (user.length)
+      this.creator.id = +user[2];
     this.difficulty = {
       stars: +d[18],
       level: getDifficulty(+d[9], !!d[17] ? 'demon' : !!d[25] ? 'auto' : undefined),
@@ -431,7 +425,7 @@ class SearchedLevel {
    * @async
    */
   async getCreator(): Promise<User> {
-    return this.creator.registered
+    return this.creator.accountID
       ? await this._creator._client.users.getByAccountID(this.creator.id)
       : null;
   }
@@ -576,6 +570,113 @@ class Level extends SearchedLevel {
   }
 }
 
+/**
+ * Details about a level returned from a search, created by a logged in user
+ */
+class LoggedInSearchedLevel extends SearchedLevel {
+  creator: LoggedInUser;
+  /**
+   * Creates info about a Geometry Dash level from a logged in user.
+   * @param creator The level creator
+   * @param rawData The raw data to parse
+   * @param userData The parsed user data
+   * @param songData The parsed song data
+   * @internal
+   */
+  constructor(
+    /** @internal */
+    _creator: LevelCreator,
+    creator: LoggedInUser,
+    rawData: string | ParsedData,
+    userData: string[][],
+    songData: ParsedData[]
+  ) {
+    super(_creator, rawData, userData, songData);
+    if (creator.id !== this.creator.id) {
+      throw new Error('provided creator does not own the provided level');
+    }
+    this.creator = creator;
+  }
+
+  async getCreator(): Promise<LoggedInUser> {
+    return this.creator;
+  }
+
+  async resolve(): Promise<LoggedInLevel> {
+    const params = new GDRequestParams({
+      levelID: this.id,
+      inc: 1,
+      extras: 0
+    });
+    params.authorize('db');
+    return new LoggedInLevel(
+      this._creator,
+      this.creator,
+      await this._creator._client.req('/downloadGJLevel22.php', { method: 'POST', body: params }),
+      this._userData,
+      this._songData
+    );
+  }
+
+  /**
+   * Sets the description of the level
+   * @param desc The new description of the level
+   * @returns Whether setting the new description succeeded
+   */
+  async setDescription(desc: string): Promise<boolean> {
+    const params = new GDRequestParams({
+      levelID: this.id,
+      levelDesc: desc
+    });
+    params.authorize('db');
+    const success: boolean = (await this._creator._client.req('/updateGJDesc20.php', {
+      body: params
+    }) !== '-1');
+    if (success) {
+      this.description = desc;
+    }
+    return success;
+  }
+
+  // Update level support? need compression support
+}
+
+interface LoggedInLevel extends Omit<Level, keyof SearchedLevel> {}
+class LoggedInLevel extends LoggedInSearchedLevel {
+  /**
+   * Creates info about a Geometry Dash level from a logged in user.
+   * @param creator The level creator
+   * @param rawData The raw data to parse
+   * @param userData The parsed user data
+   * @param songData The parsed song data
+   * @internal
+   */
+  constructor(_creator: LevelCreator, creator: LoggedInUser, rawData: string, userData: string[], songData: ParsedData) {
+    const d = parse(rawData.slice(0, rawData.indexOf('#')));
+    super(_creator, creator, rawData, [userData], [songData]);
+    this.uploadedAt = generateDate(d[28]);
+    this.updatedAt = generateDate(d[29]);
+    if (d[27] === '0') {
+      this.copy = { copyable: false };
+    } else {
+      this.copy = { copyable: true };
+      if (d[27] !== '1')
+        this.copy.password = (+decrypt(d[27], levelKey).slice(1)).toString().padStart(4, '0'); // Working on GDPS support
+    }
+    this.data = d[4];
+  }
+}
+
+for (const k in Level.prototype) {
+  if (k in SearchedLevel.prototype)
+    continue;
+  Object.defineProperty(
+    LoggedInLevel.prototype,
+    k,
+    Object.getOwnPropertyDescriptor(Level.prototype, k)
+  );
+}
+
 type Order =
   | 'likes'
   | 'downloads'
@@ -705,15 +806,6 @@ const lengthToString = (
     : '-';
 
 /**
- * Convert a client-provided order into an integer
- * @param order The order to parse
- * @returns The integer order
- * @internal
- */
-const orderToInt = (order: Order | OrderInt): OrderInt =>
-  typeof order === 'number' ? order : ORDER_MAP[order];
-
-/**
  * Gets the params for a certain award search
  * @param award The award to get
  * @returns The params to be inserted to match the given award request
@@ -724,6 +816,57 @@ const awardToParams = (award: BaseSearchConfig['award']): { epic?: 1; featured?:
   if ([2, 'Feature', 'feature'].includes(award)) return { featured: 1 };
   return {};
 };
+
+/**
+ * Convert a client-provided order into an integer
+ * @param order The order to parse
+ * @returns The integer order
+ * @internal
+ */
+const orderToInt = (order: Order | OrderInt): OrderInt =>
+  typeof order === 'number' ? order : ORDER_MAP[order];
+
+/**
+ * Gets the search params for a given search config
+ * @param config The config to get the params for
+ * @returns The params that work with the config
+ * @internal
+ */
+const getSearchParams = ({
+  query = '',
+  difficulty,
+  orderBy = 0,
+  demon,
+  award,
+  length,
+  original = false,
+  twoPlayer = false,
+  coins = false
+}: SearchConfig): GDRequestParams => {
+  if (typeof query === 'number') {
+    query = query.toString();
+  } else if (query instanceof Array) {
+    query = query.join(',');
+  }
+  const [diff, demonFilter] = diffToString(difficulty, demon);
+  const len = lengthToString(length);
+  const type = orderToInt(orderBy);
+  const extraParams = awardToParams(award);
+  const params = new GDRequestParams({
+    str: query,
+    diff,
+    len,
+    type,
+    ...extraParams
+  });
+  if (demonFilter) params.insertParams({ demonFilter });
+  if (original) params.insertParams({ original: 1 });
+  if (twoPlayer) params.insertParams({ twoPlayer: 1 });
+  if (coins) params.insertParams({ coins: 1 });
+  params.authorize('db');
+  return params;
+}
+
 
 /**
  * A creator for levels
@@ -750,6 +893,74 @@ class LevelCreator extends Creator {
     return resolve ? await level.resolve() : level;
   }
 
+
+  /**
+   * Search for the by a logged in creator
+   * @param creator The logged in creator to get the levels for
+   * @param config The query to use when searching for the levels
+   * @returns The levels by the provided creator
+   * @async
+   */
+  async byCreator(creator: LoggedInUser): Promise<LoggedInSearchedLevel>;
+  /**
+   * Search for levels by a logged in creator
+   * @param creator The logged in creator to get the levels for
+   * @param config The query to use when searching for the levels
+   * @param num The number of results to get
+   * @returns The levels by the provided creator
+   * @async
+   */
+  async byCreator(creator: LoggedInUser, config: Omit<SearchConfig, 'query'>, num: number): Promise<LoggedInSearchedLevel[]>;
+  /**
+   * Search for levels by a creator
+   * @param creator The creator to get the levels for
+   * @param config The query to use when searching for the levels
+   * @param num The number of results to get
+   * @returns The levels by the provided creator
+   * @async
+   */
+  async byCreator(creator: User | number, config?: Omit<SearchConfig, 'query'>): Promise<SearchedLevel>;
+  /**
+   * Search for levels by a creator
+   * @param creator The creator to get the levels for
+   * @param config The query to use when searching for the levels
+   * @param num The number of results to get
+   * @returns The levels by the provided creator
+   * @async
+   */
+  async byCreator(creator: User | number, config: Omit<SearchConfig, 'query'>, num: number): Promise<SearchedLevel[]>;
+  async byCreator(creator: User | number, config: Omit<SearchConfig, 'query'> = {}, num?: number): Promise<SearchedLevel | SearchedLevel[]> {
+    let singleReturn = !num;
+    if (singleReturn) num = 1;
+    let id: User | number = creator;
+    if (typeof creator !== 'number') {
+      id = creator.id;
+    }
+    const params = getSearchParams({
+      query: ''+id,
+      ...config
+    } as SearchConfig);
+    const numToGet = Math.ceil(num / 10);
+    const levels: SearchedLevel[] = []
+    for (let i = 0; i < numToGet; i++) {
+      params.insertParams({
+        page: i
+      });
+      const data = await this._client.req('/getGJLevels21.php', { method: 'POST', body: params });
+      if (data === '-1') return singleReturn ? null : levels;
+      const [levelString, userString, songString] = data.split('#');
+      const parsedUsers = userString.split('|').map(str => str.split(':'));
+      const parsedSongs = songString.split('~:~').map(str => parse(str, '~|~'));
+      levels.push(
+        ...levelString.split('|').map(str => creator instanceof LoggedInUser
+          ? new LoggedInSearchedLevel(this, creator, str, parsedUsers, parsedSongs)
+          : new SearchedLevel(this, str, parsedUsers, parsedSongs)
+        )
+      );
+    }
+    return singleReturn ? levels[0] : levels.slice(0, num);
+  }
+
   /**
    * Search for a level with a query
    * @param config The query to use when searching for the level
@@ -773,47 +984,18 @@ class LevelCreator extends Creator {
    */
   async search(config: SearchConfig & { query: string }, num: number): Promise<SearchedLevel[]>;
   async search(
-    {
-      query = '',
-      difficulty,
-      orderBy = 0,
-      demon,
-      award,
-      length,
-      original = false,
-      twoPlayer = false,
-      coins = false
-    }: SearchConfig,
+    config: SearchConfig,
     num?: number
   ): Promise<SearchedLevel | SearchedLevel[]> {
     let singleReturn = !num;
     if (singleReturn) num = 1;
-    if (typeof query === 'number') {
-      query = query.toString();
-    } else if (query instanceof Array) {
-      singleReturn = false;
-      num = query.length;
-      query = query.join(',');
-    }
-    const [diff, demonFilter] = diffToString(difficulty, demon);
-    const len = lengthToString(length);
-    const type = orderToInt(orderBy);
-    const extraParams = awardToParams(award);
+    const params = getSearchParams(config);
     const numToGet = Math.ceil(num / 10);
     const levels: SearchedLevel[] = [];
     for (let i = 0; i < numToGet; i++) {
-      const params = new GDRequestParams({
-        str: query,
-        diff,
-        len,
-        type,
-        ...extraParams
+      params.insertParams({
+        page: i
       });
-      if (demonFilter) params.insertParams({ demonFilter });
-      if (original) params.insertParams({ original: 1 });
-      if (twoPlayer) params.insertParams({ twoPlayer: 1 });
-      if (coins) params.insertParams({ coins: 1 });
-      params.authorize('db');
       const data = await this._client.req('/getGJLevels21.php', { method: 'POST', body: params });
       if (data === '-1') return singleReturn ? null : levels;
       const [levelString, userString, songString] = data.split('#');
@@ -826,4 +1008,4 @@ class LevelCreator extends Creator {
     return singleReturn ? levels[0] : levels.slice(0, num);
   }
 }
-export { SearchedLevel, Level, LevelCreator };
+export { SearchedLevel, Level, LevelCreator, LoggedInLevel, LoggedInSearchedLevel };

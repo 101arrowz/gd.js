@@ -2,8 +2,9 @@
  * User utilities
  * @packageDocumentation
  */
+import Client from '..';
 import Creator from './entityCreator';
-import { SearchedLevel, Level } from './level';
+import { SearchedLevel, Level, LoggedInSearchedLevel, LoggedInLevel } from './level';
 import {
   parse,
   UserCredentials,
@@ -740,6 +741,7 @@ class User {
  * @param shouldLike Whather to like or not
  * @param accountID The account ID from which to like
  * @param gjp The GJP of the account
+ * @param client The client to make the request from
  */
 const like = async (
   id: number,
@@ -747,7 +749,8 @@ const like = async (
   type: number,
   shouldLike: boolean,
   accountID: number,
-  gjp: string
+  gjp: string,
+  client: Client
 ): Promise<boolean> => {
   const rs = genRS();
   const like = +shouldLike;
@@ -769,7 +772,7 @@ const like = async (
   });
   params.authorize('db');
   return (
-    (await this._creator._client.req('/likeGJItem211.php', {
+    (await client.req('/likeGJItem211.php', {
       method: 'POST',
       body: params
     })) === '1'
@@ -1416,7 +1419,7 @@ class LoggedInUser extends User {
     if (id instanceof SearchedLevel) {
       id = id.id;
     }
-    return await like(id, 0, 1, true, this.accountID, this._creds.gjp);
+    return await like(id, 0, 1, true, this.accountID, this._creds.gjp, this._creator._client);
   }
 
   /**
@@ -1429,7 +1432,7 @@ class LoggedInUser extends User {
     if (id instanceof SearchedLevel) {
       id = id.id;
     }
-    return await like(id, 0, 1, false, this.accountID, this._creds.gjp);
+    return await like(id, 0, 1, false, this.accountID, this._creds.gjp, this._creator._client);
   }
 
   /**
@@ -1456,7 +1459,7 @@ class LoggedInUser extends User {
       levelID = id.levelID;
       id = id.id;
     } else if (levelID instanceof SearchedLevel) levelID = levelID.id;
-    return await like(id, levelID, 2, true, this.accountID, this._creds.gjp);
+    return await like(id, levelID, 2, true, this.accountID, this._creds.gjp, this._creator._client);
   }
 
   /**
@@ -1483,7 +1486,7 @@ class LoggedInUser extends User {
       levelID = id.levelID;
       id = id.id;
     } else if (levelID instanceof SearchedLevel) levelID = levelID.id;
-    return await like(id, levelID, 2, false, this.accountID, this._creds.gjp);
+    return await like(id, levelID, 2, false, this.accountID, this._creds.gjp, this._creator._client);
   }
 
   /**
@@ -1514,7 +1517,7 @@ class LoggedInUser extends User {
       id = id.id;
     } else if (accountID instanceof StatlessSearchedUser || accountID instanceof User)
       accountID = accountID.accountID;
-    return await like(id, accountID, 3, true, this.accountID, this._creds.gjp);
+    return await like(id, accountID, 3, true, this.accountID, this._creds.gjp, this._creator._client);
   }
 
   /**
@@ -1545,7 +1548,29 @@ class LoggedInUser extends User {
       id = id.id;
     } else if (accountID instanceof StatlessSearchedUser || accountID instanceof User)
       accountID = accountID.accountID;
-    return await like(id, accountID, 3, false, this.accountID, this._creds.gjp);
+    return await like(id, accountID, 3, false, this.accountID, this._creds.gjp, this._creator._client);
+  }
+
+  /**
+   * Gets the most recent or most liked level level by the user
+   * @param byLikes Whether to sort by likes or not. Defaults to false
+   * @returns The most recent or most liked level made by this user
+   * @async
+   */
+  async getLevels(byLikes?: boolean): Promise<LoggedInSearchedLevel>;
+  /**
+   * Gets the most recent or most liked level levels by the user
+   * @param byLikes Whether to sort by likes or not. Defaults to false
+   * @param num The number of levels to get
+   * @returns An array of the most recent or most liked levels made by this user
+   * @async
+   */
+  async getLevels(byLikes: boolean, num: number): Promise<LoggedInSearchedLevel[]>;
+  async getLevels(
+    byLikes = false,
+    num?: number
+  ): Promise<LoggedInSearchedLevel | LoggedInSearchedLevel[]> {
+    return this._creator._client.levels.byCreator(this, byLikes ? { orderBy: 'likes' } : {}, num);
   }
 }
 
