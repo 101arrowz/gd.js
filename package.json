@@ -1,13 +1,16 @@
 {
   "name": "gd.js",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A Geometry Dash API wrapper for Node.js and the browser",
   "main": "lib/index.js",
   "module": "esm/index.js",
   "browser": {
     "./esm/util/crypto/node-encdec.js": "./esm/util/crypto/encdec.js",
     "./esm/node-fetch.js": "./esm/fetch.js",
-    "./esm/util/node-flate.js": "./esm/util/flate.js"
+    "./esm/util/node-flate.js": "./esm/util/flate.js",
+    "node-fetch": false,
+    "zlib": false,
+    "url": false
   },
   "types": "esm/index.d.ts",
   "author": "Arjun Barrett",
@@ -16,7 +19,8 @@
     "build": "yarn build:lib && yarn build:docs",
     "build:lib": "yarn lint && tsc && webpack",
     "build:docs": "typedoc --mode file --out docs/ --disableSources src/index.ts",
-    "lint": "eslint --fix \"src/**/*.ts\""
+    "lint": "eslint --fix \"src/**/*.ts\"",
+    "prepack": "yarn build"
   },
   "repository": {
     "type": "git",
