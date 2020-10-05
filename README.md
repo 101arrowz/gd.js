@@ -17,17 +17,11 @@ For both older browsers AND Node.js, `npm install isomorphic-fetch` and `require
 require('isomorphic-fetch');
 const GD = require('gd.js');
 ```
-Although ECMAScript Modules are used internally, UMD exports are used for compatibility with all platforms. If you want ECMAScript Module exports, use `'gd.js/esm'`.
 
+Although ECMAScript Modules are used internally, UMD exports are used for compatibility with all platforms. If you want to force ECMAScript Module exports, use `'gd.js/esm'`. Typically, this isn't necessary, as bundlers will automatically use ES Modules if possible.
 ```js
 import GD from 'gd.js/esm';
 ```
-
-Note that the `esm` build may be slower than the standard build. Most ES Module environments will also allow you to do:
-```js
-import GD from 'gd.js';
-```
-which could potentially have better performance.
 
 If you want to use a CDN, you can add the following tag to your HTML to create a global `GD` class.
 ```html
@@ -44,7 +38,7 @@ const GD = require('gd.js');
 ```
 ES modules:
 ```js
-import GD from 'gd.js/esm';
+import GD from 'gd.js';
 ```
 ---
 Now you should create an instance of this class to create your client.
@@ -58,6 +52,8 @@ You can also pass in a configuration to the constructor. This should be an objec
 `dbURL`, which should point to the base database URL. Defaults to the official Geometry Dash servers at `https://boomlings.com/database` and should only be changed if you are using a private server. Should NOT end with a slash.
 
 `corsURL`, which should point to the base URL for CORS requests (if you don't know what this is, don't worry about it). Only has an impact if you're using `gd.js` from a browser, defaults to `https://cors-anywhere.herokuapp.com/`. Note that this will be directly prepended to the full request URL, so it will usually end with a trailing slash.
+
+`fetch` is the fetch polyfill to use. You can typically just set fetch in the global environment, but if you don't want to do that, you can also pass a polyfill here.
 
 For example:
 ```js
@@ -87,9 +83,9 @@ const getMyInfo = async () => {
   console.log(me.stats.cp); // 0
   console.log(me.cosmetics.colors.primary) // { raw: 9, parsed: '#ff0000' }
   console.log(me.permissions); // { raw: 0, pretty: 'User' }
-  const rawIconResponse = await me.cosmetics.renderIcon('cube', true); // Give me the raw response for the cube icon!
+  const rawIconResponse = await me.cosmetics.renderIcon('cube', true); // Give me the cube icon!
   const dest = fs.createWriteStream('genius991-icon.png');
-  rawIconResponse.pipe(dest); // Saving the icon to a file! Hell yeah!
+  rawIconResponse.body.pipe(dest); // Saving the icon to a file! Hell yeah!
   return new Promise((resolve, reject) => {
     rawIconResponse.on('end', () => resolve());
     rawIconResponse.on('error', reject);
@@ -106,7 +102,8 @@ const getDumbLevels = async () => {
   console.log(bloodbath.stats.likes); // 1359617
   bloodbath = await bloodbath.resolve();
   console.log(bloodpath.copy.copyable); // false
-
+  const { raw } = bloodbath.decodeData();
+  // Do whatever you want with the decoded, decompressed raw level string
 }
 
 // Every ten minutes, GD Colon will post an account comment saying "I'm actually a furry"

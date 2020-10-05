@@ -1,14 +1,17 @@
 /**
  * Date generation for parsing GD server responses
+ * @internal
  * @packageDocumentation
  */
+
+import { Duration } from 'duration-converter';
 
 /** A date from the Geometry Dash servers */
 type GDDate = {
   /** The human-readable time in the "how long ago" format. */
   pretty: string;
-  /** The time as a date. Note that this may not be completely accurate. Will only be present if the `duration-converter` module is installed */
-  date?: Date;
+  /** The time as a date. Note that this may not be completely accurate. */
+  date: Date;
 };
 
 /**
@@ -17,22 +20,11 @@ type GDDate = {
  * @returns A date ready for use by a client
  * @internal
  */
-let generateDate = (pretty: string): GDDate => {
-  const data: GDDate = { pretty };
-  const possibleDate = new Date(pretty); // Only on private servers will this work
-  if (possibleDate.getTime()) data.date = possibleDate;
-  return data;
+const generateDate = (pretty: string): GDDate => {
+  // Only on private servers will this work
+  let date = new Date(pretty);
+  if (!date.getTime()) date = new Date(Date.now() - new Duration(pretty).MilliSeconds);
+  return { pretty, date };
 };
-
-try {
-  const { Duration }: typeof import('duration-converter') = require('duration-converter');
-  generateDate = (pretty: string): GDDate => {
-    const data: GDDate = { pretty };
-    const possibleDate = new Date(pretty); // Only on private servers will this work
-    if (possibleDate.getTime()) data.date = possibleDate;
-    else data.date = new Date(Date.now() - new Duration(pretty).MilliSeconds);
-    return data;
-  };
-} catch (e) {}
 
 export { GDDate, generateDate };

@@ -1,6 +1,6 @@
 const TerserPlugin = require('terser-webpack-plugin');
 const { join } = require('path');
-module.exports = [{
+module.exports = {
   mode: 'production',
   entry: './src/entry.ts',
   optimization: {
@@ -36,31 +36,9 @@ module.exports = [{
   },
   target: 'web',
   externals: {
-    util: 'commonjs2 util',
     url: 'commonjs2 url',
-    worker_threads: 'commonjs2 worker_threads',
-    path: 'commonjs2 path',
     'node-fetch': 'commonjs2 node-fetch',
-    'duration-converter': 'commonjs2 duration-converter'
+    zlib: 'commonjs zlib'
   },
   node: false
-}, {
-  mode: 'production',
-  entry: './src/util/decompression.worker.js',
-  output: {
-    filename: 'decompression.worker.js',
-    path: join(__dirname, 'lib/')
-  },
-  target: 'node',
-  externals: {
-    'worker_threads': 'commonjs2 worker_threads'
-  }
-}, {
-  mode: 'production',
-  entry: './src/util/decompression.webworker.js',
-  output: {
-    filename: 'decompression.webworker.js',
-    path: join(__dirname, 'lib/')
-  },
-  target: 'web'
-}]
+};

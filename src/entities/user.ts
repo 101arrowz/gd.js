@@ -2,9 +2,10 @@
  * User utilities
  * @packageDocumentation
  */
+
 import Client from '..';
 import Creator from './entityCreator';
-import { SearchedLevel, Level, LoggedInSearchedLevel, LoggedInLevel } from './level';
+import { SearchedLevel, Level, LoggedInSearchedLevel } from './level';
 import {
   parse,
   UserCredentials,
@@ -521,16 +522,18 @@ class UserCosmetics {
     type: IconCosmetic = 'cube',
     returnRaw = false
   ): Promise<Response | ArrayBuffer> {
-    const params = new URLSearchParams([
+    const params = [
       ['form', type],
       ['icon', this[type].toString()],
       ['col1', this.colors.primary.raw.toString()],
       ['col2', this.colors.secondary.raw.toString()],
       ['glow', this.glow.toString()],
       ['noUser', '1']
-    ]);
+    ]
+      .map(([x, y]) => x + '=' + y)
+      .join('&');
     const response = await this._creator._client.req(
-      `https://gdbrowser.com/icon/gd.js?${params.toString()}`,
+      `https://gdbrowser.com/icon/gd.js?${params}`,
       {},
       true
     );
@@ -731,6 +734,25 @@ class User {
       });
     return singleReturn ? comments[0] : comments;
   }
+
+  /**
+   * Gets the most recent level by the user
+   * @returns The most recent level made by this user
+   * @async
+   */
+  async getLevels(): Promise<this extends LoggedInUser ? LoggedInSearchedLevel : SearchedLevel>;
+  /**
+   * Gets the most recentlevels by the user
+   * @param num The number of levels to get
+   * @returns An array of the most recent levels made by this user
+   * @async
+   */
+  async getLevels(
+    num: number
+  ): Promise<(this extends LoggedInUser ? LoggedInSearchedLevel : SearchedLevel)[]>;
+  async getLevels(num?: number): Promise<SearchedLevel | SearchedLevel[]> {
+    return this._creator._client.levels.byCreator(this, {}, num);
+  }
 }
 
 /**
@@ -742,6 +764,8 @@ class User {
  * @param accountID The account ID from which to like
  * @param gjp The GJP of the account
  * @param client The client to make the request from
+ * @returns Whether liking was successful
+ * @internal
  */
 const like = async (
   id: number,
@@ -858,8 +882,8 @@ class LoggedInUser extends User {
    * @param commentID The comment (or its ID) to delete
    * @async
    */
-  async deleteAccountComment(commentID: number | LoggedInAccountComment): Promise<boolean> {
-    if (commentID instanceof LoggedInAccountComment) {
+  async deleteAccountComment(commentID: number | AccountComment<User>): Promise<boolean> {
+    if (commentID instanceof AccountComment) {
       if (commentID.author.accountID !== this.accountID) return false;
       commentID = commentID.id;
     }
@@ -891,12 +915,12 @@ class LoggedInUser extends User {
    * @returns Whether the comment deletion was successful
    * @async
    */
-  async deleteComment(commentID: LoggedInLevelComment): Promise<boolean>;
+  async deleteComment(commentID: LevelComment<User>): Promise<boolean>;
   async deleteComment(
-    commentID: number | LoggedInLevelComment,
+    commentID: number | LevelComment<User>,
     levelID?: number | SearchedLevel
   ): Promise<boolean> {
-    if (commentID instanceof LoggedInLevelComment) {
+    if (commentID instanceof LevelComment) {
       if (commentID.author.accountID !== this.accountID) return false;
       levelID = commentID.levelID;
       commentID = commentID.id;
@@ -1125,7 +1149,7 @@ class LoggedInUser extends User {
   ): Promise<boolean> {
     if (messageID instanceof SearchedMessage) {
       if ((messageID.outgoing ? messageID.from : messageID.to).accountID !== this.accountID)
-        return null;
+        return false;
       outgoing = messageID.outgoing;
       messageID = messageID.id;
     }
@@ -1486,7 +1510,15 @@ class LoggedInUser extends User {
       levelID = id.levelID;
       id = id.id;
     } else if (levelID instanceof SearchedLevel) levelID = levelID.id;
-    return await like(id, levelID, 2, false, this.accountID, this._creds.gjp, this._creator._client);
+    return await like(
+      id,
+      levelID,
+      2,
+      false,
+      this.accountID,
+      this._creds.gjp,
+      this._creator._client
+    );
   }
 
   /**
@@ -1517,7 +1549,15 @@ class LoggedInUser extends User {
       id = id.id;
     } else if (accountID instanceof StatlessSearchedUser || accountID instanceof User)
       accountID = accountID.accountID;
-    return await like(id, accountID, 3, true, this.accountID, this._creds.gjp, this._creator._client);
+    return await like(
+      id,
+      accountID,
+      3,
+      true,
+      this.accountID,
+      this._creds.gjp,
+      this._creator._client
+    );
   }
 
   /**
@@ -1548,29 +1588,50 @@ class LoggedInUser extends User {
       id = id.id;
     } else if (accountID instanceof StatlessSearchedUser || accountID instanceof User)
       accountID = accountID.accountID;
-    return await like(id, accountID, 3, false, this.accountID, this._creds.gjp, this._creator._client);
+    return await like(
+      id,
+      accountID,
+      3,
+      false,
+      this.accountID,
+      this._creds.gjp,
+      this._creator._client
+    );
   }
 
   /**
-   * Gets the most recent or most liked level level by the user
-   * @param byLikes Whether to sort by likes or not. Defaults to false
-   * @returns The most recent or most liked level made by this user
-   * @async
+   * Updates a level's description
+   * @param levelID The level ID to update the description for
+   * @param desc The new description for the level
+   * @returns Whether or not the level description update succeeded
    */
-  async getLevels(byLikes?: boolean): Promise<LoggedInSearchedLevel>;
+  async updateLevelDescription(levelID: number, desc: string): Promise<boolean>;
   /**
-   * Gets the most recent or most liked level levels by the user
-   * @param byLikes Whether to sort by likes or not. Defaults to false
-   * @param num The number of levels to get
-   * @returns An array of the most recent or most liked levels made by this user
-   * @async
+   * Updates a level's description
+   * @param levelID The level object to update the description for
+   * @param desc The new description for the level
+   * @returns Whether or not the level description update succeeded
    */
-  async getLevels(byLikes: boolean, num: number): Promise<LoggedInSearchedLevel[]>;
-  async getLevels(
-    byLikes = false,
-    num?: number
-  ): Promise<LoggedInSearchedLevel | LoggedInSearchedLevel[]> {
-    return this._creator._client.levels.byCreator(this, byLikes ? { orderBy: 'likes' } : {}, num);
+  async updateLevelDescription(levelID: SearchedLevel, desc: string): Promise<boolean>;
+  async updateLevelDescription(levelID: number | SearchedLevel, desc: string): Promise<boolean> {
+    if (levelID instanceof SearchedLevel) {
+      if (levelID.creator.id !== this.id) {
+        return false;
+      }
+      levelID = levelID.id;
+    }
+    const params = new GDRequestParams({
+      ...this._creds,
+      levelID,
+      levelDesc: gdEncodeBase64(desc)
+    });
+    params.authorize('db');
+    return (
+      (await this._creator._client.req('/updateGJDesc20.php', {
+        method: 'POST',
+        body: params
+      })) === '1'
+    );
   }
 }
 
@@ -1758,6 +1819,25 @@ class StatlessSearchedUser {
         return new LevelComment(this._creator, this, comment);
       });
     return singleReturn ? comments[0] : comments;
+  }
+
+  /**
+   * Gets the most recent level by the user
+   * @returns The most recent level made by this user
+   * @async
+   */
+  async getLevels(): Promise<this extends LoggedInUser ? LoggedInSearchedLevel : SearchedLevel>;
+  /**
+   * Gets the most recentlevels by the user
+   * @param num The number of levels to get
+   * @returns An array of the most recent levels made by this user
+   * @async
+   */
+  async getLevels(
+    num: number
+  ): Promise<(this extends LoggedInUser ? LoggedInSearchedLevel : SearchedLevel)[]>;
+  async getLevels(num?: number): Promise<SearchedLevel | SearchedLevel[]> {
+    return this._creator._client.levels.byCreator(this, {}, num);
   }
 
   /**

@@ -4,6 +4,12 @@
  * @packageDocumentation
  */
 
+/** @internal */
+const USP =
+  typeof URLSearchParams === 'undefined'
+    ? (require('url').URLSearchParams as typeof URLSearchParams)
+    : URLSearchParams;
+
 /**
  * The "secrets" used to authenticate with Geometry Dash servers
  * @remarks Only exist because RobTop doesn't know how to use tokens.
@@ -65,7 +71,7 @@ export default class GDRequestParams {
    * @returns The parameters as a URLSearchParams object
    */
   resolve(): URLSearchParams {
-    return new URLSearchParams(
+    return new USP(
       Object.keys(this.data).map(paramName => [paramName, this.data[paramName].toString()])
     );
   }

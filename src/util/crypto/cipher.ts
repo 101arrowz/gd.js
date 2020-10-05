@@ -3,25 +3,7 @@
  * @internal
  * @packageDocumentation
  */
-
-/**
- * Encode a string in Geometry Dash server-compatible Base64
- * @param str The string to encode in Geometry Dash Base64
- * @returns The Geometry Dash Base64 string
- * @internal
- */
-const gdEncodeBase64 = (str: string): string =>
-  btoa(str)
-    .replace(/\//g, '_')
-    .replace(/\+/g, '-');
-
-/**
- * Decode a string from Geometry Dash server-compatible Base64
- * @param str The string to decode from Geometry Dash Base64
- * @returns The original, unencoded string
- * @internal
- */
-const gdDecodeBase64 = (str: string): string => atob(str.replace(/_/g, '/').replace(/-/g, '+'));
+import { gdEncodeBase64, gdDecodeBase64 } from './node-encdec';
 
 /**
  * Ciphers or deciphers a string with XOR encryption.

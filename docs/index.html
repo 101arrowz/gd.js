@@ -94,7 +94,7 @@
 				<p><code>gd.js</code> exports a single class <code>Client</code>, but I like importing it as <code>GD</code>. Make sure you&#39;ve followed all the <a href="#installation">additional installation instructions</a> regarding <code>fetch()</code> as well!</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> GD = <span class="hljs-built_in">require</span>(<span class="hljs-string">'gd.js'</span>);</code></pre>
 				<p>ES modules:</p>
-				<pre><code class="language-js"><span class="hljs-keyword">import</span> GD <span class="hljs-keyword">from</span> <span class="hljs-string">'gd.js/esm'</span>;</code></pre>
+				<pre><code class="language-js"><span class="hljs-keyword">import</span> GD <span class="hljs-keyword">from</span> <span class="hljs-string">'gd.js'</span>;</code></pre>
 				<hr>
 				<p>Now you should create an instance of this class to create your client.</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> gd = <span class="hljs-keyword">new</span> GD();</code></pre>
@@ -124,9 +124,9 @@
   <span class="hljs-built_in">console</span>.log(me.stats.cp); <span class="hljs-comment">// 0</span>
   <span class="hljs-built_in">console</span>.log(me.cosmetics.colors.primary) <span class="hljs-comment">// { raw: 9, parsed: '#ff0000' }</span>
   <span class="hljs-built_in">console</span>.log(me.permissions); <span class="hljs-comment">// { raw: 0, pretty: 'User' }</span>
-  <span class="hljs-keyword">const</span> rawIconResponse = <span class="hljs-keyword">await</span> me.cosmetics.renderIcon(<span class="hljs-string">'cube'</span>, <span class="hljs-literal">true</span>); <span class="hljs-comment">// Give me the raw response for the cube icon!</span>
+  <span class="hljs-keyword">const</span> rawIconResponse = <span class="hljs-keyword">await</span> me.cosmetics.renderIcon(<span class="hljs-string">'cube'</span>, <span class="hljs-literal">true</span>); <span class="hljs-comment">// Give me the cube icon!</span>
   <span class="hljs-keyword">const</span> dest = fs.createWriteStream(<span class="hljs-string">'genius991-icon.png'</span>);
-  rawIconResponse.pipe(dest); <span class="hljs-comment">// Saving the icon to a file! Hell yeah!</span>
+  rawIconResponse.body.pipe(dest); <span class="hljs-comment">// Saving the icon to a file! Hell yeah!</span>
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> {
     rawIconResponse.on(<span class="hljs-string">'end'</span>, () =&gt; resolve());
     rawIconResponse.on(<span class="hljs-string">'error'</span>, reject);
@@ -190,281 +190,194 @@ gd.users.login({ <span class="hljs-attr">username</span>: <span class="hljs-stri
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-class tsd-has-type-parameter">
+					<li class=" tsd-kind-class tsd-has-type-parameter tsd-is-external">
 						<a href="classes/accountcomment.html" class="tsd-kind-icon">Account<wbr>Comment</a>
 					</li>
 					<li class=" tsd-kind-class">
 						<a href="classes/client.html" class="tsd-kind-icon">Client</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/comment.html" class="tsd-kind-icon">Comment</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/creator.html" class="tsd-kind-icon">Creator</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
+						<a href="classes/customsong.html" class="tsd-kind-icon">Custom<wbr>Song</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/defaultsong.html" class="tsd-kind-icon">Default<wbr>Song</a>
 					</li>
-					<li class=" tsd-kind-class tsd-has-type-parameter">
+					<li class=" tsd-kind-class tsd-has-type-parameter tsd-is-external">
 						<a href="classes/friendrequest.html" class="tsd-kind-icon">Friend<wbr>Request</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/incomingfriendrequest.html" class="tsd-kind-icon">Incoming<wbr>Friend<wbr>Request</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/level.html" class="tsd-kind-icon">Level</a>
 					</li>
-					<li class=" tsd-kind-class tsd-has-type-parameter">
+					<li class=" tsd-kind-class tsd-has-type-parameter tsd-is-external">
 						<a href="classes/levelcomment.html" class="tsd-kind-icon">Level<wbr>Comment</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/levelcreator.html" class="tsd-kind-icon">Level<wbr>Creator</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/loggedinaccountcomment.html" class="tsd-kind-icon">Logged<wbr>InAccount<wbr>Comment</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/loggedinlevel.html" class="tsd-kind-icon">Logged<wbr>InLevel</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/loggedinlevelcomment.html" class="tsd-kind-icon">Logged<wbr>InLevel<wbr>Comment</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/loggedinsearchedlevel.html" class="tsd-kind-icon">Logged<wbr>InSearched<wbr>Level</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/loggedinuser.html" class="tsd-kind-icon">Logged<wbr>InUser</a>
 					</li>
-					<li class=" tsd-kind-class tsd-has-type-parameter">
+					<li class=" tsd-kind-class tsd-has-type-parameter tsd-is-external">
 						<a href="classes/message.html" class="tsd-kind-icon">Message</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/outgoingfriendrequest.html" class="tsd-kind-icon">Outgoing<wbr>Friend<wbr>Request</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/searchedlevel.html" class="tsd-kind-icon">Searched<wbr>Level</a>
 					</li>
-					<li class=" tsd-kind-class tsd-has-type-parameter">
+					<li class=" tsd-kind-class tsd-has-type-parameter tsd-is-external">
 						<a href="classes/searchedmessage.html" class="tsd-kind-icon">Searched<wbr>Message</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/searcheduser.html" class="tsd-kind-icon">Searched<wbr>User</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/searchedusercosmetics.html" class="tsd-kind-icon">Searched<wbr>User<wbr>Cosmetics</a>
 					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/song.html" class="tsd-kind-icon">Song</a>
-					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/songauthor.html" class="tsd-kind-icon">Song<wbr>Author</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/statlesssearcheduser.html" class="tsd-kind-icon">Statless<wbr>Searched<wbr>User</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/user.html" class="tsd-kind-icon">User</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/usercosmetics.html" class="tsd-kind-icon">User<wbr>Cosmetics</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/usercreator.html" class="tsd-kind-icon">User<wbr>Creator</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#award" class="tsd-kind-icon">Award</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#basesearchconfig" class="tsd-kind-icon">Base<wbr>Search<wbr>Config</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#coins" class="tsd-kind-icon">Coins</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#colors" class="tsd-kind-icon">Colors</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#config" class="tsd-kind-icon">Config</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#convertibletoaccountid" class="tsd-kind-icon">Convertible<wbr>ToAccountID</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#credentials" class="tsd-kind-icon">Credentials</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#demondiffconfig" class="tsd-kind-icon">Demon<wbr>Diff<wbr>Config</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#demondifficulty" class="tsd-kind-icon">Demon<wbr>Difficulty</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#difficulty" class="tsd-kind-icon">Difficulty</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#difficultylevel" class="tsd-kind-icon">Difficulty<wbr>Level</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#fullleveldata" class="tsd-kind-icon">Full<wbr>Level<wbr>Data</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#gdcolor" class="tsd-kind-icon">GDColor</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#gddate" class="tsd-kind-icon">GDDate</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#iconcosmetic" class="tsd-kind-icon">Icon<wbr>Cosmetic</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#leveldata" class="tsd-kind-icon">Level<wbr>Data</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#levellength" class="tsd-kind-icon">Level<wbr>Length</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#messageuser" class="tsd-kind-icon">Message<wbr>User</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#nondemondiffconfig" class="tsd-kind-icon">Non<wbr>Demon<wbr>Diff<wbr>Config</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#order" class="tsd-kind-icon">Order</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#orderint" class="tsd-kind-icon">Order<wbr>Int</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#parseddata" class="tsd-kind-icon">Parsed<wbr>Data</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#permission" class="tsd-kind-icon">Permission</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#permissionlevel" class="tsd-kind-icon">Permission<wbr>Level</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#prettyaward" class="tsd-kind-icon">Pretty<wbr>Award</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#prettylevellength" class="tsd-kind-icon">Pretty<wbr>Level<wbr>Length</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#rawdemondifficulty" class="tsd-kind-icon">Raw<wbr>Demon<wbr>Difficulty</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#rawdifficulty" class="tsd-kind-icon">Raw<wbr>Difficulty</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#rawlevellength" class="tsd-kind-icon">Raw<wbr>Level<wbr>Length</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#requestconfig" class="tsd-kind-icon">Request<wbr>Config</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#searchconfig" class="tsd-kind-icon">Search<wbr>Config</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#socialurl" class="tsd-kind-icon">SocialURL</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#socials" class="tsd-kind-icon">Socials</a>
 					</li>
-					<li class=" tsd-kind-type-alias">
+					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="globals.html#song" class="tsd-kind-icon">Song</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#usercredentials" class="tsd-kind-icon">User<wbr>Credentials</a>
 					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#tinf_data_error" class="tsd-kind-icon">TINF_<wbr>DATA_<wbr>ERROR</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#tinf_ok" class="tsd-kind-icon">TINF_<wbr>OK</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#clcidx" class="tsd-kind-icon">clcidx</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#code_tree" class="tsd-kind-icon">code_<wbr>tree</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#dist_base" class="tsd-kind-icon">dist_<wbr>base</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#dist_bits" class="tsd-kind-icon">dist_<wbr>bits</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#length_base" class="tsd-kind-icon">length_<wbr>base</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#length_bits" class="tsd-kind-icon">length_<wbr>bits</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#lengths" class="tsd-kind-icon">lengths</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#offs" class="tsd-kind-icon">offs</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#sdtree" class="tsd-kind-icon">sdtree</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#sltree" class="tsd-kind-icon">sltree</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#data" class="tsd-kind-icon">Data</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#tree" class="tsd-kind-icon">Tree</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#decompress" class="tsd-kind-icon">decompress</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#like" class="tsd-kind-icon">like</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#tinf_build_bits_base" class="tsd-kind-icon">tinf_<wbr>build_<wbr>bits_<wbr>base</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#tinf_build_fixed_trees" class="tsd-kind-icon">tinf_<wbr>build_<wbr>fixed_<wbr>trees</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#tinf_build_tree" class="tsd-kind-icon">tinf_<wbr>build_<wbr>tree</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#tinf_decode_symbol" class="tsd-kind-icon">tinf_<wbr>decode_<wbr>symbol</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#tinf_decode_trees" class="tsd-kind-icon">tinf_<wbr>decode_<wbr>trees</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#tinf_decompress" class="tsd-kind-icon">tinf_<wbr>decompress</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#tinf_getbit" class="tsd-kind-icon">tinf_<wbr>getbit</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#tinf_gunzip" class="tsd-kind-icon">tinf_<wbr>gunzip</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#tinf_inflate" class="tsd-kind-icon">tinf_<wbr>inflate</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#tinf_inflate_base" class="tsd-kind-icon">tinf_<wbr>inflate_<wbr>base</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#tinf_inflate_block_data" class="tsd-kind-icon">tinf_<wbr>inflate_<wbr>block_<wbr>data</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#tinf_inflate_uncompressed_block" class="tsd-kind-icon">tinf_<wbr>inflate_<wbr>uncompressed_<wbr>block</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#tinf_read_bits" class="tsd-kind-icon">tinf_<wbr>read_<wbr>bits</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#tinf_readle" class="tsd-kind-icon">tinf_<wbr>readle</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#tinf_uncompress" class="tsd-kind-icon">tinf_<wbr>uncompress</a>
+					<li class=" tsd-kind-function tsd-is-external">
+						<a href="globals.html#gdencodebase64" class="tsd-kind-icon">gd<wbr>Encode<wbr>Base64</a>
 					</li>
 				</ul>
 			</nav>

@@ -1,14 +1,21 @@
 {
   "name": "gd.js",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A Geometry Dash API wrapper for Node.js and the browser",
   "main": "lib/index.js",
+  "module": "esm/index.js",
+  "browser": {
+    "./esm/util/crypto/node-encdec.js": "./esm/util/crypto/encdec.js",
+    "./esm/node-fetch.js": "./esm/fetch.js",
+    "./esm/util/node-flate.js": "./esm/util/flate.js"
+  },
   "types": "esm/index.d.ts",
   "author": "Arjun Barrett",
   "license": "MIT",
   "scripts": {
-    "build": "yarn lint && tsc && webpack && yarn build/docs",
-    "build/docs": "typedoc --mode file --out docs/",
+    "build": "yarn build:lib && yarn build:docs",
+    "build:lib": "yarn lint && tsc && webpack",
+    "build:docs": "typedoc --mode file --out docs/ --disableSources src/index.ts",
     "lint": "eslint --fix \"src/**/*.ts\""
   },
   "repository": {
@@ -40,20 +47,21 @@
     "@typescript-eslint/parser": "^2.16.0",
     "babel-loader": "^8.0.6",
     "core-js": "3",
-    "duration-converter": "^1.3.6",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.9.0",
     "eslint-plugin-prettier": "^3.1.2",
     "node-fetch": "^2.6.0",
     "prettier": "^1.19.1",
     "terser-webpack-plugin": "^2.3.5",
-    "typedoc": "^0.16.11",
+    "typedoc": "^0.17.0-3",
     "typescript": "^3.7.4",
     "webpack": "^4.42.0",
     "webpack-bundle-analyzer": "^3.6.1",
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
+    "duration-converter": "^1.3.6",
+    "fflate": "^0.2.3",
     "sha1": "^1.1.1"
   }
 }

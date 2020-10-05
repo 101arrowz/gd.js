@@ -1,7 +1,9 @@
 /**
  * Level utilities
+ * @internal
  * @packageDocumentation
  */
+
 import {
   parse,
   generateDate,
@@ -112,9 +114,9 @@ class DefaultSong implements BaseSong {
 }
 
 /**
- * Information about a song
+ * Information about a custom song
  */
-class Song implements BaseSong {
+class CustomSong implements BaseSong {
   name: string;
   /** The song's Newgrounds ID */
   id: number;
@@ -148,6 +150,8 @@ class Song implements BaseSong {
     this.url = decodeURIComponent(d[10]);
   }
 }
+
+type Song = BaseSong | CustomSong;
 
 type Difficulty = 'N/A' | 'Auto' | 'Easy' | 'Normal' | 'Hard' | 'Harder' | 'Insane';
 type DemonDifficulty =
@@ -301,7 +305,7 @@ class SearchedLevel {
   /** The game version in which the level was built */
   gameVersion: number;
   /** The song the level uses */
-  song: Song | DefaultSong;
+  song: Song;
   /** The level's description */
   description: string;
   /** The level's creator */
@@ -369,14 +373,13 @@ class SearchedLevel {
     this.song =
       songID === '0'
         ? new DefaultSong(_creator, +d[12])
-        : new Song(_creator, (this._songData = songData.find(song => songID === song[1])));
+        : new CustomSong(_creator, (this._songData = songData.find(song => songID === song[1])));
     this.description = gdDecodeBase64(d[3]);
     const user = (this._userData = userData.find(el => el[0] === d[6]) || []);
     this.creator = {
       id: +d[6]
     };
-    if (user.length)
-      this.creator.id = +user[2];
+    if (user.length) this.creator.accountID = +user[2];
     this.difficulty = {
       stars: +d[18],
       level: getDifficulty(+d[9], !!d[17] ? 'demon' : !!d[25] ? 'auto' : undefined),
@@ -396,7 +399,7 @@ class SearchedLevel {
     this.orbs = ORBS[this.difficulty.stars];
     this.diamonds = this.difficulty.stars < 2 ? 0 : this.difficulty.stars + 2;
     const orig = +d[30];
-    if (orig !== 0) this.original = orig;
+    if (orig) this.original = orig;
   }
 
   /**
@@ -592,9 +595,6 @@ class LoggedInSearchedLevel extends SearchedLevel {
     songData: ParsedData[]
   ) {
     super(_creator, rawData, userData, songData);
-    if (creator.id !== this.creator.id) {
-      throw new Error('provided creator does not own the provided level');
-    }
     this.creator = creator;
   }
 
@@ -619,29 +619,28 @@ class LoggedInSearchedLevel extends SearchedLevel {
   }
 
   /**
-   * Sets the description of the level
+   * Updates the description of the level
    * @param desc The new description of the level
    * @returns Whether setting the new description succeeded
    */
-  async setDescription(desc: string): Promise<boolean> {
-    const params = new GDRequestParams({
-      levelID: this.id,
-      levelDesc: desc
-    });
-    params.authorize('db');
-    const success: boolean = (await this._creator._client.req('/updateGJDesc20.php', {
-      body: params
-    }) !== '-1');
+  async updateDescription(desc: string): Promise<boolean> {
+    const success = await this.creator.updateLevelDescription(this, desc);
     if (success) {
       this.description = desc;
     }
     return success;
   }
 
-  // Update level support? need compression support
+  // Update level func? need compression support
 }
 
-interface LoggedInLevel extends Omit<Level, keyof SearchedLevel> {}
+interface LoggedInLevel extends Omit<Level, keyof SearchedLevel> {
+  /**
+   * Prevent prettier from converting this to an interface
+   * @internal
+   */
+  '': undefined;
+}
 class LoggedInLevel extends LoggedInSearchedLevel {
   /**
    * Creates info about a Geometry Dash level from a logged in user.
@@ -651,7 +650,13 @@ class LoggedInLevel extends LoggedInSearchedLevel {
    * @param songData The parsed song data
    * @internal
    */
-  constructor(_creator: LevelCreator, creator: LoggedInUser, rawData: string, userData: string[], songData: ParsedData) {
+  constructor(
+    _creator: LevelCreator,
+    creator: LoggedInUser,
+    rawData: string,
+    userData: string[],
+    songData: ParsedData
+  ) {
     const d = parse(rawData.slice(0, rawData.indexOf('#')));
     super(_creator, creator, rawData, [userData], [songData]);
     this.uploadedAt = generateDate(d[28]);
@@ -667,15 +672,11 @@ class LoggedInLevel extends LoggedInSearchedLevel {
   }
 }
 
-for (const k in Level.prototype) {
-  if (k in SearchedLevel.prototype)
-    continue;
-  Object.defineProperty(
-    LoggedInLevel.prototype,
-    k,
-    Object.getOwnPropertyDescriptor(Level.prototype, k)
-  );
-}
+Object.defineProperty(
+  LoggedInLevel.prototype,
+  'decodeData',
+  Object.getOwnPropertyDescriptor(Level.prototype, 'decodeData')
+);
 
 type Order =
   | 'likes'
@@ -865,8 +866,7 @@ const getSearchParams = ({
   if (coins) params.insertParams({ coins: 1 });
   params.authorize('db');
   return params;
-}
-
+};
 
 /**
  * A creator for levels
@@ -893,7 +893,6 @@ class LevelCreator extends Creator {
     return resolve ? await level.resolve() : level;
   }
 
-
   /**
    * Search for the by a logged in creator
    * @param creator The logged in creator to get the levels for
@@ -901,7 +900,10 @@ class LevelCreator extends Creator {
    * @returns The levels by the provided creator
    * @async
    */
-  async byCreator(creator: LoggedInUser): Promise<LoggedInSearchedLevel>;
+  async byCreator(
+    creator: LoggedInUser,
+    config?: Omit<SearchConfig, 'query' | 'orderBy'>
+  ): Promise<LoggedInSearchedLevel>;
   /**
    * Search for levels by a logged in creator
    * @param creator The logged in creator to get the levels for
@@ -910,7 +912,11 @@ class LevelCreator extends Creator {
    * @returns The levels by the provided creator
    * @async
    */
-  async byCreator(creator: LoggedInUser, config: Omit<SearchConfig, 'query'>, num: number): Promise<LoggedInSearchedLevel[]>;
+  async byCreator(
+    creator: LoggedInUser,
+    config: Omit<SearchConfig, 'query' | 'orderBy'>,
+    num: number
+  ): Promise<LoggedInSearchedLevel[]>;
   /**
    * Search for levels by a creator
    * @param creator The creator to get the levels for
@@ -919,7 +925,10 @@ class LevelCreator extends Creator {
    * @returns The levels by the provided creator
    * @async
    */
-  async byCreator(creator: User | number, config?: Omit<SearchConfig, 'query'>): Promise<SearchedLevel>;
+  async byCreator(
+    creator: StatlessSearchedUser | User | number,
+    config?: Omit<SearchConfig, 'query' | 'orderBy'>
+  ): Promise<SearchedLevel>;
   /**
    * Search for levels by a creator
    * @param creator The creator to get the levels for
@@ -928,20 +937,29 @@ class LevelCreator extends Creator {
    * @returns The levels by the provided creator
    * @async
    */
-  async byCreator(creator: User | number, config: Omit<SearchConfig, 'query'>, num: number): Promise<SearchedLevel[]>;
-  async byCreator(creator: User | number, config: Omit<SearchConfig, 'query'> = {}, num?: number): Promise<SearchedLevel | SearchedLevel[]> {
-    let singleReturn = !num;
+  async byCreator(
+    creator: StatlessSearchedUser | User | number,
+    config: Omit<SearchConfig, 'query' | 'orderBy'>,
+    num: number
+  ): Promise<SearchedLevel[]>;
+  async byCreator(
+    creator: StatlessSearchedUser | User | number,
+    config: Omit<SearchConfig, 'query' | 'orderBy'> = {},
+    num?: number
+  ): Promise<SearchedLevel | SearchedLevel[]> {
+    const singleReturn = !num;
     if (singleReturn) num = 1;
-    let id: User | number = creator;
+    let id: StatlessSearchedUser | User | number = creator;
     if (typeof creator !== 'number') {
       id = creator.id;
     }
     const params = getSearchParams({
-      query: ''+id,
+      query: '' + id,
+      orderBy: 5 as OrderInt, // Special case
       ...config
     } as SearchConfig);
     const numToGet = Math.ceil(num / 10);
-    const levels: SearchedLevel[] = []
+    const levels: SearchedLevel[] = [];
     for (let i = 0; i < numToGet; i++) {
       params.insertParams({
         page: i
@@ -952,10 +970,13 @@ class LevelCreator extends Creator {
       const parsedUsers = userString.split('|').map(str => str.split(':'));
       const parsedSongs = songString.split('~:~').map(str => parse(str, '~|~'));
       levels.push(
-        ...levelString.split('|').map(str => creator instanceof LoggedInUser
-          ? new LoggedInSearchedLevel(this, creator, str, parsedUsers, parsedSongs)
-          : new SearchedLevel(this, str, parsedUsers, parsedSongs)
-        )
+        ...levelString
+          .split('|')
+          .map(str =>
+            creator instanceof LoggedInUser
+              ? new LoggedInSearchedLevel(this, creator, str, parsedUsers, parsedSongs)
+              : new SearchedLevel(this, str, parsedUsers, parsedSongs)
+          )
       );
     }
     return singleReturn ? levels[0] : levels.slice(0, num);
@@ -983,11 +1004,8 @@ class LevelCreator extends Creator {
    * @async
    */
   async search(config: SearchConfig & { query: string }, num: number): Promise<SearchedLevel[]>;
-  async search(
-    config: SearchConfig,
-    num?: number
-  ): Promise<SearchedLevel | SearchedLevel[]> {
-    let singleReturn = !num;
+  async search(config: SearchConfig, num?: number): Promise<SearchedLevel | SearchedLevel[]> {
+    const singleReturn = !num;
     if (singleReturn) num = 1;
     const params = getSearchParams(config);
     const numToGet = Math.ceil(num / 10);
@@ -1008,4 +1026,14 @@ class LevelCreator extends Creator {
     return singleReturn ? levels[0] : levels.slice(0, num);
   }
 }
-export { SearchedLevel, Level, LevelCreator, LoggedInLevel, LoggedInSearchedLevel };
+export {
+  SearchedLevel,
+  Level,
+  LevelCreator,
+  LoggedInLevel,
+  LoggedInSearchedLevel,
+  BaseSong,
+  CustomSong,
+  DefaultSong,
+  Song
+};

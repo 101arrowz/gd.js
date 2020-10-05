@@ -1,5 +1,6 @@
 /**
  * Authentication info
+ * @internal
  * @packageDocumentation
  */
 
