@@ -4,8 +4,12 @@
  * @packageDocumentation
  */
 
+import isNode from './util/isNode';
+
+const glob = isNode ? global : window;
+
 /** @internal */
-let fetch = (typeof window === 'undefined' ? global : window).fetch;
+let fetch = glob.fetch;
 if (!fetch) {
   try {
     fetch = require('node-fetch');
@@ -15,4 +19,4 @@ if (!fetch) {
     );
   }
 }
-export default fetch;
+export default fetch.bind(glob);
