@@ -132,11 +132,8 @@ const gd = require('gd.js'); // Now you can use in Node.js!
 Beyond `fetch()` issues, note that `gd.js` adds `atob()` and `btoa()` onto the global scope for Node.js environments to mimic their behaviors in the browser.
 
 ### Other Info
-If you need to parse an arbitrary string with the `key:value:key2:value2` format you can `require()`/`import` `'gd.js/esm/util/parse'` and use its `parse` method.
+If you need to parse an arbitrary string with the `key:value:key2:value2` format you can import `'gd.js/esm/util/parse'` and use its `parse` method. (Note this only works with ES Modules; for Node.js, you may need to enable the experimental ESM loader.)
 
-```js
-const { parse } = require('gd.js/esm/util/parse');
-```
 ES Modules:
 ```js
 import { parse } from 'gd.js/esm/util/parse';
