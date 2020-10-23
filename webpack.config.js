@@ -2,7 +2,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const { join } = require('path');
 module.exports = {
   mode: 'production',
-  entry: './src/entry.ts',
+  entry: './esm/entry.js',
   optimization: {
     minimizer: [
       new TerserPlugin({
@@ -13,17 +13,20 @@ module.exports = {
       })
     ]
   },
+  plugins: [
+    // new (require('webpack-bundle-analyzer').BundleAnalyzerPlugin)()
+  ],
   output: {
     library: 'GD',
     libraryTarget: 'umd',
     globalObject: 'typeof self !== \'undefined\' ? self : this',
     filename: 'index.js',
-    path: join(__dirname, 'lib/')
+    path: join(__dirname, 'umd/')
   },
   module: {
     rules: [
       {
-        test: /\.ts$/,
+        test: /\.js$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader'

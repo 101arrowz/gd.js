@@ -149,4 +149,4 @@ const colors = levelEasyData.parsed.meta.kS38.split('|').map(str => parse(str, '
 
 ### Development
 
-If you want to contribute, make sure to run `yarn run patch-package` or `npx patch-package` after installing dependencies. Thanks for your help!
+If you want to contribute, check out the code. Every function, even internal ones, are documented. Thanks for your help!

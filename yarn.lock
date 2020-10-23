@@ -2430,10 +2430,10 @@ fast-levenshtein@~2.0.6:
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
   integrity sha1-PYpcZog6FqMMqGQ+hR8Zuqd5eRc=
 
-fflate@^0.2.3:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/fflate/-/fflate-0.2.3.tgz#550054a6940159aca5515cb931cb0a3a52d812db"
-  integrity sha512-1bBr+K7/jRfxfbVglNE3Eefx5pVOvJ7rw4Lbqj6SCNqUJ+IPC+y6v4SONTT52a6tsb3Ps8zS4phg51elz3R57g==
+fflate@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/fflate/-/fflate-0.3.1.tgz#78e3ae2e325c6b79c232f3c57a07ea9804571886"
+  integrity sha512-s9MRsVVRY6cGXBQSqsfT/ThXnULk+Rl1n6tZE2BLuP956YMuPH4/Kl0S2yL/ZA5chil8kUmmevd+ONvN9gSkfw==
 
 figgy-pudding@^3.5.1:
   version "3.5.2"

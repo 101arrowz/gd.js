@@ -165,8 +165,7 @@ gd.users.login({ <span class="hljs-attr">username</span>: <span class="hljs-stri
 				<a href="#other-info" id="other-info" style="color: inherit; text-decoration: none;">
 					<h3>Other Info</h3>
 				</a>
-				<p>If you need to parse an arbitrary string with the <code>key:value:key2:value2</code> format you can <code>require()</code>/<code>import</code> <code>&#39;gd.js/esm/util/parse&#39;</code> and use its <code>parse</code> method.</p>
-				<pre><code class="language-js"><span class="hljs-keyword">const</span> { parse } = <span class="hljs-built_in">require</span>(<span class="hljs-string">'gd.js/esm/util/parse'</span>);</code></pre>
+				<p>If you need to parse an arbitrary string with the <code>key:value:key2:value2</code> format you can import <code>&#39;gd.js/esm/util/parse&#39;</code> and use its <code>parse</code> method. (Note this only works with ES Modules; for Node.js, you may need to enable the experimental ESM loader.)</p>
 				<p>ES Modules:</p>
 				<pre><code class="language-js"><span class="hljs-keyword">import</span> { parse } <span class="hljs-keyword">from</span> <span class="hljs-string">'gd.js/esm/util/parse'</span>;</code></pre>
 				<p>Its first parameter is the string to parse and its second parameter is the splitter (defaults to <code>&#39;:&#39;</code>). If you were to parse <code>kS38</code> in the level string, you could do:</p>
@@ -176,7 +175,7 @@ gd.users.login({ <span class="hljs-attr">username</span>: <span class="hljs-stri
 				<a href="#development" id="development" style="color: inherit; text-decoration: none;">
 					<h3>Development</h3>
 				</a>
-				<p>If you want to contribute, make sure to run <code>yarn run patch-package</code> or <code>npx patch-package</code> after installing dependencies. Thanks for your help!</p>
+				<p>If you want to contribute, check out the code. Every function, even internal ones, are documented. Thanks for your help!</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -337,6 +336,9 @@ gd.users.login({ <span class="hljs-attr">username</span>: <span class="hljs-stri
 						<a href="globals.html#parseddata" class="tsd-kind-icon">Parsed<wbr>Data</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="globals.html#parsedleveldata" class="tsd-kind-icon">Parsed<wbr>Level<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#permission" class="tsd-kind-icon">Permission</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-is-external">
@@ -374,12 +376,6 @@ gd.users.login({ <span class="hljs-attr">username</span>: <span class="hljs-stri
 					</li>
 					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#usercredentials" class="tsd-kind-icon">User<wbr>Credentials</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-is-external">
-						<a href="globals.html#glob" class="tsd-kind-icon">glob</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-external">
-						<a href="globals.html#gdencodebase64" class="tsd-kind-icon">gd<wbr>Encode<wbr>Base64</a>
 					</li>
 				</ul>
 			</nav>

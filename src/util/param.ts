@@ -7,7 +7,7 @@
 /** @internal */
 const USP =
   typeof URLSearchParams === 'undefined'
-    ? (require('url').URLSearchParams as typeof URLSearchParams)
+    ? (eval('require')('url').URLSearchParams as typeof URLSearchParams)
     : URLSearchParams;
 
 /**

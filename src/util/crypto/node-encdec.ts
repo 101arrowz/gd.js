@@ -1,15 +1,11 @@
-import isNode from '../isNode';
-import { gdEncodeBase64 as e, gdDecodeBase64 as d } from './encdec';
-
 /**
  * Encode a string in Geometry Dash server-compatible Base64
  * @param str The string to encode in Geometry Dash Base64
  * @returns The Geometry Dash Base64 string
  * @internal
  */
-export const gdEncodeBase64 = isNode
-  ? (str: string): string => Buffer.from(str).toString('base64')
-  : e;
+export const gdEncodeBase64 = (str: string): string =>
+  Buffer.from(str, 'latin1').toString('base64');
 
 /**
  * Decode a string from Geometry Dash server-compatible Base64
@@ -17,6 +13,5 @@ export const gdEncodeBase64 = isNode
  * @returns The original, unencoded string
  * @internal
  */
-export const gdDecodeBase64 = isNode
-  ? (str: string): string => Buffer.from(str, 'base64').toString()
-  : d;
+export const gdDecodeBase64 = (str: string): string =>
+  Buffer.from(str, 'base64').toString('latin1');

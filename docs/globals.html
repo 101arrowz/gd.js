@@ -124,6 +124,7 @@
 								<li class="tsd-kind-type-alias tsd-is-external"><a href="globals.html#order" class="tsd-kind-icon">Order</a></li>
 								<li class="tsd-kind-type-alias tsd-is-external"><a href="globals.html#orderint" class="tsd-kind-icon">Order<wbr>Int</a></li>
 								<li class="tsd-kind-type-alias tsd-is-external"><a href="globals.html#parseddata" class="tsd-kind-icon">Parsed<wbr>Data</a></li>
+								<li class="tsd-kind-type-alias tsd-is-external"><a href="globals.html#parsedleveldata" class="tsd-kind-icon">Parsed<wbr>Level<wbr>Data</a></li>
 								<li class="tsd-kind-type-alias tsd-is-external"><a href="globals.html#permission" class="tsd-kind-icon">Permission</a></li>
 								<li class="tsd-kind-type-alias tsd-is-external"><a href="globals.html#permissionlevel" class="tsd-kind-icon">Permission<wbr>Level</a></li>
 								<li class="tsd-kind-type-alias tsd-is-external"><a href="globals.html#prettyaward" class="tsd-kind-icon">Pretty<wbr>Award</a></li>
@@ -137,18 +138,6 @@
 								<li class="tsd-kind-type-alias tsd-is-external"><a href="globals.html#socials" class="tsd-kind-icon">Socials</a></li>
 								<li class="tsd-kind-type-alias tsd-is-external"><a href="globals.html#song" class="tsd-kind-icon">Song</a></li>
 								<li class="tsd-kind-type-alias tsd-is-external"><a href="globals.html#usercredentials" class="tsd-kind-icon">User<wbr>Credentials</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section tsd-is-external">
-							<h3>Variables</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-variable tsd-is-external"><a href="globals.html#glob" class="tsd-kind-icon">glob</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section tsd-is-external">
-							<h3>Functions</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-function tsd-is-external"><a href="globals.html#gdencodebase64" class="tsd-kind-icon">gd<wbr>Encode<wbr>Base64</a></li>
 							</ul>
 						</section>
 					</div>
@@ -515,7 +504,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-is-external">
 					<a name="fullleveldata" class="tsd-anchor"></a>
 					<h3>Full<wbr>Level<wbr>Data</h3>
-					<div class="tsd-signature tsd-kind-icon">Full<wbr>Level<wbr>Data<span class="tsd-signature-symbol">:</span> <a href="globals.html#leveldata" class="tsd-signature-type">LevelData</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>parsed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>meta<span class="tsd-signature-symbol">: </span><a href="globals.html#parseddata" class="tsd-signature-type">ParsedData</a><span class="tsd-signature-symbol">; </span>objects<span class="tsd-signature-symbol">: </span><a href="globals.html#parseddata" class="tsd-signature-type">ParsedData</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Full<wbr>Level<wbr>Data<span class="tsd-signature-symbol">:</span> <a href="globals.html#leveldata" class="tsd-signature-type">LevelData</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>parsed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>meta<span class="tsd-signature-symbol">: </span><a href="globals.html#parseddata" class="tsd-signature-type">ParsedData</a><span class="tsd-signature-symbol">; </span>objects<span class="tsd-signature-symbol">: </span><a href="globals.html#parsedleveldata" class="tsd-signature-type">ParsedLevelData</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -744,6 +733,26 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-index-signature">
 								<h5><span class="tsd-signature-symbol">[</span>k: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-is-external">
+					<a name="parsedleveldata" class="tsd-anchor"></a>
+					<h3>Parsed<wbr>Level<wbr>Data</h3>
+					<div class="tsd-signature tsd-kind-icon">Parsed<wbr>Level<wbr>Data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A parsed Geometry Dash level object</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-index-signature">
+								<h5><span class="tsd-signature-symbol">[</span>k: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">number</span></h5>
 							</li>
 						</ul>
 					</div>
@@ -978,39 +987,6 @@
 					</div>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-external">
-				<h2>Variables</h2>
-				<section class="tsd-panel tsd-member tsd-kind-variable tsd-is-external">
-					<a name="glob" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagConst">Const</span> glob</h3>
-					<div class="tsd-signature tsd-kind-icon">glob<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">Global</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">globalThis</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">Window</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">globalThis</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> = isNode ? global : window</span></div>
-					<aside class="tsd-sources">
-					</aside>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-external">
-				<h2>Functions</h2>
-				<section class="tsd-panel tsd-member tsd-kind-function tsd-is-external">
-					<a name="gdencodebase64" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagConst">Const</span> gd<wbr>Encode<wbr>Base64</h3>
-					<ul class="tsd-signatures tsd-kind-function tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">gd<wbr>Encode<wbr>Base64<span class="tsd-signature-symbol">(</span>str<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>str: <span class="tsd-signature-type">string</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
-						</li>
-					</ul>
-				</section>
-			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
@@ -1170,6 +1146,9 @@
 						<a href="globals.html#parseddata" class="tsd-kind-icon">Parsed<wbr>Data</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="globals.html#parsedleveldata" class="tsd-kind-icon">Parsed<wbr>Level<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#permission" class="tsd-kind-icon">Permission</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-is-external">
@@ -1207,12 +1186,6 @@
 					</li>
 					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#usercredentials" class="tsd-kind-icon">User<wbr>Credentials</a>
-					</li>
-					<li class=" tsd-kind-variable tsd-is-external">
-						<a href="globals.html#glob" class="tsd-kind-icon">glob</a>
-					</li>
-					<li class=" tsd-kind-function tsd-is-external">
-						<a href="globals.html#gdencodebase64" class="tsd-kind-icon">gd<wbr>Encode<wbr>Base64</a>
 					</li>
 				</ul>
 			</nav>

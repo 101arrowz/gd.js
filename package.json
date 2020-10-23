@@ -1,13 +1,17 @@
 {
   "name": "gd.js",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "A Geometry Dash API wrapper for Node.js and the browser",
-  "main": "lib/index.js",
+  "main": "lib/entry.js",
+  "unpkg": "umd/index.js",
   "module": "esm/index.js",
   "browser": {
     "./esm/util/crypto/node-encdec.js": "./esm/util/crypto/encdec.js",
     "./esm/node-fetch.js": "./esm/fetch.js",
     "./esm/util/node-flate.js": "./esm/util/flate.js",
+    "./lib/util/crypto/node-encdec.js": "./lib/util/crypto/encdec.js",
+    "./lib/node-fetch.js": "./lib/fetch.js",
+    "./lib/util/node-flate.js": "./lib/util/flate.js",
     "node-fetch": false,
     "zlib": false,
     "url": false
@@ -17,7 +21,7 @@
   "license": "MIT",
   "scripts": {
     "build": "yarn build:lib && yarn build:docs",
-    "build:lib": "yarn lint && tsc && webpack",
+    "build:lib": "yarn lint && tsc && tsc --project tsconfig.node.json && webpack",
     "build:docs": "typedoc --mode file --out docs/ --disableSources src/index.ts",
     "lint": "eslint --fix \"src/**/*.ts\"",
     "prepack": "yarn build"
@@ -65,7 +69,7 @@
   },
   "dependencies": {
     "duration-converter": "^1.3.6",
-    "fflate": "^0.2.3",
+    "fflate": "^0.3.1",
     "sha1": "^1.1.1"
   }
 }

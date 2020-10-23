@@ -6,6 +6,7 @@
 
 import {
   parse,
+  parseObject,
   generateDate,
   decrypt,
   gdDecodeBase64,
@@ -13,7 +14,8 @@ import {
   levelKey,
   GDDate,
   ParsedData,
-  GDRequestParams
+  GDRequestParams,
+  ParsedLevelData
 } from '../util';
 import Creator from './entityCreator';
 import { User, LevelComment, StatlessSearchedUser, LoggedInUser } from './user';
@@ -498,7 +500,7 @@ type FullLevelData = LevelData & {
     /** The metadata of the level */
     meta: ParsedData;
     /** An array of objects in the level with numeric key-value pair representations. Each key has a different meaning. For example, 1 is ID, 2 is X position, and 3 is Y position. Friendlier parsing is a WIP. */
-    objects: ParsedData[];
+    objects: ParsedLevelData[];
   };
 };
 
@@ -560,12 +562,12 @@ class Level extends SearchedLevel {
   async decodeData(full: boolean): Promise<LevelData> {
     const raw = await decompress(this.data);
     if (full) {
-      const [header, ...parsedData] = raw.split(';').map(str => parse(str, ','));
+      const [rawHeader, ...rawParsedData] = raw.split(';');
       return {
         raw,
         parsed: {
-          meta: header,
-          objects: parsedData
+          meta: parse(rawHeader, ','),
+          objects: rawParsedData.map(parseObject)
         }
       } as FullLevelData;
     }

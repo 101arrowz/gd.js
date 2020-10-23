@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "ES2018",
     "allowJs": true,
     "moduleResolution": "node",
     "outDir": "esm/",
@@ -8,6 +8,5 @@
     "declaration": true,
     "stripInternal": true
   },
-  "include": ["src/**/*.ts", "src/**/*.js"],
-  "exclude": ["src/entry.ts"]
+  "include": ["src/**/*.ts", "src/**/*.js"]
 }
