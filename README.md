@@ -102,7 +102,7 @@ const getDumbLevels = async () => {
   console.log(bloodbath.stats.likes); // 1359617
   bloodbath = await bloodbath.resolve();
   console.log(bloodpath.copy.copyable); // false
-  const { raw } = bloodbath.decodeData();
+  const { raw } = await bloodbath.decodeData();
   // Do whatever you want with the decoded, decompressed raw level string
 }
 
