@@ -562,6 +562,8 @@ class User {
   username: string;
   /** The player's user ID */
   id: number;
+  /** The global rank of the player */
+  rank: number;
   /** The player's account ID */
   accountID: number;
   /** The player's stats */
@@ -608,6 +610,7 @@ class User {
       stars: +d[3],
       diamonds: +d[46],
       demons: +d[4],
+      rank: +d[30],
       coins: {
         normal: +d[13],
         user: +d[17]
@@ -1708,6 +1711,8 @@ class StatlessSearchedUser {
   username: string;
   /** The player's user ID. Will only be present if it is known */
   id?: number;
+  /** The global rank of the player */
+  rank: number;
   /** The player's account ID */
   accountID: number;
   /** The player's cosmetics */
@@ -1856,12 +1861,16 @@ class StatlessSearchedUser {
 class SearchedUser extends StatlessSearchedUser {
   /** The player's user ID */
   id: number;
+  /** The global rank of the player */
+  rank: number;
   /** The player's stats */
   stats: {
     /** The number of stars the player has collected */
     stars: number;
     /** The number of demons the player has beaten */
     demons: number;
+    /** The number of diamonds the player has collected */
+    diamonds: number;
     /** The coins the player has collected */
     coins: {
       /** The number of coins in the single-player mode (gold coins) the player has collected */
@@ -1884,6 +1893,7 @@ class SearchedUser extends StatlessSearchedUser {
     this.stats = {
       stars: +d[3],
       demons: +d[4],
+      rank: +d[30],
       coins: {
         normal: +d[13],
         user: +d[17]
