@@ -300,7 +300,7 @@ type Coins = {
 class SearchedLevel {
   /** The name of the level */
   name: string;
-  /** The level's ID */
+  /** The level's ID. If you are creating a new level, this is 0 */
   id: number;
   /** The level's version */
   version: number;

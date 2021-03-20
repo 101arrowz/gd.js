@@ -13,7 +13,7 @@ type Config = {
   /** The URL to use as a CORS proxy when making requests from a browser. Defaults to https://cors-anywhere.herokuapp.com/. Note it should have a trailing slash. */
   corsURL?: string;
   /** The fetch polyfill to use. Only necessary when fetch is not supported in the target environment. Defaults to node-fetch (if installed) */
-  fetch: typeof fetch;
+  fetch?: typeof fetch;
 };
 
 /**
