@@ -572,6 +572,8 @@ class User {
     diamonds: number;
     /** The number of demons the player has beaten */
     demons: number;
+    /** The global rank of the player */
+    rank: number;
     /** The coins the player has collected */
     coins: {
       /** The number of coins in the single-player mode (gold coins) the player has collected */
@@ -608,6 +610,7 @@ class User {
       stars: +d[3],
       diamonds: +d[46],
       demons: +d[4],
+      rank: +d[30],
       coins: {
         normal: +d[13],
         user: +d[17]
