@@ -1,6 +1,6 @@
 {
   "name": "gd.js",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "A Geometry Dash API wrapper for Node.js and the browser",
   "main": "lib/entry.js",
   "unpkg": "umd/index.js",
