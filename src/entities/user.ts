@@ -8,11 +8,9 @@ import Creator from './entityCreator';
 import { SearchedLevel, Level, LoggedInSearchedLevel } from './level';
 import {
   parse,
-  UserCredentials,
   GDRequestParams,
   accountKey,
   encrypt,
-  Credentials,
   gdDecodeBase64,
   gdEncodeBase64,
   ParsedData,
@@ -32,6 +30,7 @@ import sha1 from 'sha1';
  * Types that can be converted to an account ID
  */
 type ConvertibleToAccountID = number | string | User | StatlessSearchedUser;
+
 /**
  * Converts multiple datatypes into an account
  * @param creator The creator of the caller
@@ -804,6 +803,18 @@ const like = async (
       body: params
     })) === '1'
   );
+};
+
+/**
+ * Credentials to use in requests to Geometry Dash servers
+ */
+export type Credentials = {
+  /** The player's username */
+  userName: string;
+  /** The player's account ID */
+  accountID: number;
+  /** The player's password, XOR-encrypted */
+  gjp: string;
 };
 
 /**
@@ -1897,6 +1908,16 @@ class SearchedUser extends StatlessSearchedUser {
 }
 
 /**
+ * Credentials provided by a user
+ */
+export type UserCredentials = {
+  /** The player's username */
+  username: string;
+  /** The player's password */
+  password: string;
+};
+
+/**
  * A creator for Geometry Dash players
  */
 class UserCreator extends Creator {
@@ -2094,4 +2115,31 @@ class UserCreator extends Creator {
   }
 }
 
-export { User, LoggedInUser, SearchedUser, StatlessSearchedUser, UserCreator, LevelComment };
+export {
+  User,
+  LoggedInUser,
+  SearchedUser,
+  StatlessSearchedUser,
+  UserCreator,
+  Comment,
+  LevelComment,
+  AccountComment,
+  LoggedInAccountComment,
+  LoggedInLevelComment,
+  FriendRequest,
+  IncomingFriendRequest,
+  OutgoingFriendRequest,
+  ConvertibleToAccountID,
+  MessageUser,
+  SearchedMessage,
+  Message,
+  GDColor,
+  PermissionLevel,
+  Permission,
+  SocialURL,
+  IconCosmetic,
+  Colors,
+  UserCosmetics,
+  Socials,
+  SearchedUserCosmetics
+};

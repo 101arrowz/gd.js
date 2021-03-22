@@ -1,6 +1,5 @@
 /**
  * Level utilities
- * @internal
  * @packageDocumentation
  */
 
@@ -80,7 +79,6 @@ const DEFAULT_SONGS: [string, string][] = [
 
 /**
  * Base definition for a song
- * @internal
  */
 interface BaseSong {
   /** The name of the song */
@@ -212,6 +210,7 @@ const getDifficulty = (diff: number, special?: 'auto' | 'demon'): DifficultyLeve
   };
 };
 
+type RawAward = 0 | 1 | 2 | 3;
 type PrettyAward = 'None' | 'Star' | 'Feature' | 'Epic';
 /** @internal */
 const AWARDS: PrettyAward[] = ['None', 'Star', 'Feature', 'Epic'];
@@ -222,7 +221,7 @@ type Award = {
    * The raw numeric representation of the award. 0 = none, 1 = star, 2 = feature, 3 = epic.
    * Note this is also the amount of creator points earned from the level
    */
-  raw: 0 | 1 | 2 | 3;
+  raw: RawAward;
   /** The level's position in the leaderboard. Note this will only exist if the  */
   position?: number;
   /** The pretty representation of the award */
@@ -295,7 +294,7 @@ type Coins = {
 };
 
 /**
- * Data about a level returned from a search
+ * Details about a level returned from a search
  */
 class SearchedLevel {
   /** The name of the level */
@@ -632,8 +631,6 @@ class LoggedInSearchedLevel extends SearchedLevel {
     }
     return success;
   }
-
-  // Update level func? need compression support
 }
 
 interface LoggedInLevel extends Omit<Level, keyof SearchedLevel> {
@@ -643,6 +640,10 @@ interface LoggedInLevel extends Omit<Level, keyof SearchedLevel> {
    */
   '': undefined;
 }
+
+/**
+ * Details about a level, including its full representation and created by a logged in user
+ */
 class LoggedInLevel extends LoggedInSearchedLevel {
   /**
    * Creates info about a Geometry Dash level from a logged in user.
@@ -1028,14 +1029,39 @@ class LevelCreator extends Creator {
     return singleReturn ? levels[0] : levels.slice(0, num);
   }
 }
+
 export {
   SearchedLevel,
   Level,
+  GDDate,
+  ParsedData,
+  ParsedLevelData,
   LevelCreator,
   LoggedInLevel,
   LoggedInSearchedLevel,
+  SongAuthor,
   BaseSong,
   CustomSong,
   DefaultSong,
-  Song
+  Song,
+  Difficulty,
+  DemonDifficulty,
+  RawDifficulty,
+  RawDemonDifficulty,
+  DifficultyLevel,
+  RawAward,
+  PrettyAward,
+  Award,
+  RawLevelLength,
+  PrettyLevelLength,
+  LevelLength,
+  Coins,
+  LevelData,
+  FullLevelData,
+  Order,
+  OrderInt,
+  BaseSearchConfig,
+  NonDemonDiffConfig,
+  DemonDiffConfig,
+  SearchConfig
 };

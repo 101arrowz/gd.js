@@ -1,9 +1,10 @@
 {
   "name": "gd.js",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "description": "A Geometry Dash API wrapper for Node.js and the browser",
   "main": "lib/entry.js",
   "unpkg": "umd/index.js",
+  "jsdelivr": "umd/index.js",
   "module": "esm/index.js",
   "browser": {
     "./esm/util/crypto/node-encdec.js": "./esm/util/crypto/encdec.js",

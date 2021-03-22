@@ -1,4 +1,4 @@
-import { isNode, GDRequestParams as GDParams } from './util';
+import { isNode, GDRequestParams } from './util';
 import { UserCreator, LevelCreator } from './entities';
 import fetch from './node-fetch';
 
@@ -23,7 +23,7 @@ type RequestConfig = {
   /** The method for the request */
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
   /** The parameters for the request */
-  body?: GDParams;
+  body?: GDRequestParams;
 };
 
 /** @internal */
@@ -62,19 +62,25 @@ class Client {
     this.levels = new LevelCreator(this);
   }
 
-  /** @internal */
+  /**
+   * Make a request to a Geometry Dash server. It isn't recommended to use this directly, but if there's
+   * some section of the Geometry Dash server API that `gd.js` doesn't provide, this is a good solution.
+   *
+   * @param url The path to request to (based at the {@link Config.dbURL})
+   * @param conf The request configuration
+   * @param returnRaw Whether to parse the response into a string or return it raw
+   * @return The Response containing the Geometry Dash server's response
+   */
   async req(url: string, conf: RequestConfig, returnRaw: true): Promise<Response>;
-  /** @internal */
-  async req(url: string, conf: RequestConfig, returnRaw?: false): Promise<string>;
   /**
    * Make a request to a Geometry Dash server.
    *
    * @param url The path to request to (based at the {@link Config.dbURL})
    * @param conf The request configuration
    * @param returnRaw Whether to parse the response into a string or return it raw
-   * @return The Response or string containing the Geometry Dash server's response
-   * @internal
+   * @return The string containing the Geometry Dash server's response
    */
+  async req(url: string, conf: RequestConfig, returnRaw?: false): Promise<string>;
   async req(
     url: string,
     { method = 'GET', body = null }: RequestConfig = {},
@@ -113,4 +119,7 @@ class Client {
     if (this.config.logLevel > 1) console.log(str);
   }
 }
+
+export { Config, RequestConfig, GDRequestParams };
+export * from './entities';
 export default Client;

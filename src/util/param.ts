@@ -23,13 +23,11 @@ const SECRETS = {
 
 /**
  * Parsed data returned from Geometry Dash requests
- * @internal
  */
 export type GDRequestData = { [k: string]: string | number };
 
 /**
  * Parameters for Geometry Dash requests
- * @internal
  */
 export default class GDRequestParams {
   private data: GDRequestData;

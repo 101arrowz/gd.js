@@ -4,6 +4,12 @@
  * @packageDocumentation
  */
 
+/**
+ * Encode a string to Geometry Dash server-compatible Base64
+ * @param str The string to encode
+ * @returns The string encoded in Geometry Dash Base64
+ * @internal
+ */
 export const gdEncodeBase64 = (str: string): string =>
   btoa(str)
     .replace(/\//g, '_')

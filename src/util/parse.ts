@@ -5,6 +5,13 @@
  */
 
 /**
+ * The default splitter for parsing.
+ * This is mostly here to consume the @internal marker
+ * @internal
+ */
+const defaultSplitter = ':';
+
+/**
  * A parsed response from the Geometry Dash servers
  */
 export type ParsedData = { [k: string]: string };
@@ -16,7 +23,7 @@ export type ParsedData = { [k: string]: string };
  * @returns The parsed data
  * @internal
  */
-export const parse = (data: string, splitter = ':'): ParsedData => {
+export const parse = (data: string, splitter = defaultSplitter): ParsedData => {
   const split = data.split(splitter);
   const obj: ParsedData = {};
   for (let i = 0; i < split.length; i += 2) obj[split[i]] = split[i + 1];
@@ -37,7 +44,6 @@ export type ParsedLevelData = { [k: number]: number };
 export const parseObject = (data: string): ParsedLevelData => {
   const split = data.split(',');
   const obj: ParsedLevelData = {};
-  // the majority
-  for (let i = 0; i < split.length; i += 2) obj[split[i]] = +split[i + 1] || split[i + 1];
+  for (let i = 0; i < split.length; i += 2) obj[split[i]] = +split[i + 1];
   return obj;
 };

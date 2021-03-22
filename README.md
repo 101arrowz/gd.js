@@ -115,6 +115,18 @@ Documentation
 ---
 The documentation is available online [here](https://101arrowz.github.io/gd.js). You can click the ["Globals" tab](https://101arrowz.github.io/gd.js/globals) to see all the available classes, types, etc. The client (which is what you get when you import `gd.js`) is available under the ["Client" class](https://101arrowz.github.io/gd.js/classes/client).
 
+Note that everything in the documentation is exported.
+```js
+// In ESM environments, import utility types and classes as:
+import GD, { LevelComment } from 'gd.js';
+
+// In CommonJS environments such as Node.js:
+const GD = require('gd.js');
+const LevelComment = GD.LevelComment;
+```
+
+Do not try to construct the exported utility classes, doing so will always fail. Only construct the `Client` and use it to get instances of the other classes.
+
 ### Advanced: Notes About Compatibility
 
 `gd.js` relies on the `fetch` API and `Promise`. Polyfill `Promise` as needed (I recommend [`es6-promise`](https://npmjs.com/package/es6-promise)). For instructions on `fetch` polyfilling, read on.

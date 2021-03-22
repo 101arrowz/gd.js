@@ -152,6 +152,14 @@ gd.users.login({ <span class="hljs-attr">username</span>: <span class="hljs-stri
 					<h2>Documentation</h2>
 				</a>
 				<p>The documentation is available online <a href="https://101arrowz.github.io/gd.js">here</a>. You can click the <a href="https://101arrowz.github.io/gd.js/globals">&quot;Globals&quot; tab</a> to see all the available classes, types, etc. The client (which is what you get when you import <code>gd.js</code>) is available under the <a href="https://101arrowz.github.io/gd.js/classes/client">&quot;Client&quot; class</a>.</p>
+				<p>Note that everything in the documentation is exported.</p>
+				<pre><code class="language-js"><span class="hljs-comment">// In ESM environments, import utility types and classes as:</span>
+<span class="hljs-keyword">import</span> GD, { LevelComment } <span class="hljs-keyword">from</span> <span class="hljs-string">'gd.js'</span>;
+
+<span class="hljs-comment">// In CommonJS environments such as Node.js:</span>
+<span class="hljs-keyword">const</span> GD = <span class="hljs-built_in">require</span>(<span class="hljs-string">'gd.js'</span>);
+<span class="hljs-keyword">const</span> LevelComment = GD.LevelComment;</code></pre>
+				<p>Do not try to construct the exported utility classes, doing so will always fail. Only construct the <code>Client</code> and use it to get instances of the other classes.</p>
 				<a href="#advanced-notes-about-compatibility" id="advanced-notes-about-compatibility" style="color: inherit; text-decoration: none;">
 					<h3>Advanced: Notes About Compatibility</h3>
 				</a>
@@ -208,6 +216,9 @@ gd.users.login({ <span class="hljs-attr">username</span>: <span class="hljs-stri
 					</li>
 					<li class=" tsd-kind-class tsd-has-type-parameter tsd-is-external">
 						<a href="classes/friendrequest.html" class="tsd-kind-icon">Friend<wbr>Request</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-external">
+						<a href="classes/gdrequestparams.html" class="tsd-kind-icon">GDRequest<wbr>Params</a>
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/incomingfriendrequest.html" class="tsd-kind-icon">Incoming<wbr>Friend<wbr>Request</a>
@@ -269,6 +280,9 @@ gd.users.login({ <span class="hljs-attr">username</span>: <span class="hljs-stri
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/usercreator.html" class="tsd-kind-icon">User<wbr>Creator</a>
 					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/basesong.html" class="tsd-kind-icon">Base<wbr>Song</a>
+					</li>
 					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#award" class="tsd-kind-icon">Award</a>
 					</li>
@@ -312,6 +326,9 @@ gd.users.login({ <span class="hljs-attr">username</span>: <span class="hljs-stri
 						<a href="globals.html#gddate" class="tsd-kind-icon">GDDate</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="globals.html#gdrequestdata" class="tsd-kind-icon">GDRequest<wbr>Data</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#iconcosmetic" class="tsd-kind-icon">Icon<wbr>Cosmetic</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-is-external">
@@ -349,6 +366,9 @@ gd.users.login({ <span class="hljs-attr">username</span>: <span class="hljs-stri
 					</li>
 					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#prettylevellength" class="tsd-kind-icon">Pretty<wbr>Level<wbr>Length</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-external">
+						<a href="globals.html#rawaward" class="tsd-kind-icon">Raw<wbr>Award</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-is-external">
 						<a href="globals.html#rawdemondifficulty" class="tsd-kind-icon">Raw<wbr>Demon<wbr>Difficulty</a>
