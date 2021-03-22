@@ -151,7 +151,7 @@ class CustomSong implements BaseSong {
   }
 }
 
-type Song = BaseSong | CustomSong;
+type Song = DefaultSong | CustomSong;
 
 type Difficulty = 'N/A' | 'Auto' | 'Easy' | 'Normal' | 'Hard' | 'Harder' | 'Insane';
 type DemonDifficulty =
