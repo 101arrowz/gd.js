@@ -51,9 +51,7 @@ You can also pass in a configuration to the constructor. This should be an objec
 
 `dbURL`, which should point to the base database URL. Defaults to the official Geometry Dash servers at `http://www.boomlings.com/database` and should only be changed if you are using a private server. Should NOT end with a slash.
 
-`corsURL`, which should point to the base URL for CORS requests (if you don't know what this is or are using Node.js, don't worry about it). Only has an impact if you're using `gd.js` from a browser, defaults to `https://cors-anywhere.herokuapp.com/`. Note that this will be directly prepended to the full request URL, so it will usually end with a trailing slash.
-
-**Also note that the default CORS proxy will not work in production;** you must go to [`https://cors-anywhere.herokuapp.com/corsdemo`](https://cors-anywhere.herokuapp.com/corsdemo) and request temporary access before usage; also, due to a bug in Chrome, the default CORS proxy only works in Firefox. For production (or for development in Chrome), **you need to set up [your own CORS proxy](#advanced-cors-proxying)**.
+`corsURL`, which should point to the base URL for CORS requests. If you're using Node.js, don't worry about this; it only has an impact if you use `gd.js` from a browser. Note that this will be directly prepended to the full request URL, so it will usually end with a trailing slash. **If you are using `gd.js` in the browser, you NEED to set up [your own CORS proxy](#advanced-cors-proxying)**.
 
 `fetch` is the fetch polyfill to use. You can typically just set fetch in the global environment, but if you don't want to do that, you can also pass a polyfill here.
 
@@ -165,7 +163,7 @@ const colors = levelEasyData.parsed.meta.kS38.split('|').map(str => parse(str, '
 
 To set up your own CORS proxy, set up a standard [CORS-Anywhere proxy](https://github.com/Rob--W/cors-anywhere), but configure it to strip `User-Agent` and optionally remove the rate limit.
 
-Alternatively you can [deploy this preconfigured template](https://github.com/101arrowz/gd.js-cors-proxy) to a hosting platform of your choice (unfortunately Heroku appears to be blacklisted by RobTop and won't work). Just run `node server.js` with the appropriate `PORT` and `HOST` environment variables and you should be set.
+Alternatively you can [deploy this preconfigured template](https://github.com/101arrowz/gd.js-cors-proxy) to a hosting platform of your choice (unfortunately Heroku appears to be blacklisted by RobTop and won't work). Just run `node server.js` with the appropriate `PORT` and `HOST` environment variables and you should be set. Once your server is online, just provide the base path to the server as `corsURL` in the options.
 
 ### Development
 

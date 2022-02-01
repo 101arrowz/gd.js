@@ -4,7 +4,7 @@
  * @packageDocumentation
  */
 
-export { default as isNode } from './isNode';
+export { default as isServer } from './isServer';
 export { default as GDRequestParams, GDRequestData } from './param';
 export * from './compress';
 export * from './udid';

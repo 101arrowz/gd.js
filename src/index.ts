@@ -1,4 +1,4 @@
-import { isNode, GDRequestParams } from './util';
+import { isServer, GDRequestParams } from './util';
 import { UserCreator, LevelCreator } from './entities';
 import fetch from './node-fetch';
 
@@ -10,7 +10,7 @@ type Config = {
   logLevel?: 0 | 1 | 2;
   /** The URL for the database. Defaults to http://www.boomlings.com/database. */
   dbURL?: string;
-  /** The URL to use as a CORS proxy when making requests from a browser. Defaults to https://cors-anywhere.herokuapp.com/. Note it should have a trailing slash. */
+  /** The URL to use as a CORS proxy when making requests from a browser. Note it should have a trailing slash. */
   corsURL?: string;
   /** The fetch polyfill to use. Only necessary when fetch is not supported in the target environment. Defaults to node-fetch (if installed) */
   fetch?: typeof fetch;
@@ -27,10 +27,9 @@ type RequestConfig = {
 };
 
 /** @internal */
-const DEFAULT_CONFIG: Required<Config> = {
+const DEFAULT_CONFIG: Config = {
   logLevel: 1,
   dbURL: 'http://www.boomlings.com/database',
-  corsURL: 'https://cors-anywhere.herokuapp.com/',
   fetch
 };
 
@@ -47,13 +46,18 @@ class Client {
    * The configuration for the Geometry Dash client
    * @internal
    */
-  private config: Required<Config>;
+  private config: Config;
 
   /**
    * Creates a client for Geometry Dash requests.
    * @param config The configuration for the client.
    */
   constructor(config?: Config) {
+    if (!isServer && !config.corsURL) {
+      throw new Error(
+        'critical: gd.js cannot function in the browser without a CORS proxy. Please provide a corsURL in the options to fix this issue.'
+      );
+    }
     this.config = {
       ...DEFAULT_CONFIG,
       ...config
@@ -91,7 +95,9 @@ class Client {
       sentBody = body.resolve();
     }
     const resp = await fetch(
-      (isNode ? '' : this.config.corsURL) + (url.startsWith('http') ? '' : this.config.dbURL) + url,
+      (isServer ? '' : this.config.corsURL) +
+        (url.startsWith('http') ? '' : this.config.dbURL) +
+        url,
       {
         method,
         headers: { 'User-Agent': '' },
