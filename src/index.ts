@@ -8,7 +8,7 @@ import fetch from './node-fetch';
 type Config = {
   /** The level of logging. 2 = verbose, 1 = warnings, 0 = off. Defaults to 1. */
   logLevel?: 0 | 1 | 2;
-  /** The URL for the database. Defaults to http://boomlings.com/database. */
+  /** The URL for the database. Defaults to http://www.boomlings.com/database. */
   dbURL?: string;
   /** The URL to use as a CORS proxy when making requests from a browser. Defaults to https://cors-anywhere.herokuapp.com/. Note it should have a trailing slash. */
   corsURL?: string;
@@ -29,7 +29,7 @@ type RequestConfig = {
 /** @internal */
 const DEFAULT_CONFIG: Required<Config> = {
   logLevel: 1,
-  dbURL: 'http://boomlings.com/database',
+  dbURL: 'http://www.boomlings.com/database',
   corsURL: 'https://cors-anywhere.herokuapp.com/',
   fetch
 };
@@ -94,6 +94,7 @@ class Client {
       (isNode ? '' : this.config.corsURL) + (url.startsWith('http') ? '' : this.config.dbURL) + url,
       {
         method,
+        headers: { 'User-Agent': '' },
         referrerPolicy: 'no-referrer',
         body: sentBody
       }

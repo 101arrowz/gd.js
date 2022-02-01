@@ -97,8 +97,9 @@
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> gd = <span class="hljs-keyword">new</span> GD();</code></pre>
 				<p>You can also pass in a configuration to the constructor. This should be an object and can include the following keys:</p>
 				<p><code>logLevel</code>, which should be one of 0, 1, or 2. 0 = no logging, 1 = warnings, 2 = debug/verbose. 1 by default.</p>
-				<p><code>dbURL</code>, which should point to the base database URL. Defaults to the official Geometry Dash servers at <code>https://boomlings.com/database</code> and should only be changed if you are using a private server. Should NOT end with a slash.</p>
-				<p><code>corsURL</code>, which should point to the base URL for CORS requests (if you don&#39;t know what this is, don&#39;t worry about it). Only has an impact if you&#39;re using <code>gd.js</code> from a browser, defaults to <code>https://cors-anywhere.herokuapp.com/</code>. Note that this will be directly prepended to the full request URL, so it will usually end with a trailing slash.</p>
+				<p><code>dbURL</code>, which should point to the base database URL. Defaults to the official Geometry Dash servers at <code>http://www.boomlings.com/database</code> and should only be changed if you are using a private server. Should NOT end with a slash.</p>
+				<p><code>corsURL</code>, which should point to the base URL for CORS requests (if you don&#39;t know what this is or are using Node.js, don&#39;t worry about it). Only has an impact if you&#39;re using <code>gd.js</code> from a browser, defaults to <code>https://cors-anywhere.herokuapp.com/</code>. Note that this will be directly prepended to the full request URL, so it will usually end with a trailing slash.</p>
+				<p><strong>Also note that the default CORS proxy will not work in production;</strong> you must go to <a href="https://cors-anywhere.herokuapp.com/corsdemo"><code>https://cors-anywhere.herokuapp.com/corsdemo</code></a> and request temporary access before usage; also, due to a bug in Chrome, the default CORS proxy only works in Firefox. For production (or for development in Chrome), <strong>you need to set up <a href="#advanced-cors-proxying">your own CORS proxy</a></strong>.</p>
 				<p><code>fetch</code> is the fetch polyfill to use. You can typically just set fetch in the global environment, but if you don&#39;t want to do that, you can also pass a polyfill here.</p>
 				<p>For example:</p>
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> gd = <span class="hljs-keyword">new</span> GD({
@@ -180,6 +181,11 @@ gd.users.login({ <span class="hljs-attr">username</span>: <span class="hljs-stri
 				<pre><code class="language-js"><span class="hljs-keyword">const</span> levelEasy = <span class="hljs-keyword">await</span> gd.levels.get(<span class="hljs-string">'Level Easy'</span>, <span class="hljs-literal">true</span>);
 <span class="hljs-keyword">const</span> levelEasyData = <span class="hljs-keyword">await</span> levelEasy.decodeData(<span class="hljs-literal">true</span>);
 <span class="hljs-keyword">const</span> colors = levelEasyData.parsed.meta.kS38.split(<span class="hljs-string">'|'</span>).map(<span class="hljs-function"><span class="hljs-params">str</span> =&gt;</span> parse(str, <span class="hljs-string">'_'</span>));</code></pre>
+				<a href="#advanced-cors-proxying" id="advanced-cors-proxying" style="color: inherit; text-decoration: none;">
+					<h3>Advanced: CORS Proxying</h3>
+				</a>
+				<p>To set up your own CORS proxy, set up a standard <a href="https://github.com/Rob--W/cors-anywhere">CORS-Anywhere proxy</a>, but configure it to strip <code>User-Agent</code> and optionally remove the rate limit.</p>
+				<p>Alternatively you can <a href="https://github.com/101arrowz/gd.js-cors-proxy">deploy this preconfigured template</a> to a hosting platform of your choice (unfortunately Heroku appears to be blacklisted by RobTop and won&#39;t work). Just run <code>node server.js</code> with the appropriate <code>PORT</code> and <code>HOST</code> environment variables and you should be set.</p>
 				<a href="#development" id="development" style="color: inherit; text-decoration: none;">
 					<h3>Development</h3>
 				</a>
