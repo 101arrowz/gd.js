@@ -1,4 +1,8 @@
 # gd.js
+
+> **Warning**
+> This package is no longer maintained and does not fully support Geometry Dash 2.2. Existing releases remain available for legacy projects. For new projects, consider [@gddl/gd-client](https://www.npmjs.com/package/@gddl/gd-client), [gj-boomlings-api](https://www.npmjs.com/package/gj-boomlings-api), or [@voctal/gdapi](https://www.npmjs.com/package/@voctal/gdapi). These are independent projects, not official successors to gd.js.
+
 A tiny, fast, beautiful Geometry Dash API for Node.js and the browser
 
 Installation
